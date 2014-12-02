@@ -199,14 +199,14 @@ public class FoodItem extends ModelObject implements Serializable{
 		}
 	}
 
-		public FoodItem convertToGrams(){
-			MeasurementUnit measurementUnit = getMeasurementUnit();
-			double amount = getAmount();
-			double amountInGrams = amount;
-			if(measurementUnit != MeasurementUnit.GRAM){
-				double conversionRatio = FoodUnitWeightParser.getInstance().convertFoodMeasurementUnitToGrams(getFoodType(), measurementUnit);
-				amountInGrams = amount * conversionRatio;
-			}
-			return new FoodItem(amountInGrams, MeasurementUnit.GRAM, getFoodType());
+	public FoodItem convertToGrams(){
+		MeasurementUnit measurementUnit = getMeasurementUnit();
+		double amount = getAmount();
+		double amountInGrams = amount;
+		if(measurementUnit != MeasurementUnit.GRAM){
+			double conversionRatio = FoodUnitWeightParser.getInstance().convertFoodMeasurementUnitToGrams(getFoodType(), measurementUnit);
+			amountInGrams = amount * conversionRatio;
+		}
+		return new FoodItem(amountInGrams, MeasurementUnit.GRAM, getFoodType());
 	}
 }
