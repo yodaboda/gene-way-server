@@ -1,0 +1,27 @@
+apply plugin: 'java'
+
+sourceSets {
+        main {
+                java {
+                        srcDir 'src'
+                }
+        }
+}
+
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Gene-Way domain',
+                   'Implementation-Version': version
+    }
+}
+
+dependencies {
+    	compile 'org.hibernate:hibernate-core:3.6.7.Final'
+	compile 'org.hibernate:hibernate-entitymanager:4.3.7.Final'
+	compile 'org.hibernate:hibernate-validator:4.3.2.Final'
+	compile 'org.jboss.logging:jboss-logging:3.1.0.CR1'
+	compile 'org.mybatis:mybatis:3.2.8'
+	compile 'com.h2database:h2:1.4.182'
+	compile project(':shared')
+}

@@ -1,0 +1,1 @@
+insert into CUSTOMER.CUSTOMER(username) values ('فراس سويدان')
