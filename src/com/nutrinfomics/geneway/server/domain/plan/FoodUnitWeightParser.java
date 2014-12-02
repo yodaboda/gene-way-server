@@ -1,4 +1,4 @@
-package com.nutrinfomics.geneway.client.model.plan;
+package com.nutrinfomics.geneway.server.domain.plan;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,6 +8,10 @@ import java.util.EnumMap;
 import java.util.Vector;
 
 import au.com.bytecode.opencsv.CSVReader;
+
+import com.nutrinfomics.geneway.shared.FoodCategory;
+import com.nutrinfomics.geneway.shared.FoodItemType;
+import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 public class FoodUnitWeightParser {
 	public static FoodUnitWeightParser instance;
