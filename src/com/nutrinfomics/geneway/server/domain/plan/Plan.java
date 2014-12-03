@@ -68,12 +68,12 @@ public class Plan extends ModelObject implements Serializable {
 		this.activities = activities;
 	}
 
-	static public Plan findPlan(Session session){
+	static public Plan findPlanForSession(Session session){
 		return getPlanForUsername("فراس سويدان");
 	}
 	
 	static public Plan findPlan(long id){
-		return findPlan(null);
+		return findPlanForSession(null);
 	}
 	
 	static private Plan getPlanForUsername(String username) {
