@@ -2,11 +2,18 @@ package com.nutrinfomics.geneway.server.domain.device;
 
 import java.io.Serializable;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
-public class Device extends ModelObject implements Serializable{
+@Entity
+public class Device extends EntityBase implements Serializable{
 	private String uuid;
+	
+	@OneToOne(fetch=FetchType.EAGER, mappedBy="device")
 	private Customer customer;
 
 	public String getUuid() {

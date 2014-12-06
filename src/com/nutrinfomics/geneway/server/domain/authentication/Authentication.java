@@ -2,7 +2,8 @@ package com.nutrinfomics.geneway.server.domain.authentication;
 
 import java.util.UUID;
 
-import com.nutrinfomics.geneway.server.BCrypt;
+import org.mindrot.jbcrypt.BCrypt;
+
 import com.nutrinfomics.geneway.server.data.UserMapperServices;
 import com.nutrinfomics.geneway.server.domain.authentication.AuthenticationException.LoginExceptionType;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;

@@ -8,11 +8,23 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.SnackProperty;
 
-public class Snack extends ModelObject implements Serializable{
+@Entity
+public class Snack extends EntityBase implements Serializable{
+	
+	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	private List<FoodItem> foodItems;
+	
+	@Enumerated(EnumType.STRING)
 	private SnackProperty snackProperty = null;
 	private Date time = null;
 	

@@ -10,6 +10,9 @@ sourceSets {
 
 
 jar {
+	from ('src') {
+    	include 'META-INF/persistence.xml'
+  	}
     manifest {
         attributes 'Implementation-Title': 'Gene-Way domain',
                    'Implementation-Version': version
@@ -25,5 +28,6 @@ dependencies {
 	compile 'com.h2database:h2:1.4.182'
 	compile 'net.sf.opencsv:opencsv:2.3'
 	compile 'org.mindrot:jbcrypt:0.3m'
+	compile 'com.google.web.bindery:requestfactory-server:2.7.0'
 	compile project(':shared')
 }

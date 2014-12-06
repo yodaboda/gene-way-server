@@ -2,12 +2,19 @@ package com.nutrinfomics.geneway.server.domain.device;
 
 import java.io.Serializable;
 
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+
 import com.nutrinfomics.geneway.server.data.UserMapperServices;
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
-public class Session extends ModelObject implements Serializable{
+@Entity
+public class Session extends EntityBase implements Serializable{
 	private String sid;
+	
+	@OneToOne(fetch=FetchType.EAGER, mappedBy="session")
 	private Customer customer;
 	
 	public Customer getCustomer() {
@@ -26,7 +33,7 @@ public class Session extends ModelObject implements Serializable{
 		this.sid = sid;
 	}
 	
-	public static Session findSession(long id){
-		return UserMapperServices.getInstance().findSession(id);
-	}
+//	public static Session findSession(long id){
+//		return UserMapperServices.getInstance().findSession(id);
+//	}
 }

@@ -3,9 +3,12 @@ package com.nutrinfomics.geneway.server.domain.customer;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import javax.persistence.Entity;
 
-public class PersonalDetails implements Serializable{
+import com.nutrinfomics.geneway.server.domain.EntityBase;
+
+@Entity
+public class PersonalDetails extends EntityBase{
 	public String getEmail() {
 		return email;
 	}

@@ -2,10 +2,10 @@ package com.nutrinfomics.geneway.server.domain.subscription;
 
 import java.util.Date;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
-public class Subscription extends ModelObject{
+public class Subscription extends EntityBase{
 	Date start;
 	Date end;
 	Customer customer;

@@ -6,14 +6,23 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Vector;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
-public class FoodItem extends ModelObject implements Serializable{
+@Entity
+public class FoodItem extends EntityBase implements Serializable{
 	private double amount;
+	
+	@Enumerated(EnumType.STRING)
 	private MeasurementUnit measurementUnit;
+	
+	@Enumerated(EnumType.STRING)
 	private FoodItemType foodType;
 	private int weeklyDays;
 	private int usedWeeklyDays = 0;

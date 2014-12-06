@@ -11,16 +11,37 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Vector;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
+import javax.persistence.Column;
+import javax.persistence.ElementCollection;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import com.nutrinfomics.geneway.server.data.HibernateUtil;
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.shared.ActivitiesType;
 import com.nutrinfomics.geneway.shared.SupplementType;
 
-
-public class Plan extends ModelObject implements Serializable {
+@Entity
+public class Plan extends EntityBase implements Serializable {
 
 	private SnackMenu snackMenu;
+	
+	@ElementCollection(targetClass=ActivitiesType.class)
+    @Enumerated(EnumType.STRING) // Possibly optional (I'm not sure) but defaults to ORDINAL.
+    @CollectionTable(name="plan_activities")
+    @Column(name="activities") // Column name in plan_activities
 	private List<ActivitiesType> activities;
+	
+	@ElementCollection(targetClass=SupplementType.class)
+    @Enumerated(EnumType.STRING) // Possibly optional (I'm not sure) but defaults to ORDINAL.
+    @CollectionTable(name="plan_supplements")
+    @Column(name="supplements") // Column name in plan_supplements
 	private List<SupplementType> supplements;
 	
 	public Plan(){
@@ -69,12 +90,13 @@ public class Plan extends ModelObject implements Serializable {
 	}
 
 	static public Plan findPlanForSession(Session session){
+//		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
 		return getPlanForUsername("فراس سويدان");
 	}
-	
-	static public Plan findPlan(long id){
-		return findPlanForSession(null);
-	}
+//	
+//	static public Plan findPlan(long id){
+//		return findPlanForSession(null);
+//	}
 	
 	static private Plan getPlanForUsername(String username) {
 		String filePath = "/home/firas/Documents/plans/" + username + "/snackMenu.ser";

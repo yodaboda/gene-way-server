@@ -5,11 +5,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
-import com.nutrinfomics.geneway.server.domain.ModelObject;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.SnackProperty;
 
-
-public class SnackMenu extends ModelObject implements Serializable{
+@Entity
+public class SnackMenu extends EntityBase implements Serializable{
+	
+	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	private List<Snack> snacks;
 	
 	public SnackMenu(){
@@ -64,7 +71,7 @@ public class SnackMenu extends ModelObject implements Serializable{
 		return snacks;
 	}
 	
-	static public SnackMenu findSnackMenu(long id){
-		return Plan.findPlan(id).getSnackMenu();
-	}
+//	static public SnackMenu findSnackMenu(long id){
+//		return Plan.findPlan(id).getSnackMenu();
+//	}
 }
