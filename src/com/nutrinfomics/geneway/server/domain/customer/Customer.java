@@ -143,7 +143,26 @@ public class Customer extends EntityBase{
 		return hashedPassword;
 	}
 
+	public boolean hasHashedPassword(){
+		return hashedPassword != null;
+	}
+	
 	public void setHashedPassword(String hashedPassword) {
 		this.hashedPassword = hashedPassword;
+	}
+	
+	public boolean checkPassword(String plainTextPassword){
+		if(password != null){
+			return password.equals(plainTextPassword);
+		}
+		else{
+			if(hashedPassword != null){
+				return BCrypt.checkpw(plainTextPassword, hashedPassword);
+			}
+			else{
+				return false;
+			}
+		}
+
 	}
 }

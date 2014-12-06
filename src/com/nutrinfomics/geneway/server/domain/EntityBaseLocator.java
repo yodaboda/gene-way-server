@@ -1,19 +1,14 @@
 package com.nutrinfomics.geneway.server.domain;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 
 import com.google.web.bindery.requestfactory.shared.Locator;
+import com.nutrinfomics.geneway.server.data.HibernateUtil;
 
 public class EntityBaseLocator extends Locator<EntityBase, Long>{
 
-	private EntityManager entityManager;
+	private EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
 
-	public EntityBaseLocator(){
-		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory( "domainPersistence" );
-		entityManager = entityManagerFactory.createEntityManager();
-	}
 	@Override
 	public EntityBase create(Class<? extends EntityBase> clazz) {
 		try {

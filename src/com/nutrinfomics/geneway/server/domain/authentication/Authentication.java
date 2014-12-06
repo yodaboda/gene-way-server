@@ -1,10 +1,12 @@
 package com.nutrinfomics.geneway.server.domain.authentication;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
-import org.mindrot.jbcrypt.BCrypt;
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 
-import com.nutrinfomics.geneway.server.data.UserMapperServices;
+import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.authentication.AuthenticationException.LoginExceptionType;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
@@ -12,9 +14,15 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class Authentication {
 	public static Customer authenticateCustomer(String userName, String password, String uuid) throws AuthenticationException{
-		Customer customer = UserMapperServices.getInstance().selectCustomer(userName);
 		
-		if(customer == null){
+		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
+		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", userName);
+		
+		Customer customer;
+		try{
+			customer = query.getSingleResult();
+		}
+		catch(Exception e){
 			throw new AuthenticationException(LoginExceptionType.INVALID_USERNAME);
 		}
 
@@ -23,34 +31,33 @@ public class Authentication {
 		session.setSid(sessionID.toString());
 		session.setCustomer(customer);
 		
-		String hashedPassword = UserMapperServices.getInstance().getCustomerHashedPassword(customer);
-		if(hashedPassword == null){ // first-time login
-			hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-			customer.setPassword(hashedPassword);
-			UserMapperServices.getInstance().updateCustomerHashedPassword(customer);
-
+		customer.setSession(session);
+		
+		boolean hasHashedPassword = customer.hasHashedPassword();
+		
+		if(!hasHashedPassword){ // first-time login
 			Device device = new Device();
 			device.setUuid(uuid);
 			device.setCustomer(customer);
-			
-			UserMapperServices.getInstance().insertDevice(device);
-			UserMapperServices.getInstance().insertSession(session);
+
+			customer.setDevice(device);
+
+			entityManager.getTransaction().begin();
+			entityManager.persist(device);
+			entityManager.persist(session);
+			entityManager.getTransaction().commit();
 		}
-//		String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-		boolean valid = isHashedPasswordEqual(hashedPassword, password);
+
+		boolean valid = customer.checkPassword(password);
 
 		if(valid){
-			Device deviceDb = UserMapperServices.getInstance().getCustomerDevice(customer);
+			Device device = customer.getDevice();
 
-			if(deviceDb == null || !deviceDb.getUuid().equalsIgnoreCase(uuid)){
+			if(device == null || !device.getUuid().equalsIgnoreCase(uuid)){
 				AuthenticationException loginException = new AuthenticationException(LoginExceptionType.UNAUTHORIZED_DEVICE);
 				throw loginException;
 			}
 			
-			UserMapperServices.getInstance().updateSession(session);
-
-			customer.setDevice(deviceDb);
-			customer.setSession(UserMapperServices.getInstance().getSession(customer));
 			return customer;
 		}
 		else{
@@ -59,32 +66,23 @@ public class Authentication {
 	}
 	
 	public static Customer authenticateSession(String sid, String uuid) throws AuthenticationException{
-		Customer customer = UserMapperServices.getInstance().getCustomer(sid);
-		Device device = UserMapperServices.getInstance().getCustomerDevice(customer);
-		Session session = UserMapperServices.getInstance().getSession(customer);
+
+		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
+		TypedQuery<Session> query = entityManager.createQuery("SELECT s FROM Session s WERE s.sid = :sid", Session.class).setParameter("sid", sid);
+		Session session = query.getSingleResult();
+
+		Customer customer = session.getCustomer();
+		Device device = customer.getDevice();
 
 		if( ! device.getUuid().equalsIgnoreCase(uuid) ||
 				! session.getSid().equalsIgnoreCase(sid) ){
 			throw new AuthenticationException(LoginExceptionType.INVALID_SESSION);
 		}
-		
-		customer.setDevice(device);
-		device.setCustomer(customer);
-		
-		customer.setSession(session);
-		session.setCustomer(customer);
-		
-		return customer;
 
+		return customer;
 	}
 
 	public static Customer registerCustomer(String username, String password, String uuid){
 		return null;
 	}
-	
-	private static boolean isHashedPasswordEqual(String hashedPassword, String plainTextPassword){
-		if(hashedPassword == null || plainTextPassword == null) return false;
-		return BCrypt.checkpw(plainTextPassword, hashedPassword);
-	}
-
 }
