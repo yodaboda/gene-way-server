@@ -38,11 +38,11 @@ public class Customer extends EntityBase{
 	private PersonalDetails personalDetails;
 	private Subscription subscription;
 	
-	@NotNull
+//	@NotNull
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Session session;
 	
-	@NotNull
+//	@NotNull
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Device device;
 	
@@ -143,8 +143,8 @@ public class Customer extends EntityBase{
 		return hashedPassword;
 	}
 
-	public boolean hasHashedPassword(){
-		return hashedPassword != null;
+	public boolean hasPassword(){
+		return password != null;
 	}
 	
 	public void setHashedPassword(String hashedPassword) {

@@ -1,6 +1,5 @@
 package com.nutrinfomics.geneway.server.domain.authentication;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
@@ -18,7 +17,18 @@ public class Authentication {
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
 		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", userName);
 		
-		Customer customer;
+		
+		Customer customer;// = new Customer();
+//		customer.setUsername("mmmmm");
+//		
+//		try{
+//			entityManager.getTransaction().begin();
+//			entityManager.persist(customer);
+//			entityManager.getTransaction().commit();
+//		}
+//		catch(Exception e){
+//			e.printStackTrace();
+//		}
 		try{
 			customer = query.getSingleResult();
 		}
@@ -33,14 +43,15 @@ public class Authentication {
 		
 		customer.setSession(session);
 		
-		boolean hasHashedPassword = customer.hasHashedPassword();
+		boolean hasPassword = customer.hasPassword();
 		
-		if(!hasHashedPassword){ // first-time login
+		if(!hasPassword){ // first-time login
 			Device device = new Device();
 			device.setUuid(uuid);
 			device.setCustomer(customer);
 
 			customer.setDevice(device);
+			customer.setPassword(password);
 
 			entityManager.getTransaction().begin();
 			entityManager.persist(device);
