@@ -89,7 +89,7 @@ public class Plan extends EntityBase implements Serializable {
 		this.activities = activities;
 	}
 
-	static public Plan findPlanForSession(Session session){
+	static public Plan findPlanForSession(String sid){
 //		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
 		return getPlanForUsername("فراس سويدان");
 	}

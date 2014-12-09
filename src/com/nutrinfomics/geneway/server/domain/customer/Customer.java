@@ -1,5 +1,6 @@
 package com.nutrinfomics.geneway.server.domain.customer;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -90,6 +91,7 @@ public class Customer extends EntityBase{
 
 	public void setPassword(String password) {
 		this.password = password;
+		hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
 	public Device getDevice() {
@@ -108,45 +110,10 @@ public class Customer extends EntityBase{
 		this.status = status;
 	}
 
-//	public static Customer findCustomer(long id){
-//		
-//		try{
-//			EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory( "domainPersistence" );
-//			entityManagerFactory.createEntityManager();
-//		}
-//		catch(Exception ex){
-//			ex.printStackTrace();
-////		    System.out.println("Erro: " + _Ex.getMessage());
-//		}
-//
-////		Customer customer2 = HibernateUtil.getInstance().getEntityManager().find(Customer.class, 2);
-//		
-////		customer2.getId();
-//		
-//		Customer customer = UserMapperServices.getInstance().findCustomer(id);
-//		Session session = UserMapperServices.getInstance().getSession(customer);
-//		Device device = UserMapperServices.getInstance().getCustomerDevice(customer);
-//		
-//		customer.setDevice(device);
-//		customer.setSession(session);
-//		
-//		session.setCustomer(customer);
-//		device.setCustomer(customer);
-//		
-//		return customer;
-//	}
-
 	public String getHashedPassword() {
-		if(hashedPassword == null){
-			hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-		}
 		return hashedPassword;
 	}
 
-	public boolean hasPassword(){
-		return password != null;
-	}
-	
 	public void setHashedPassword(String hashedPassword) {
 		this.hashedPassword = hashedPassword;
 	}

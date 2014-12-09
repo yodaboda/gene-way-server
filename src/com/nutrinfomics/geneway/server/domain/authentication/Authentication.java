@@ -12,88 +12,67 @@ import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class Authentication {
-	public static Customer authenticateCustomer(String userName, String password, String uuid) throws AuthenticationException{
+	public static Session authenticateCustomer(Customer customer) throws AuthenticationException{
 		
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", userName);
+		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", customer.getUsername());
 		
+		Customer customerDb;
 		
-		Customer customer;// = new Customer();
-//		customer.setUsername("mmmmm");
-//		
-//		try{
-//			entityManager.getTransaction().begin();
-//			entityManager.persist(customer);
-//			entityManager.getTransaction().commit();
-//		}
-//		catch(Exception e){
-//			e.printStackTrace();
-//		}
 		try{
-			customer = query.getSingleResult();
+			customerDb = query.getSingleResult();
 		}
 		catch(Exception e){
 			throw new AuthenticationException(LoginExceptionType.INVALID_USERNAME);
 		}
 
-		Session session = new Session();
-		UUID sessionID = UUID.randomUUID();
-		session.setSid(sessionID.toString());
-		session.setCustomer(customer);
+		Session session = customerDb.getSession();
 		
-		customer.setSession(session);
+		entityManager.getTransaction().begin();
+		session.setSid(UUID.randomUUID().toString());
+		entityManager.getTransaction().commit();
 		
-		boolean hasPassword = customer.hasPassword();
-		
-		if(!hasPassword){ // first-time login
-			Device device = new Device();
-			device.setUuid(uuid);
-			device.setCustomer(customer);
-
-			customer.setDevice(device);
-			customer.setPassword(password);
-
-			entityManager.getTransaction().begin();
-			entityManager.persist(device);
-			entityManager.persist(session);
-			entityManager.getTransaction().commit();
-		}
-
-		boolean valid = customer.checkPassword(password);
+		boolean valid = customerDb.checkPassword(customer.getPassword());
 
 		if(valid){
-			Device device = customer.getDevice();
+			Device device = customerDb.getDevice();
 
-			if(device == null || !device.getUuid().equalsIgnoreCase(uuid)){
+			if(device == null || !device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())){
 				AuthenticationException loginException = new AuthenticationException(LoginExceptionType.UNAUTHORIZED_DEVICE);
 				throw loginException;
 			}
 			
-			return customer;
+			return customerDb.getSession();
 		}
 		else{
 			throw new AuthenticationException(LoginExceptionType.INVALID_PASSWORD);
 		}
 	}
 	
-	public static Customer authenticateSession(String sid, String uuid) throws AuthenticationException{
+	public static Session authenticateSession(Session session) throws AuthenticationException{
 
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<Session> query = entityManager.createQuery("SELECT s FROM Session s WERE s.sid = :sid", Session.class).setParameter("sid", sid);
-		Session session = query.getSingleResult();
+		TypedQuery<Session> query = entityManager.createQuery("SELECT s FROM Session s WERE s.sid = :sid", Session.class).setParameter("sid", session.getSid());
+		Session sessionDb = query.getSingleResult();
 
-		Customer customer = session.getCustomer();
-		Device device = customer.getDevice();
+		Customer customerDb = sessionDb.getCustomer();
+		Device deviceDb = customerDb.getDevice();
 
-		if( ! device.getUuid().equalsIgnoreCase(uuid) ||
-				! session.getSid().equalsIgnoreCase(sid) ){
+		if( ! deviceDb.getUuid().equalsIgnoreCase(session.getCustomer().getDevice().getUuid()) ||
+				! sessionDb.getSid().equalsIgnoreCase(session.getSid()) ){
 			throw new AuthenticationException(LoginExceptionType.INVALID_SESSION);
 		}
 
-		return customer;
+		return customerDb.getSession();
 	}
 
-	public static Customer registerCustomer(String username, String password, String uuid){
-		return null;
+	public static Customer registerCustomer(Customer customer){
+		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
+
+		entityManager.getTransaction().begin();
+		entityManager.persist(customer);
+		entityManager.getTransaction().commit();
+		
+		return customer;
 	}
 }

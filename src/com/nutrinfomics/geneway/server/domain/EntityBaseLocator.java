@@ -2,6 +2,7 @@ package com.nutrinfomics.geneway.server.domain;
 
 import javax.persistence.EntityManager;
 
+import com.google.web.bindery.requestfactory.shared.ExtraTypes;
 import com.google.web.bindery.requestfactory.shared.Locator;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 

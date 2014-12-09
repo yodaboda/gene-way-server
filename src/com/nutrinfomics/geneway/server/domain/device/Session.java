@@ -2,6 +2,7 @@ package com.nutrinfomics.geneway.server.domain.device;
 
 import java.io.Serializable;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
@@ -14,7 +15,7 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 public class Session extends EntityBase implements Serializable{
 	private String sid;
 	
-	@OneToOne(fetch=FetchType.EAGER, mappedBy="session")
+	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="session")
 	private Customer customer;
 	
 	public Customer getCustomer() {
