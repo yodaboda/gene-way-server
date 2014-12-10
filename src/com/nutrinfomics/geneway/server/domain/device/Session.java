@@ -33,8 +33,4 @@ public class Session extends EntityBase implements Serializable{
 	public void setSid(String sid) {
 		this.sid = sid;
 	}
-	
-//	public static Session findSession(long id){
-//		return UserMapperServices.getInstance().findSession(id);
-//	}
 }

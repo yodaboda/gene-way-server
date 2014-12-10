@@ -20,6 +20,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
@@ -29,7 +30,7 @@ import com.nutrinfomics.geneway.shared.SupplementType;
 
 @Entity
 public class Plan extends EntityBase implements Serializable {
-
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private SnackMenu snackMenu;
 	
 	@ElementCollection(targetClass=ActivitiesType.class)

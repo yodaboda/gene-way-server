@@ -2,12 +2,24 @@ package com.nutrinfomics.geneway.server.domain.subscription;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
+@Entity
 public class Subscription extends EntityBase{
+	@Temporal(TemporalType.DATE)
 	Date start;
+	@Temporal(TemporalType.DATE)
 	Date end;
+	
+	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="subscription")
 	Customer customer;
 
 	public Date getStart() {

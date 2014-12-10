@@ -9,6 +9,7 @@ import java.util.Vector;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Transient;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.FoodCategory;
@@ -26,6 +27,7 @@ public class FoodItem extends EntityBase implements Serializable{
 	private FoodItemType foodType;
 	private int weeklyDays;
 	private int usedWeeklyDays = 0;
+	@Transient
 	private static EnumMap<FoodCategory, Vector<FoodItemType>> foodItemTypeByCategory;
 	
 	public FoodItem(){

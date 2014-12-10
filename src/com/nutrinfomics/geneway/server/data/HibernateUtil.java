@@ -6,11 +6,14 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import javax.persistence.TypedQuery;
 import javax.persistence.spi.PersistenceProvider;
 import javax.persistence.spi.PersistenceProviderResolver;
 import javax.persistence.spi.PersistenceProviderResolverHolder;
 
 import org.hibernate.jpa.HibernatePersistenceProvider;
+
+import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
 public class HibernateUtil {
 
@@ -44,10 +47,21 @@ public class HibernateUtil {
 		catch(Exception _Ex){
 		    System.out.println("Erro: " + _Ex.getMessage());
 		}
-		
+
+	}
+	
+	public void shutdown(){
+		entityManagerFactory.close();
 	}
 	
 	public EntityManager getEntityManager(){
 		return entityManagerFactory.createEntityManager();
+	}
+	
+	public Customer getCustomer(String username){
+		EntityManager entityManager = getEntityManager();
+		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", username);
+		
+		return query.getSingleResult();
 	}
 }

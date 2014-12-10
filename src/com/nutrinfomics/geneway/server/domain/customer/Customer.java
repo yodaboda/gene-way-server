@@ -35,24 +35,36 @@ public class Customer extends EntityBase{
 	
 	@Transient
 	private String password;
-	
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private PersonalDetails personalDetails;
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Subscription subscription;
 	
-//	@NotNull
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Session session;
 	
-//	@NotNull
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Device device;
 	
 	private Status status;
 	private PersonalizedLifeStyle lifeStyle;
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private Plan plan;
 	
 	public Customer(){
 	}
 
+	public Plan getPlan(){
+		return plan;
+	}
+	
+	public void setPlan(Plan plan){
+		this.plan = plan;
+	}
+	
 	public Subscription getSubscription() {
 		return subscription;
 	}

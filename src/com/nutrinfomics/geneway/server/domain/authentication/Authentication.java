@@ -15,12 +15,10 @@ public class Authentication {
 	public static Session authenticateCustomer(Customer customer) throws AuthenticationException{
 		
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", customer.getUsername());
-		
 		Customer customerDb;
 		
 		try{
-			customerDb = query.getSingleResult();
+			customerDb = HibernateUtil.getInstance().getCustomer(customer.getUsername());
 		}
 		catch(Exception e){
 			throw new AuthenticationException(LoginExceptionType.INVALID_USERNAME);

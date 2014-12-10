@@ -3,9 +3,17 @@ package com.nutrinfomics.geneway.server.domain.customer;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
+import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.shared.Gender;
 
 @Entity
 public class PersonalDetails extends EntityBase{
@@ -39,9 +47,22 @@ public class PersonalDetails extends EntityBase{
 	public void setBirthday(Date birthday) {
 		this.birthday = birthday;
 	}
+	public Gender getGender() {
+		return gender;
+	}
+	public void setGender(Gender gender) {
+		this.gender = gender;
+	}
 	private String email;
 	private String firstName;
 	private String lastName;
+	
+	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="personalDetails")
 	private Customer customer;
+	
+	@Temporal(TemporalType.DATE)
 	private Date birthday;
+	
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
 }
