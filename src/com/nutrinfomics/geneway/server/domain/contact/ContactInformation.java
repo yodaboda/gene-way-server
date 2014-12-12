@@ -8,6 +8,11 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
+
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
@@ -16,7 +21,7 @@ public class ContactInformation extends EntityBase{
 	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 	
-	
+	@Fetch(FetchMode.SELECT) // hibernate specific: need to add it to avoid "cannot simultaneously fetch multiple bags"
 	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	private List<Email> emails = new ArrayList<>();
 

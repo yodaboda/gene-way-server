@@ -3,7 +3,6 @@ package com.nutrinfomics.geneway.server.domain.authentication;
 import java.util.UUID;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.authentication.AuthenticationException.LoginExceptionType;
@@ -13,7 +12,7 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class Authentication {
 	public static Session authenticateCustomer(Customer customer) throws AuthenticationException{
-		
+
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
 		Customer customerDb;
 		
@@ -27,6 +26,11 @@ public class Authentication {
 		Session session = customerDb.getSession();
 		
 		entityManager.getTransaction().begin();
+		
+		if(session == null){
+			customerDb.setSession(new Session());
+			session = customerDb.getSession();
+		}
 		session.setSid(UUID.randomUUID().toString());
 		entityManager.getTransaction().commit();
 		
@@ -35,12 +39,21 @@ public class Authentication {
 		if(valid){
 			Device device = customerDb.getDevice();
 
-			if(device == null || !device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())){
+			if(device == null){
+				entityManager.getTransaction().begin();
+				device = new Device();
+				device.setUuid(customer.getDevice().getUuid());
+				customerDb.setDevice(device);
+				entityManager.getTransaction().commit();
+			}
+			
+			if(!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())){
 				AuthenticationException loginException = new AuthenticationException(LoginExceptionType.UNAUTHORIZED_DEVICE);
 				throw loginException;
 			}
 			
-			return customerDb.getSession();
+			customer.getSession().setSid(customerDb.getSession().getSid());
+			return customer.getSession();
 		}
 		else{
 			throw new AuthenticationException(LoginExceptionType.INVALID_PASSWORD);
@@ -49,9 +62,7 @@ public class Authentication {
 	
 	public static Session authenticateSession(Session session) throws AuthenticationException{
 
-		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<Session> query = entityManager.createQuery("SELECT s FROM Session s WERE s.sid = :sid", Session.class).setParameter("sid", session.getSid());
-		Session sessionDb = query.getSingleResult();
+		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
 
 		Customer customerDb = sessionDb.getCustomer();
 		Device deviceDb = customerDb.getDevice();

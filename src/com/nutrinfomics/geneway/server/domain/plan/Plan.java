@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -26,6 +27,7 @@ import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.shared.ActivitiesType;
+import com.nutrinfomics.geneway.shared.SnackStatus;
 import com.nutrinfomics.geneway.shared.SupplementType;
 
 @Entity
@@ -90,6 +92,23 @@ public class Plan extends EntityBase implements Serializable {
 		this.activities = activities;
 	}
 
+	static public Snack getNextSnack(Snack currentSnack, SnackStatus snackStatus, Session session, Date timestamp, int timeZoneOffset){
+
+		String dateString = SnackHistory.getDateString(timestamp, timeZoneOffset);
+
+		SnackHistory.markSnack(currentSnack, snackStatus, timestamp, timeZoneOffset);
+		
+		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
+		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
+
+		for(Snack snack : snackMenu.getSnacks()){
+			if(! SnackHistory.isSnackMarked(snack, dateString)){
+				return snack;
+			}
+		}
+		return session.getCustomer().getPlan().getSnackMenu().getSnack(0);
+	}
+	
 	static public Plan findPlanForSession(String sid){
 //		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
 		return getPlanForUsername("فراس سويدان");

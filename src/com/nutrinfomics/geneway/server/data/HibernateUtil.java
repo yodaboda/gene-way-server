@@ -14,6 +14,7 @@ import javax.persistence.spi.PersistenceProviderResolverHolder;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
+import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class HibernateUtil {
 
@@ -46,12 +47,12 @@ public class HibernateUtil {
 		}
 		catch(Exception _Ex){
 		    System.out.println("Erro: " + _Ex.getMessage());
+		    _Ex.printStackTrace();
 		}
-
 	}
 	
 	public void shutdown(){
-		entityManagerFactory.close();
+		if(entityManagerFactory != null) entityManagerFactory.close();
 	}
 	
 	public EntityManager getEntityManager(){
@@ -63,5 +64,12 @@ public class HibernateUtil {
 		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", username);
 		
 		return query.getSingleResult();
+	}
+
+	public Session getSession(String sid) {
+		EntityManager entityManager = getInstance().getEntityManager();
+		TypedQuery<Session> query = entityManager.createQuery("SELECT s FROM Session s WHERE s.sid = :sid", Session.class).setParameter("sid", sid);
+		Session sessionDb = query.getSingleResult();
+		return sessionDb;
 	}
 }

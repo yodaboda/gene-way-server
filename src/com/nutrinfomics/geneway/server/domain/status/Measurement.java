@@ -9,6 +9,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 @Entity
 public class Measurement extends EntityBase{
@@ -20,6 +21,17 @@ public class Measurement extends EntityBase{
 	private MeasurementType type;
 
 	private double value;
+
+	@Enumerated(EnumType.STRING)
+	private MeasurementUnit unit;
+	
+	public MeasurementUnit getUnit() {
+		return unit;
+	}
+
+	public void setUnit(MeasurementUnit unit) {
+		this.unit = unit;
+	}
 
 	public Date getDate() {
 		return date;

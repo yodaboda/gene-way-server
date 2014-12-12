@@ -14,6 +14,8 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.SnackProperty;
@@ -26,6 +28,8 @@ public class Snack extends EntityBase implements Serializable{
 	
 	@Enumerated(EnumType.STRING)
 	private SnackProperty snackProperty = null;
+	
+	@Temporal(TemporalType.TIME)
 	private Date time = null;
 	
 	public Snack(FoodItem[] foodItems) {
@@ -99,6 +103,11 @@ public class Snack extends EntityBase implements Serializable{
 	 */
 	public void setTime(Date time) {
 		this.time = time;
+	}
+
+	public boolean isConsumed() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }
