@@ -14,49 +14,59 @@ public class Authentication {
 	public static Session authenticateCustomer(Customer customer) throws AuthenticationException{
 
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		Customer customerDb;
-		
 		try{
-			customerDb = HibernateUtil.getInstance().getCustomer(customer.getUsername());
-		}
-		catch(Exception e){
-			throw new AuthenticationException(LoginExceptionType.INVALID_USERNAME);
-		}
+			entityManager.getTransaction().begin();
+			Customer customerDb;
 
-		Session session = customerDb.getSession();
-		
-		entityManager.getTransaction().begin();
-		
-		if(session == null){
-			customerDb.setSession(new Session());
-			session = customerDb.getSession();
-		}
-		session.setSid(UUID.randomUUID().toString());
-		entityManager.getTransaction().commit();
-		
-		boolean valid = customerDb.checkPassword(customer.getPassword());
+			try{
+				customerDb = HibernateUtil.getInstance().getCustomer(customer.getUsername(), entityManager);
+			}
+			catch(Exception e){
+				throw new AuthenticationException(LoginExceptionType.INVALID_USERNAME);
+			}
 
-		if(valid){
-			Device device = customerDb.getDevice();
+			Session session = customerDb.getSession();
 
-			if(device == null){
-				entityManager.getTransaction().begin();
-				device = new Device();
-				device.setUuid(customer.getDevice().getUuid());
-				customerDb.setDevice(device);
+			if(session == null){
+				session = new Session();
+				entityManager.persist(session);
+			}
+			session.setSid(UUID.randomUUID().toString());
+
+			customerDb.setSession(session);
+			session.setCustomer(customerDb);
+
+			boolean valid = customerDb.checkPassword(customer.getPassword());
+
+			if(valid){
+				Device device = customerDb.getDevice();
+
+				if(device == null){
+					device = new Device();
+					entityManager.persist(device);
+
+					device.setUuid(customer.getDevice().getUuid());
+					customerDb.setDevice(device);
+					device.setCustomer(customerDb);
+				}
+
+				if(!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())){
+					AuthenticationException loginException = new AuthenticationException(LoginExceptionType.UNAUTHORIZED_DEVICE);
+					throw loginException;
+				}
+
+				customer.getSession().setSid(customerDb.getSession().getSid());
+				
 				entityManager.getTransaction().commit();
+				
+				return customer.getSession();
 			}
-			
-			if(!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())){
-				AuthenticationException loginException = new AuthenticationException(LoginExceptionType.UNAUTHORIZED_DEVICE);
-				throw loginException;
+			else{
+				throw new AuthenticationException(LoginExceptionType.INVALID_PASSWORD);
 			}
-			
-			customer.getSession().setSid(customerDb.getSession().getSid());
-			return customer.getSession();
 		}
-		else{
-			throw new AuthenticationException(LoginExceptionType.INVALID_PASSWORD);
+		finally{
+			entityManager.close();
 		}
 	}
 	
@@ -76,12 +86,7 @@ public class Authentication {
 	}
 
 	public static Customer registerCustomer(Customer customer){
-		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-
-		entityManager.getTransaction().begin();
-		entityManager.persist(customer);
-		entityManager.getTransaction().commit();
-		
+		customer.persist();
 		return customer;
 	}
 }

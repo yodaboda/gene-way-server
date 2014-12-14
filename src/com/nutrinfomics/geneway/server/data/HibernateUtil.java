@@ -61,15 +61,21 @@ public class HibernateUtil {
 	
 	public Customer getCustomer(String username){
 		EntityManager entityManager = getEntityManager();
-		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", username);
-		
-		return query.getSingleResult();
+		Customer customer = getCustomer(username, entityManager);
+		entityManager.close();
+		return customer;
 	}
 
+	public Customer getCustomer(String username, EntityManager entityManager){
+		TypedQuery<Customer> query = entityManager.createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", username);
+		return query.getSingleResult();
+	}
+	
 	public Session getSession(String sid) {
 		EntityManager entityManager = getInstance().getEntityManager();
 		TypedQuery<Session> query = entityManager.createQuery("SELECT s FROM Session s WHERE s.sid = :sid", Session.class).setParameter("sid", sid);
 		Session sessionDb = query.getSingleResult();
+		entityManager.close();
 		return sessionDb;
 	}
 }

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
 import javax.persistence.EnumType;
@@ -12,6 +13,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Index;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -26,11 +28,11 @@ import com.nutrinfomics.geneway.shared.SnackStatus;
 @Table(indexes = { @Index(columnList = "snack, dayString", unique = true) })
 public class SnackHistory extends EntityBase{
 
-	@Id
 	@OneToOne(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@JoinColumn(name="snack")
 	private Snack snack;
 
-	@Id
+	@Column(name="dayString")
 	private String dayString;
 
 	@Temporal(TemporalType.TIMESTAMP)
@@ -43,7 +45,7 @@ public class SnackHistory extends EntityBase{
 	
 	public static boolean isSnackMarked(Snack snack, String dayString) {
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<SnackHistory> query = entityManager.createQuery("SELECT s FROM SnackHistory h WHERE snack = :snack AND dayString = :dayString", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString);
+		TypedQuery<SnackHistory> query = entityManager.createQuery("SELECT s FROM SnackHistory s WHERE s.snack = :snack AND s.dayString = :dayString", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString);
 		try{
 			SnackHistory snackHistory = query.getSingleResult();
 			return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
@@ -101,19 +103,20 @@ public class SnackHistory extends EntityBase{
 		this.status = status;
 	}
 
-
 	static public String getDateString(Date timestamp, int timeZoneOffset) {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(timestamp);
 		calendar.set(Calendar.ZONE_OFFSET, timeZoneOffset);
 		
-		SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+		int hour = calendar.get(Calendar.HOUR_OF_DAY);
+		System.out.println(hour);
+		
+		SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy"); //
 		formatter.setCalendar(calendar);
 				
 		String dateString = formatter.format(calendar.getTime());
 		return dateString;
 	}
-
 
 	public static void markSnack(Snack currentSnack, SnackStatus snackStatus, Date date, int timeZoneOffset) {
 		SnackHistory snackHistory = new SnackHistory();

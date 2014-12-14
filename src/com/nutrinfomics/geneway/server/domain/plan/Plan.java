@@ -96,7 +96,9 @@ public class Plan extends EntityBase implements Serializable {
 
 		String dateString = SnackHistory.getDateString(timestamp, timeZoneOffset);
 
-		SnackHistory.markSnack(currentSnack, snackStatus, timestamp, timeZoneOffset);
+		if(!currentSnack.getFoodItems().isEmpty()){
+			SnackHistory.markSnack(currentSnack, snackStatus, timestamp, timeZoneOffset);
+		}
 		
 		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
 		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
@@ -109,7 +111,7 @@ public class Plan extends EntityBase implements Serializable {
 		return session.getCustomer().getPlan().getSnackMenu().getSnack(0);
 	}
 	
-	static public Plan findPlanForSession(String sid){
+	static public Plan findPlanForSession(Session session){
 //		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
 		return getPlanForUsername("فراس سويدان");
 	}
