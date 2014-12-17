@@ -28,7 +28,7 @@ import com.nutrinfomics.geneway.shared.SnackStatus;
 @Table(indexes = { @Index(columnList = "snack, dayString", unique = true) })
 public class SnackHistory extends EntityBase{
 
-	@OneToOne(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@OneToOne(fetch=FetchType.EAGER) // no cascade
 	@JoinColumn(name="snack")
 	private Snack snack;
 

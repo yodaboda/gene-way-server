@@ -45,9 +45,16 @@ public class EntityBase implements Serializable{
 	
 	public void persist(){
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		entityManager.getTransaction().begin();
-		entityManager.persist(this);
-		entityManager.getTransaction().commit();
-		entityManager.close();
+		try{
+			entityManager.getTransaction().begin();
+			entityManager.persist(this);
+			entityManager.getTransaction().commit();
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		finally{
+			entityManager.close();
+		}
 	}
 }

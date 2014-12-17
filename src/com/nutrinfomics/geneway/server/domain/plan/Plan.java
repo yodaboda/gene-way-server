@@ -92,14 +92,7 @@ public class Plan extends EntityBase implements Serializable {
 		this.activities = activities;
 	}
 
-	static public Snack getNextSnack(Snack currentSnack, SnackStatus snackStatus, Session session, Date timestamp, int timeZoneOffset){
-
-		String dateString = SnackHistory.getDateString(timestamp, timeZoneOffset);
-
-		if(!currentSnack.getFoodItems().isEmpty()){
-			SnackHistory.markSnack(currentSnack, snackStatus, timestamp, timeZoneOffset);
-		}
-		
+	static public Snack getNextSnack(Session session, String dateString){
 		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
 		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
@@ -108,7 +101,7 @@ public class Plan extends EntityBase implements Serializable {
 				return snack;
 			}
 		}
-		return session.getCustomer().getPlan().getSnackMenu().getSnack(0);
+		return null;
 	}
 	
 	static public Plan findPlanForSession(Session session){
