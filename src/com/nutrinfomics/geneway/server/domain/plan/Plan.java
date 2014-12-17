@@ -101,7 +101,7 @@ public class Plan extends EntityBase implements Serializable {
 				return snack;
 			}
 		}
-		return null;
+		return new Snack();
 	}
 	
 	static public Plan findPlanForSession(Session session){
