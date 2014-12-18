@@ -57,4 +57,20 @@ public class EntityBase implements Serializable{
 			entityManager.close();
 		}
 	}
+	
+	public void merge(){
+		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
+		try{
+			entityManager.getTransaction().begin();
+			entityManager.merge(this);
+			entityManager.getTransaction().commit();
+		}
+		catch(Exception ex){
+			ex.printStackTrace();
+		}
+		finally{
+			entityManager.close();
+		}
+	}
+
 }

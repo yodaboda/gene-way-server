@@ -22,16 +22,21 @@ import javax.persistence.TypedQuery;
 
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.shared.SnackProperty;
 import com.nutrinfomics.geneway.shared.SnackStatus;
 
 @Entity
-@Table(indexes = { @Index(columnList = "snack, dayString", unique = true) })
+@Table(indexes = { @Index(columnList = "plannedSnack, dayString", unique = true) })
 public class SnackHistory extends EntityBase{
 
 	@OneToOne(fetch=FetchType.EAGER) // no cascade
-	@JoinColumn(name="snack")
-	private Snack snack;
+	@JoinColumn(name="plannedSnack")
+	private Snack plannedSnack;
 
+	@OneToOne(fetch=FetchType.EAGER) // no cascade
+	@JoinColumn(name="eatenSnack")
+	private Snack eatenSnack;
+	
 	@Column(name="dayString")
 	private String dayString;
 
@@ -45,7 +50,7 @@ public class SnackHistory extends EntityBase{
 	
 	public static boolean isSnackMarked(Snack snack, String dayString) {
 		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<SnackHistory> query = entityManager.createQuery("SELECT s FROM SnackHistory s WHERE s.snack = :snack AND s.dayString = :dayString", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString);
+		TypedQuery<SnackHistory> query = entityManager.createQuery("SELECT s FROM SnackHistory s WHERE s.plannedSnack = :snack AND s.dayString = :dayString", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString);
 		try{
 			SnackHistory snackHistory = query.getSingleResult();
 			return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
@@ -56,13 +61,27 @@ public class SnackHistory extends EntityBase{
 	}
 
 
-	public Snack getSnack() {
-		return snack;
+
+	public Snack getPlannedsnack() {
+		return plannedSnack;
 	}
 
 
-	public void setSnack(Snack snack) {
-		this.snack = snack;
+
+	public void setPlannedsnack(Snack plannedSnack) {
+		this.plannedSnack = plannedSnack;
+	}
+
+
+
+	public Snack getEatenSnack() {
+		return eatenSnack;
+	}
+
+
+
+	public void setEatenSnack(Snack eatenSnack) {
+		this.eatenSnack = eatenSnack;
 	}
 
 	public String getDayString() {
@@ -118,16 +137,31 @@ public class SnackHistory extends EntityBase{
 		return dateString;
 	}
 
-	public static void markSnack(Snack currentSnack, SnackStatus snackStatus, Date date, int timeZoneOffset) {
-		SnackHistory snackHistory = new SnackHistory();
-		
-		snackHistory.setSnack(currentSnack);
-		snackHistory.setDayString(getDateString(date, timeZoneOffset));
-		snackHistory.setStatus(snackStatus);
-		snackHistory.setTimestamp(date);
-		snackHistory.setTimeZoneDiff(timeZoneOffset);
-		
-		snackHistory.persist();
+	private static Snack plannedSnackValue;
+
+	public static void setPlannedSnackValue(Snack plannedSnackActualValue){
+		plannedSnackValue = plannedSnackActualValue;
 	}
+	
+	@Override
+	public void persist(){
+		setPlannedsnack(plannedSnackValue);
+		super.persist();
+	}
+	
+//	public static void markSnack(Snack eatenSnack, SnackStatus snackStatus, Date date, int timeZoneOffset) {
+//		
+//		SnackHistory snackHistory = new SnackHistory();
+//		
+//		snackHistory.setPlannedsnack(plannedSnackValue);
+//		snackHistory.setEatenSnack(eatenSnack);
+//		snackHistory.setDayString(getDateString(date, timeZoneOffset));
+//		snackHistory.setStatus(snackStatus);
+//		snackHistory.setTimestamp(date);
+//		snackHistory.setTimeZoneDiff(timeZoneOffset);
+//		
+//		snackHistory.persist();
+//		
+//	}
 
 }

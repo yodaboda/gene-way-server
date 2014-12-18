@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.EnumMap;
 import java.util.Vector;
 
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -25,8 +26,10 @@ public class FoodItem extends EntityBase implements Serializable{
 	
 	@Enumerated(EnumType.STRING)
 	private FoodItemType foodType;
-	private int weeklyDays;
-	private int usedWeeklyDays = 0;
+	
+	@Embedded
+	private ArbitraryCycle cycle = new ArbitraryCycle();
+	
 	@Transient
 	private static EnumMap<FoodCategory, Vector<FoodItemType>> foodItemTypeByCategory;
 	
@@ -40,7 +43,7 @@ public class FoodItem extends EntityBase implements Serializable{
 	
 	public FoodItem(FoodItem foodItem){
 		this(foodItem.getAmount(), foodItem.getMeasurementUnit(),
-				foodItem.getFoodType(), foodItem.getWeeklyDays());
+				foodItem.getFoodType(), new ArbitraryCycle(foodItem.getCycle()));
 	}
 	
 	public FoodItem(FoodItemType foodType){
@@ -49,136 +52,63 @@ public class FoodItem extends EntityBase implements Serializable{
 
 	public FoodItem(double amount, MeasurementUnit measurementUnit, 
 			FoodItemType foodType){
-		this(amount, measurementUnit, foodType, 7);
+		this(amount, measurementUnit, foodType, new ArbitraryCycle(7));
 	}
 
 	
 	public FoodItem(double amount, MeasurementUnit measurementUnit, 
-					FoodItemType foodType, int weeklyDays){
+					FoodItemType foodType, ArbitraryCycle cycle){
 		setAmount(amount);
 		setMeasurementUnit(measurementUnit);
 		setFoodType(foodType);
-		setWeeklyDays(weeklyDays);
+		setCycle(cycle);
 	}
 
 	public FoodItem(String[] data) {
 		setFoodType(FoodItemType.valueOf(data[0]));
 		setMeasurementUnit(MeasurementUnit.valueOf(data[1]));
 		setAmount(Double.parseDouble(data[2]));
-		setWeeklyDays(Integer.parseInt(data[3]));
+		getCycle().setCycleLength(Integer.parseInt(data[3]));
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getAmount()
-	 */
 	public double getAmount() {
 		return amount;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getWeeklyNormalizedAmount()
-	 */
 	public double getWeeklyNormalizedAmount(){
-		return amount * getWeeklyDays() / 7.0;
+		return amount * getCycle().getCycleLength() / 7.0;
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#setAmount(double)
-	 */
 	public void setAmount(double amount) {
 		this.amount = amount;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getMeasurementUnit()
-	 */
 	public MeasurementUnit getMeasurementUnit() {
 		return measurementUnit;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#setMeasurementUnit(com.nutrinfomics.geneway.server.domain.plan.MeasurementUnit)
-	 */
 	public void setMeasurementUnit(MeasurementUnit measurementUnit) {
 		this.measurementUnit = measurementUnit;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getFoodType()
-	 */
 	public FoodItemType getFoodType() {
 		return foodType;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#setFoodType(com.nutrinfomics.geneway.server.domain.plan.FoodItemType)
-	 */
 	public void setFoodType(FoodItemType foodType) {
 		this.foodType = foodType;
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#toString()
-	 */
+
 	@Override
 	public String toString(){
-		return foodType + " " + measurementUnit + " " + amount + " " + weeklyDays;
+		return foodType + " " + measurementUnit + " " + amount + " " + cycle.getCycleLength();
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#toStrings()
-	 */
+
 	public String[] toStrings(){
 		return new String[]{foodType + "", measurementUnit + "", amount + "",
-							weeklyDays + ""};
+							cycle.getCycleLength() + ""};
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getWeeklyDays()
-	 */
-	public int getWeeklyDays() {
-		return weeklyDays;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#setWeeklyDays(int)
-	 */
-	public void setWeeklyDays(int weeklyDays) {
-		this.weeklyDays = weeklyDays;
-	}
-	//should be less than weeklyDays
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getUsedWeeklyDays()
-	 */
-	public int getUsedWeeklyDays() {
-		return usedWeeklyDays;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#advanceUsedWeeklyDaysBySingleUnit()
-	 */
-	public void advanceUsedWeeklyDaysBySingleUnit() {
-		this.usedWeeklyDays++;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#getDaysYetToBeUsed()
-	 */
-	public int getDaysYetToBeUsed(){
-		return weeklyDays - usedWeeklyDays;
-	}
-	
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#isToBeUsed()
-	 */
-	public boolean isToBeUsed(){
-		return getDaysYetToBeUsed() > 0;
-	}
-
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.FoodItemProxy#resetWeekly()
-	 */
-	public void resetWeekly() {
-		usedWeeklyDays = 0;
-	}
 
 	public static Vector<FoodItemType> getFoodTypeInCategory(FoodCategory foodCategory){
 		if(foodItemTypeByCategory == null){
@@ -219,5 +149,13 @@ public class FoodItem extends EntityBase implements Serializable{
 			amountInGrams = amount * conversionRatio;
 		}
 		return new FoodItem(amountInGrams, MeasurementUnit.GRAM, getFoodType());
+	}
+
+	public ArbitraryCycle getCycle() {
+		return cycle;
+	}
+
+	public void setCycle(ArbitraryCycle cycle) {
+		this.cycle = cycle;
 	}
 }

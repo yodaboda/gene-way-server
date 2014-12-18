@@ -27,6 +27,7 @@ import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.shared.ActivitiesType;
+import com.nutrinfomics.geneway.shared.SnackProperty;
 import com.nutrinfomics.geneway.shared.SnackStatus;
 import com.nutrinfomics.geneway.shared.SupplementType;
 
@@ -98,6 +99,12 @@ public class Plan extends EntityBase implements Serializable {
 
 		for(Snack snack : snackMenu.getSnacks()){
 			if(! SnackHistory.isSnackMarked(snack, dateString)){
+				SnackHistory.setPlannedSnackValue(snack);
+				if(snack instanceof VaryingSnack){
+					Snack resultSnack = ((VaryingSnack)snack).getTodaysSnack();
+					return resultSnack;
+				}
+				
 				return snack;
 			}
 		}

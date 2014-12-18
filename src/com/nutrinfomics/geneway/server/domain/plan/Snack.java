@@ -24,7 +24,7 @@ import com.nutrinfomics.geneway.shared.SnackProperty;
 public class Snack extends EntityBase implements Serializable{
 	
 	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
-	private List<FoodItem> foodItems;
+	protected List<FoodItem> foodItems;
 	
 	@Enumerated(EnumType.STRING)
 	private SnackProperty snackProperty = null;
@@ -56,58 +56,32 @@ public class Snack extends EntityBase implements Serializable{
 		foodItems.add(foodItem);
 	}
 	
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#getFoodItems()
-	 */
 	public List<FoodItem> getFoodItems() {
 		return foodItems;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#add(com.nutrinfomics.geneway.server.domain.plan.Snack)
-	 */
 	public void add(Snack snack) {
 		foodItems.addAll(snack.getFoodItems());
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#add(java.util.Vector)
-	 */
 	public void add(Vector<FoodItem> foodItems) {
 		this.foodItems.addAll(foodItems);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#getSnackProperty()
-	 */
 	public SnackProperty getSnackProperty() {
 		return snackProperty;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#setSnackProperty(com.nutrinfomics.geneway.server.domain.plan.Snack.SnackProperty)
-	 */
 	public void setSnackProperty(SnackProperty snackProperty) {
 		this.snackProperty = snackProperty;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#getTime()
-	 */
 	public Date getTime() {
 		return time;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#setTime(java.util.Date)
-	 */
 	public void setTime(Date time) {
 		this.time = time;
-	}
-
-	public boolean isConsumed() {
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 }
