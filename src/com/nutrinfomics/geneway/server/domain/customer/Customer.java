@@ -35,7 +35,6 @@ import com.nutrinfomics.geneway.server.domain.subscription.Subscription;
 @Table(indexes = { @Index(columnList = "username") })
 public class Customer extends EntityBase{
 
-	@NotNull
 	@Size(min = 3, max = 30)
 	private String username;
 	
