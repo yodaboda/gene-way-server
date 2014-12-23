@@ -9,7 +9,6 @@ import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.nutrinfomics.geneway.server.data.UserMapperServices;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 

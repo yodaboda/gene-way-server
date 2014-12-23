@@ -19,6 +19,8 @@ jar {
     }
 }
 
+configurations { providedCompile }
+
 dependencies {
 	compile 'org.hibernate:hibernate-core:3.6.7.Final'
 	compile 'org.hibernate:hibernate-entitymanager:4.3.7.Final'
@@ -30,4 +32,10 @@ dependencies {
 	compile 'org.mindrot:jbcrypt:0.3m'
 	compile 'com.google.web.bindery:requestfactory-server:2.7.0'
 	compile project(':shared')
+	
+	providedCompile "javax.servlet:servlet-api:2.5"
 }
+
+sourceSets.main.compileClasspath += configurations.providedCompile
+sourceSets.test.compileClasspath += configurations.providedCompile
+sourceSets.test.runtimeClasspath += configurations.providedCompile

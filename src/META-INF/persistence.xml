@@ -4,12 +4,11 @@
              version="2.0">
 
     <persistence-unit name="domainPersistence" transaction-type="RESOURCE_LOCAL">
-        <description>
-            Hibernate using JPA
-        </description>
+        
+        <description> Domain persistent</description>
 		
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        
+
         <properties>
             <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
