@@ -8,8 +8,11 @@ import java.io.InputStream;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import javax.persistence.CascadeType;
@@ -23,10 +26,12 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
+import com.google.web.bindery.requestfactory.shared.Request;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.shared.ActivitiesType;
+import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.SnackProperty;
 import com.nutrinfomics.geneway.shared.SnackStatus;
 import com.nutrinfomics.geneway.shared.SupplementType;
@@ -111,37 +116,64 @@ public class Plan extends EntityBase implements Serializable {
 		return new Snack();
 	}
 	
-	static public Plan findPlanForSession(Session session){
-//		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
-		return getPlanForUsername("فراس سويدان");
+	static public Set<FoodItemType> getIngredients(Session session, String dateString){
+		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
+		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
+
+		Set<FoodItemType> foodItemTypes = new HashSet<>();
+		
+		for(Snack snack : snackMenu.getSnacks()){
+			for(FoodItem foodItem : snack.getFoodItems()){
+				foodItemTypes.add(foodItem.getFoodType());
+			}
+		}
+		return foodItemTypes;
 	}
+
+	static public List<String> getMenuSummary(Session session, String dateString){
+		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
+		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
+
+		List<String> snackSummary = new ArrayList<>();
+		
+		for(Snack snack : snackMenu.getSnacks()){
+			snackSummary.add(snack.getSummary());
+		}
+		return snackSummary;
+	}
+
+	
+//	static public Plan findPlanForSession(Session session){
+////		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
+//		return getPlanForUsername("فراس سويدان");
+//	}
 //	
 //	static public Plan findPlan(long id){
 //		return findPlanForSession(null);
 //	}
 	
-	static private Plan getPlanForUsername(String username) {
-		String filePath = "/home/firas/Documents/plans/" + username + "/snackMenu.ser";
-
-		SnackMenu snackMenu = null;
-		try(
-			      InputStream file = new FileInputStream(filePath);
-			      InputStream buffer = new BufferedInputStream(file);
-			      ObjectInput input = new ObjectInputStream (buffer);
-			    ){
-			snackMenu = (SnackMenu)input.readObject();
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return buildPlanFromSnackMenu(snackMenu);
-	}
+//	static private Plan getPlanForUsername(String username) {
+//		String filePath = "/home/firas/Documents/plans/" + username + "/snackMenu.ser";
+//
+//		SnackMenu snackMenu = null;
+//		try(
+//			      InputStream file = new FileInputStream(filePath);
+//			      InputStream buffer = new BufferedInputStream(file);
+//			      ObjectInput input = new ObjectInputStream (buffer);
+//			    ){
+//			snackMenu = (SnackMenu)input.readObject();
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		return buildPlanFromSnackMenu(snackMenu);
+//	}
 
 	static private Plan buildPlanFromSnackMenu(SnackMenu snackMenu) {
 		Plan plan = new Plan();

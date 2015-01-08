@@ -18,6 +18,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.SnackProperty;
 
 @Entity
@@ -82,6 +83,16 @@ public class Snack extends EntityBase implements Serializable{
 
 	public void setTime(Date time) {
 		this.time = time;
+	}
+
+	public String getSummary() {
+		if(snackProperty == SnackProperty.REST) return SnackProperty.REST.toString();
+		if(snackProperty == SnackProperty.ENERGY){
+			for(FoodItem foodItem : getFoodItems()){
+				if(foodItem.getFoodType().getFoodCategory() == FoodCategory.FRUIT) return foodItem.getFoodType().toString();
+			}
+		}
+		return getFoodItems().get(0).getFoodType().toString();
 	}
 
 }
