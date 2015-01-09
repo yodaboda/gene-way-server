@@ -19,6 +19,8 @@ public class SnackMenu extends EntityBase implements Serializable{
 	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
 	private List<Snack> snacks;
 	
+	
+	
 	public SnackMenu(){
 		
 	}

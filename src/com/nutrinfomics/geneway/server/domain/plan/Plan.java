@@ -23,17 +23,13 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-import com.google.web.bindery.requestfactory.shared.Request;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.shared.ActivitiesType;
 import com.nutrinfomics.geneway.shared.FoodItemType;
-import com.nutrinfomics.geneway.shared.SnackProperty;
-import com.nutrinfomics.geneway.shared.SnackStatus;
 import com.nutrinfomics.geneway.shared.SupplementType;
 
 @Entity
@@ -52,6 +48,9 @@ public class Plan extends EntityBase implements Serializable {
     @CollectionTable(name="plan_supplements")
     @Column(name="supplements") // Column name in plan_supplements
 	private List<SupplementType> supplements;
+	
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private SnackTimes snackTimes;
 	
 	public Plan(){
 		
@@ -98,6 +97,12 @@ public class Plan extends EntityBase implements Serializable {
 		this.activities = activities;
 	}
 
+	
+	static public SnackTimes getSnackTimes(Session session){
+		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
+		return sessionDb.getCustomer().getPlan().getSnackTimes();
+	}
+	
 	static public Snack getNextSnack(Session session, String dateString){
 		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
 		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
@@ -179,6 +184,12 @@ public class Plan extends EntityBase implements Serializable {
 		Plan plan = new Plan();
 		plan.setSnackMenu(snackMenu);
 		return plan;
+	}
+	public SnackTimes getSnackTimes() {
+		return snackTimes;
+	}
+	public void setSnackTimes(SnackTimes snackTimes) {
+		this.snackTimes = snackTimes;
 	}
 
 }
