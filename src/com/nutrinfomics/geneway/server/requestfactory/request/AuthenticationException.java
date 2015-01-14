@@ -1,4 +1,4 @@
-package com.nutrinfomics.geneway.server.domain.authentication;
+package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import java.io.Serializable;
 

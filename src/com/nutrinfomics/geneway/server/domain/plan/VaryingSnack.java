@@ -98,29 +98,6 @@ public class VaryingSnack extends Snack implements WeeklyBehaving{
 		return foodItemsCopy;
 	}
 
-	public Snack getTodaysSnack(){
-		try{
-			List<Integer> indices = new ArrayList<>(7);
-			for(int i = 0; i < 7; ++i) indices.add(i);
-			Collections.shuffle(indices);
-			
-			for(int i = 0; i <indices.size(); ++i){
-				if(!eaten.get(indices.get(i))){
-					eaten.set(indices.get(i), true);
-					return weeklySnacks.get(indices.get(i));
-				}
-			}
-		
-			//otherwise, all snacks already eaten - end of week - reset
-			for(int i = 0; i < 7; ++i) eaten.set(i, false);
-
-			eaten.set(indices.get(0), true);
-			return weeklySnacks.get(indices.get(0));
-		}
-		finally{
-			merge();
-		}
-	}
 	
 	private void clear(){
 		todaysFoodItems.clear();
@@ -224,5 +201,20 @@ public class VaryingSnack extends Snack implements WeeklyBehaving{
 		
 		for(FoodItem otherFoodItem : otherFoodItems)
 			otherFoodItem.getCycle().reset();
+	}
+
+
+	public boolean isEaten(Integer integer) {
+		return eaten.get(integer);
+	}
+
+
+	public void setEaten(Integer integer, boolean b) {
+		eaten.set(integer, b);		
+	}
+
+
+	public List<Snack> getWeeklySnacks() {
+		return weeklySnacks;
 	}
 }

@@ -1,10 +1,10 @@
-package com.nutrinfomics.geneway.server;
+package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.lang.reflect.Method;
 
 import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
-import com.nutrinfomics.geneway.server.domain.authentication.Authentication;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
+import com.nutrinfomics.geneway.server.requestfactory.request.AuthenticationService;
 
 public class SecurityDecorator extends ServiceLayerDecorator {
 
@@ -19,7 +19,7 @@ public class SecurityDecorator extends ServiceLayerDecorator {
 	 private boolean isAllowed(Method domainMethod) {
 		try {
 			return !GeneWayRequestFactoryServlet.isOnlyLoginAllowed() || 
-					domainMethod.equals(Authentication.class.getMethod("authenticateCustomer", Customer.class));
+					domainMethod.equals(AuthenticationService.class.getMethod("authenticateCustomer", Customer.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

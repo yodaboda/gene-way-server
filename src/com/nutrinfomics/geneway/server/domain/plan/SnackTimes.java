@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
@@ -16,7 +17,7 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 public class SnackTimes extends EntityBase{
 	private double timeBetweenSnacks = 2;
 
-	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@ElementCollection(fetch=FetchType.EAGER)
 	@Temporal(TemporalType.TIME)
 	private List<Date> snackTimes;
 

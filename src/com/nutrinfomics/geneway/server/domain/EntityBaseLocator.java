@@ -2,13 +2,16 @@ package com.nutrinfomics.geneway.server.domain;
 
 import javax.persistence.EntityManager;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
 import com.google.web.bindery.requestfactory.shared.ExtraTypes;
 import com.google.web.bindery.requestfactory.shared.Locator;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 
 public class EntityBaseLocator extends Locator<EntityBase, Long>{
 
-	private EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
+	@Inject
+	Provider<EntityManager> entityManager;
 
 	@Override
 	public EntityBase create(Class<? extends EntityBase> clazz) {
@@ -26,7 +29,7 @@ public class EntityBaseLocator extends Locator<EntityBase, Long>{
 
 	@Override
 	public EntityBase find(Class<? extends EntityBase> clazz, Long id) {
-		return entityManager.find(clazz, id); 
+		return entityManager.get().find(clazz, id); 
 	}
 
 	@Override

@@ -48,17 +48,6 @@ public class SnackHistory extends EntityBase{
 	@Enumerated(EnumType.STRING)
 	private SnackStatus status;
 	
-	public static boolean isSnackMarked(Snack snack, String dayString) {
-		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		TypedQuery<SnackHistory> query = entityManager.createQuery("SELECT s FROM SnackHistory s WHERE s.plannedSnack = :snack AND s.dayString = :dayString", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString);
-		try{
-			SnackHistory snackHistory = query.getSingleResult();
-			return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
-		}
-		catch(Exception e){
-			return false;
-		}
-	}
 
 
 
@@ -141,12 +130,6 @@ public class SnackHistory extends EntityBase{
 
 	public static void setPlannedSnackValue(Snack plannedSnackActualValue){
 		plannedSnackValue = plannedSnackActualValue;
-	}
-	
-	@Override
-	public void persist(){
-		setPlannedsnack(plannedSnackValue);
-		super.persist();
 	}
 	
 //	public static void markSnack(Snack eatenSnack, SnackStatus snackStatus, Date date, int timeZoneOffset) {

@@ -10,14 +10,18 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.TableGenerator;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
+import com.google.inject.Inject;
+import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class EntityBase implements Serializable{
-	
+		
 	@Id
 	@GeneratedValue(strategy = GenerationType.TABLE)
 //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "pkGen")
@@ -41,36 +45,6 @@ public class EntityBase implements Serializable{
 
 	public void setId(long id) {
 		this.id = id;
-	}
-	
-	public void persist(){
-		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		try{
-			entityManager.getTransaction().begin();
-			entityManager.persist(this);
-			entityManager.getTransaction().commit();
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-		}
-		finally{
-			entityManager.close();
-		}
-	}
-	
-	public void merge(){
-		EntityManager entityManager = HibernateUtil.getInstance().getEntityManager();
-		try{
-			entityManager.getTransaction().begin();
-			entityManager.merge(this);
-			entityManager.getTransaction().commit();
-		}
-		catch(Exception ex){
-			ex.printStackTrace();
-		}
-		finally{
-			entityManager.close();
-		}
 	}
 
 }

@@ -1,15 +1,7 @@
 package com.nutrinfomics.geneway.server.domain.plan;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -49,8 +41,8 @@ public class Plan extends EntityBase implements Serializable {
     @Column(name="supplements") // Column name in plan_supplements
 	private List<SupplementType> supplements;
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private SnackTimes snackTimes;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private PlanPreferences planPreferences;
 	
 	public Plan(){
 		
@@ -92,104 +84,18 @@ public class Plan extends EntityBase implements Serializable {
 		this.supplements = supplements;
 	}
 	public Plan(SnackMenu snackMenu, Vector<ActivitiesType> activities,
-				Vector<SupplementType> supplements){
+				Vector<SupplementType> supplements, PlanPreferences planPreferences){
 		this.snackMenu = snackMenu;
 		this.activities = activities;
+		this.planPreferences = planPreferences;
 	}
 
 	
-	static public SnackTimes getSnackTimes(Session session){
-		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
-		return sessionDb.getCustomer().getPlan().getSnackTimes();
+	public PlanPreferences getPlanPreferences() {
+		return planPreferences;
 	}
-	
-	static public Snack getNextSnack(Session session, String dateString){
-		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
-		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
-
-		for(Snack snack : snackMenu.getSnacks()){
-			if(! SnackHistory.isSnackMarked(snack, dateString)){
-				SnackHistory.setPlannedSnackValue(snack);
-				if(snack instanceof VaryingSnack){
-					Snack resultSnack = ((VaryingSnack)snack).getTodaysSnack();
-					return resultSnack;
-				}
-				
-				return snack;
-			}
-		}
-		return new Snack();
-	}
-	
-	static public Set<FoodItemType> getIngredients(Session session, String dateString){
-		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
-		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
-
-		Set<FoodItemType> foodItemTypes = new HashSet<>();
-		
-		for(Snack snack : snackMenu.getSnacks()){
-			for(FoodItem foodItem : snack.getFoodItems()){
-				foodItemTypes.add(foodItem.getFoodType());
-			}
-		}
-		return foodItemTypes;
-	}
-
-	static public List<String> getMenuSummary(Session session, String dateString){
-		Session sessionDb = HibernateUtil.getInstance().getSession(session.getSid());
-		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
-
-		List<String> snackSummary = new ArrayList<>();
-		
-		for(Snack snack : snackMenu.getSnacks()){
-			snackSummary.add(snack.getSummary());
-		}
-		return snackSummary;
-	}
-
-	
-//	static public Plan findPlanForSession(Session session){
-////		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
-//		return getPlanForUsername("فراس سويدان");
-//	}
-//	
-//	static public Plan findPlan(long id){
-//		return findPlanForSession(null);
-//	}
-	
-//	static private Plan getPlanForUsername(String username) {
-//		String filePath = "/home/firas/Documents/plans/" + username + "/snackMenu.ser";
-//
-//		SnackMenu snackMenu = null;
-//		try(
-//			      InputStream file = new FileInputStream(filePath);
-//			      InputStream buffer = new BufferedInputStream(file);
-//			      ObjectInput input = new ObjectInputStream (buffer);
-//			    ){
-//			snackMenu = (SnackMenu)input.readObject();
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return buildPlanFromSnackMenu(snackMenu);
-//	}
-
-	static private Plan buildPlanFromSnackMenu(SnackMenu snackMenu) {
-		Plan plan = new Plan();
-		plan.setSnackMenu(snackMenu);
-		return plan;
-	}
-	public SnackTimes getSnackTimes() {
-		return snackTimes;
-	}
-	public void setSnackTimes(SnackTimes snackTimes) {
-		this.snackTimes = snackTimes;
+	public void setPlanPreferences(PlanPreferences planPreferences) {
+		this.planPreferences = planPreferences;
 	}
 
 }
