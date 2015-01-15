@@ -13,6 +13,7 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 @Entity
 public class Device extends EntityBase implements Serializable{
 	private String uuid;
+	private String phonenumber;
 	
 	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="device")
 	private Customer customer;
@@ -28,6 +29,12 @@ public class Device extends EntityBase implements Serializable{
 	}
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
+	}
+	public void setPhonenumber(String phonenumber) {
+		this.phonenumber = phonenumber;
+	}
+	public String getPhonenumber(){
+		return phonenumber;
 	}
 
 }
