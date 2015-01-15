@@ -17,9 +17,9 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.nutrinfomics.geneway.server.alert.format.SnackFormat;
-import com.nutrinfomics.geneway.server.alert.format.resources.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
+import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 abstract public class AbstractAlert implements UserAlert {
 

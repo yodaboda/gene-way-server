@@ -12,6 +12,7 @@ import javax.persistence.TypedQuery;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
+import com.nutrinfomics.geneway.server.alert.Alerts;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
@@ -41,9 +42,10 @@ public class PlanService {
 				SnackHistory.setPlannedSnackValue(snack);
 				if(snack instanceof VaryingSnack){
 					Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
-					return resultSnack;
+					snack = resultSnack;
 				}
 				
+				Alerts.getInstance().add(sessionDb.getCustomer(), snack);
 				return snack;
 			}
 		}

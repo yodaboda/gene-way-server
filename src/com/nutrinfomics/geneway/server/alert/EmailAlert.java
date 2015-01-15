@@ -1,9 +1,9 @@
 package com.nutrinfomics.geneway.server.alert;
 
 import com.nutrinfomics.geneway.server.alert.format.SnackFormat;
-import com.nutrinfomics.geneway.server.alert.format.resources.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
+import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class EmailAlert extends AbstractAlert {
 

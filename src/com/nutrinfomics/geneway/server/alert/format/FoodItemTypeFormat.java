@@ -2,8 +2,8 @@ package com.nutrinfomics.geneway.server.alert.format;
 
 import java.util.Locale;
 
-import com.nutrinfomics.geneway.server.alert.format.resources.ResourceBundles;
 import com.nutrinfomics.geneway.shared.FoodItemType;
+import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class FoodItemTypeFormat {
 

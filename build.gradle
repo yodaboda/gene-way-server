@@ -38,8 +38,9 @@ dependencies {
 	compile 'javax.mail:mail:1.4.7'
 	compile project(':shared')
 	
-	compile project(path: ':app', configuration: 'constants')
-	
+	compile name: 'langdetect'
+	compile name: 'jsonic-1.2.0'
+		
 	providedCompile "javax.servlet:servlet-api:2.5"
 }
 
