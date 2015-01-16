@@ -5,13 +5,12 @@ import java.util.List;
 
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
+import com.nutrinfomics.geneway.server.alert.ScheduledAlert.AlertType;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
 public class Alerts {
 	private static Alerts alerts;
-	
-	private List<UserAlert> alertList = new ArrayList<>();
 	
 	public static Alerts getInstance(){
 		if(alerts == null){
@@ -36,16 +35,26 @@ public class Alerts {
 		}
 	}
 	
-	public void add(Customer customer, Snack snack){
-		if(customer.getPlan().getPlanPreferences().isEmailAlerts()){
-			double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
-			UserAlert alert = new EmailAlert(customer, snack, inHours);
-			alertList.add(alert);
+	public UserAlert createAlert(Customer customer, Snack snack){
+		List<AlertType> alertTypes = new ArrayList<>();
+ 		if(customer.getPlan().getPlanPreferences().isEmailAlerts()){
+ 			alertTypes.add(AlertType.EMAIL);
 		}
 		if(customer.getPlan().getPlanPreferences().isSmsAlerts()){
-			double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
-			UserAlert alert = new SMSAlert(customer, snack, inHours);
-			alertList.add(alert);
+			alertTypes.add(AlertType.SMS);
+		}
+
+		double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
+
+		return new ScheduledAlert(customer, inHours, snack, alertTypes);
+	}
+
+
+	public static UserAlert create(Customer customer, AlertType alertType) {
+		switch(alertType){
+			case EMAIL: return new EmailAlert(customer);
+			case SMS: return new SMSAlert(customer);
+			default: return null;
 		}
 	}
 }

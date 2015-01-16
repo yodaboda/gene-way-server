@@ -13,16 +13,18 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.alert.Alerts;
+import com.nutrinfomics.geneway.server.alert.UserAlert;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
+import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
-import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
 import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.shared.FoodItemType;
+import com.nutrinfomics.geneway.shared.SnackProperty;
 import com.nutrinfomics.geneway.shared.SnackStatus;
 
 public class PlanService {
@@ -38,14 +40,14 @@ public class PlanService {
 		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
 		for(Snack snack : snackMenu.getSnacks()){
-			if(! isSnackMarked(snack, dateString)){
-				SnackHistory.setPlannedSnackValue(snack);
+			if(! isSnackMarked(sessionDb.getCustomer(), snack, dateString)){
 				if(snack instanceof VaryingSnack){
 					Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
 					snack = resultSnack;
 				}
 				
-				Alerts.getInstance().add(sessionDb.getCustomer(), snack);
+				UserAlert alert = Alerts.getInstance().createAlert(sessionDb.getCustomer(), snack);
+				snack.setAlert(alert);
 				return snack;
 			}
 		}
@@ -78,14 +80,25 @@ public class PlanService {
 	}
 	
 	
-	private boolean isSnackMarked(Snack snack, String dayString) {
-		TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.plannedSnack = :snack AND s.dayString = :dayString", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString);
-		try{
-			SnackHistory snackHistory = query.getSingleResult();
-			return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
-		}
-		catch(Exception e){
+	private boolean isSnackMarked(Customer customer, Snack snack, String dayString) {
+		if(snack.getSnackProperty() == SnackProperty.REST){
+			//in case of rest snack we need to check if user already had a rest snack
+			TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.dayString = :dayString AND s.customer = :customer", SnackHistory.class).setParameter("dayString", dayString).setParameter("customer", customer);
+			List<SnackHistory> result = query.getResultList();
+			for(SnackHistory snackHistory : result){
+				if(snackHistory.getPlannedSnack().getSnackProperty() == SnackProperty.REST) return true;
+			}
 			return false;
+		}
+		else{
+			TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.plannedSnack = :snack AND s.dayString = :dayString AND s.customer = :customer", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString).setParameter("customer", customer);
+			try{
+				SnackHistory snackHistory = query.getSingleResult();
+				return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
+			}
+			catch(Exception e){
+				return false;
+			}
 		}
 	}
 
@@ -115,44 +128,4 @@ public class PlanService {
 		}
 		return snackSummary;
 	}
-
-	
-//	static public Plan findPlanForSession(Session session){
-////		HibernateUtil.getInstance().getEntityManager().find(Plan.class, 2);
-//		return getPlanForUsername("فراس سويدان");
-//	}
-//	
-//	static public Plan findPlan(long id){
-//		return findPlanForSession(null);
-//	}
-	
-//	static private Plan getPlanForUsername(String username) {
-//		String filePath = "/home/firas/Documents/plans/" + username + "/snackMenu.ser";
-//
-//		SnackMenu snackMenu = null;
-//		try(
-//			      InputStream file = new FileInputStream(filePath);
-//			      InputStream buffer = new BufferedInputStream(file);
-//			      ObjectInput input = new ObjectInputStream (buffer);
-//			    ){
-//			snackMenu = (SnackMenu)input.readObject();
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		return buildPlanFromSnackMenu(snackMenu);
-//	}
-
-	private Plan buildPlanFromSnackMenu(SnackMenu snackMenu) {
-		Plan plan = new Plan();
-		plan.setSnackMenu(snackMenu);
-		return plan;
-	}
-
 }

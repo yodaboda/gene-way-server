@@ -7,6 +7,7 @@ import java.util.ResourceBundle;
 
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
+import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class SnackFormat {
 	private static SnackFormat instance;
@@ -41,7 +42,7 @@ public class SnackFormat {
 			s += FoodItemFormat.getInstance().format(new FoodItem(foodItem.getAmount(), foodItem.getMeasurementUnit(), foodItem.getFoodType()), 
 					locale) +
 					" - " + NumberFormat.getIntegerInstance(locale).format(foodItem.getCycle().getCycleLength()) + " " +
-					ResourceBundle.getBundle("MiscBundle", locale).getString("days")  + System.getProperty("line.separator");			
+					ResourceBundles.getMiscBundleResource("days", locale) + System.getProperty("line.separator");			
 		}
 		return s.isEmpty() ? s : s.substring(0, s.length() - 1); // string ends with "\n"
 	}

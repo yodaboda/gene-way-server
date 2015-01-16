@@ -1,21 +1,40 @@
 package com.nutrinfomics.geneway.server.alert;
 
-import com.nutrinfomics.geneway.server.alert.format.SnackFormat;
+import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
+
+import com.nutrinfomics.geneway.server.alert.message.AbstractEmailMessage;
+import com.nutrinfomics.geneway.server.alert.message.EmailAlertEmailMessage;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
-import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class EmailAlert extends AbstractAlert {
 
-	public EmailAlert(Customer customer, Snack snack, double inHours) {
-		super(customer, snack, inHours);
+	protected AbstractEmailMessage emailMessage;
+	
+	public EmailAlert(Customer customer) {
+		super(customer);
+		
+		emailMessage = new EmailAlertEmailMessage(this);
 	}
 
-	protected String getSubject(){
-		return ResourceBundles.getGeneWayResource("itsTimeToTakeYourMealTitle", getLocale());
+	@Override
+	public void remind() {
+		try {
+			emailMessage.generateAndSendEmail();//"0587555520"
+		} catch (AddressException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MessagingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	protected String getRecipient(){
-		return getCustomer().getContactInformation().getEmails().get(0).getEmail();
+
+	@Override
+	public void cancel() {
+		emailMessage = null;
 	}
+
 
 }

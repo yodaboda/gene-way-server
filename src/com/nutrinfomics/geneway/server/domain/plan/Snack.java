@@ -16,7 +16,9 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.persistence.Transient;
 
+import com.nutrinfomics.geneway.server.alert.UserAlert;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.SnackProperty;
@@ -32,6 +34,9 @@ public class Snack extends EntityBase implements Serializable{
 	
 	@Temporal(TemporalType.TIME)
 	private Date time = null;
+	
+	@Transient
+	private UserAlert alert;
 	
 	public Snack(FoodItem[] foodItems) {
 		this(Arrays.asList(foodItems));
@@ -95,4 +100,7 @@ public class Snack extends EntityBase implements Serializable{
 		return getFoodItems().get(0).getFoodType().toString();
 	}
 
+	public void setAlert(UserAlert alert) {
+		this.alert = alert;
+	}
 }

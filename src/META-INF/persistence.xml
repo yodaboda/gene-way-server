@@ -10,11 +10,11 @@
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 
         <properties>
-            <property name="javax.persistence.jdbc.driver" value="org.h2.Driver" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.H2Dialect"></property>
-            <property name="javax.persistence.jdbc.url" value="jdbc:h2:tcp://localhost//home/firas/Documents/plans/usersH.db;CIPHER=AES" />
+            <property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"></property>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost/gene_way" />
             <property name="javax.persistence.jdbc.user" value="nuth2db" />
-            <property name="javax.persistence.jdbc.password" value="e18ooXLIrzDcqWNd qTFBieBixKtlHdNN" />
+            <property name="javax.persistence.jdbc.password" value="e18ooXLIrzDcqWNd" />
 			
 			<property name="hibernate.max_fetch_depth" value="3"/>
             

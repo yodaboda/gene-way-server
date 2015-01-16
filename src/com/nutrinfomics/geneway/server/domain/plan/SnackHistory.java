@@ -19,16 +19,24 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.TypedQuery;
+import javax.validation.constraints.NotNull;
 
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.shared.SnackProperty;
 import com.nutrinfomics.geneway.shared.SnackStatus;
 
 @Entity
-@Table(indexes = { @Index(columnList = "plannedSnack, dayString", unique = true) })
+@Table(indexes = { @Index(columnList = "customer, plannedSnack, dayString", unique = true),
+					@Index(columnList = "customer, dayString", unique = false) })
 public class SnackHistory extends EntityBase{
 
+	@OneToOne(fetch=FetchType.EAGER)
+	@JoinColumn(name="customer")
+	@NotNull
+	private Customer customer;
+	
 	@OneToOne(fetch=FetchType.EAGER) // no cascade
 	@JoinColumn(name="plannedSnack")
 	private Snack plannedSnack;
@@ -47,20 +55,23 @@ public class SnackHistory extends EntityBase{
 	
 	@Enumerated(EnumType.STRING)
 	private SnackStatus status;
+
 	
-
-
-
-	public Snack getPlannedsnack() {
+	public Snack getPlannedSnack() {
 		return plannedSnack;
 	}
 
-
-
-	public void setPlannedsnack(Snack plannedSnack) {
+	public void setPlannedSnack(Snack plannedSnack) {
 		this.plannedSnack = plannedSnack;
 	}
 
+	public Customer getCustomer() {
+		return customer;
+	}
+
+	public void setCustomer(Customer customer) {
+		this.customer = customer;
+	}
 
 
 	public Snack getEatenSnack() {
@@ -125,26 +136,4 @@ public class SnackHistory extends EntityBase{
 		String dateString = formatter.format(calendar.getTime());
 		return dateString;
 	}
-
-	private static Snack plannedSnackValue;
-
-	public static void setPlannedSnackValue(Snack plannedSnackActualValue){
-		plannedSnackValue = plannedSnackActualValue;
-	}
-	
-//	public static void markSnack(Snack eatenSnack, SnackStatus snackStatus, Date date, int timeZoneOffset) {
-//		
-//		SnackHistory snackHistory = new SnackHistory();
-//		
-//		snackHistory.setPlannedsnack(plannedSnackValue);
-//		snackHistory.setEatenSnack(eatenSnack);
-//		snackHistory.setDayString(getDateString(date, timeZoneOffset));
-//		snackHistory.setStatus(snackStatus);
-//		snackHistory.setTimestamp(date);
-//		snackHistory.setTimeZoneDiff(timeZoneOffset);
-//		
-//		snackHistory.persist();
-//		
-//	}
-
 }
