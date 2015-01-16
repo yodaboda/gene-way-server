@@ -3,8 +3,8 @@ package com.nutrinfomics.geneway.server.alert.format;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.shared.SnackProperty;
-import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class SnackPropertyFormat {
 

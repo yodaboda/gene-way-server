@@ -13,8 +13,8 @@
             <property name="javax.persistence.jdbc.driver" value="org.mariadb.jdbc.Driver" />
             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"></property>
             <property name="javax.persistence.jdbc.url" value="jdbc:mariadb://localhost/gene_way" />
-            <property name="javax.persistence.jdbc.user" value="nuth2db" />
-            <property name="javax.persistence.jdbc.password" value="e18ooXLIrzDcqWNd" />
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="SsFFWnyi" />
 			
 			<property name="hibernate.max_fetch_depth" value="3"/>
             

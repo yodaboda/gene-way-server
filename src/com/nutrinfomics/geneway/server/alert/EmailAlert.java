@@ -3,10 +3,10 @@ package com.nutrinfomics.geneway.server.alert;
 import javax.mail.MessagingException;
 import javax.mail.internet.AddressException;
 
+import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.alert.message.AbstractEmailMessage;
 import com.nutrinfomics.geneway.server.alert.message.EmailAlertEmailMessage;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
-import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class EmailAlert extends AbstractAlert {
 

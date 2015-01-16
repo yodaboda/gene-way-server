@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
-import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class SnackFormat {
 	private static SnackFormat instance;

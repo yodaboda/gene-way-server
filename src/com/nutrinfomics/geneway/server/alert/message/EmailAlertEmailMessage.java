@@ -1,7 +1,7 @@
 package com.nutrinfomics.geneway.server.alert.message;
 
+import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.alert.UserAlert;
-import com.nutrinfomics.geneway.shared.constants.ResourceBundles;
 
 public class EmailAlertEmailMessage extends AbstractEmailMessage {
 
