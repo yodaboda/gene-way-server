@@ -17,6 +17,7 @@ public class AuthenticationService {
 	
 	@Inject Provider<EntityManager> entityManager;
 
+	
 	@Transactional
 	public Session authenticateCustomer(Customer customer) throws AuthenticationException{
 		Customer customerDb;
@@ -32,12 +33,12 @@ public class AuthenticationService {
 
 		if(session == null){
 			session = new Session();
-			entityManager.get().persist(session);
+			customerDb.setSession(session);
+			session.setCustomer(customerDb);
 		}
 		session.setSid(UUID.randomUUID().toString());
 
-		customerDb.setSession(session);
-		session.setCustomer(customerDb);
+		entityManager.get().persist(session);
 
 		boolean valid = customerDb.checkPassword(customer.getPassword());
 
@@ -46,11 +47,11 @@ public class AuthenticationService {
 
 			if(device == null){
 				device = new Device();
-				entityManager.get().persist(device);
-
 				device.setUuid(customer.getDevice().getUuid());
 				customerDb.setDevice(device);
 				device.setCustomer(customerDb);
+
+				entityManager.get().persist(device);
 			}
 
 			if(!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())){
@@ -58,9 +59,8 @@ public class AuthenticationService {
 				throw loginException;
 			}
 
-			customer.getSession().setSid(customerDb.getSession().getSid());
 
-			return customer.getSession();
+			return customerDb.getSession();
 		}
 		else{
 			throw new AuthenticationException(LoginExceptionType.INVALID_PASSWORD);

@@ -20,8 +20,7 @@ public class ArbitraryCycle extends EntityBase implements Repetition {
 	}
 	
 	public ArbitraryCycle(int cycleLength){
-		this.cycleLength = cycleLength;
-		remainingLength = cycleLength;
+		setCycleLength(cycleLength);
 	}
 	
 	@Override
@@ -31,6 +30,7 @@ public class ArbitraryCycle extends EntityBase implements Repetition {
 
 	public void setCycleLength(int cycleLength){
 		this.cycleLength = cycleLength;
+		remainingLength = cycleLength;
 	}
 	
 	@Override
