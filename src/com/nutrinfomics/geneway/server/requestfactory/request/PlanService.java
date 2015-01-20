@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
-import javax.persistence.TypedQuery;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -15,17 +14,16 @@ import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.alert.Alerts;
 import com.nutrinfomics.geneway.server.alert.UserAlert;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
-import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
+import com.nutrinfomics.geneway.server.domain.plan.MarkedSnackMenu;
+import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
 import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.shared.FoodItemType;
-import com.nutrinfomics.geneway.shared.SnackProperty;
-import com.nutrinfomics.geneway.shared.SnackStatus;
 
 public class PlanService {
 	@Inject Provider<EntityManager> entityManager;
@@ -35,23 +33,75 @@ public class PlanService {
 		return sessionDb.getCustomer().getPlan().getPlanPreferences();
 	}
 	
-	public Snack getNextSnack(Session session, String dateString){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
-		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
+	private MarkedSnackMenu calcTodaysSnackMenu(Session sessionDb, String dateString){
+		Plan plan = sessionDb.getCustomer().getPlan();
+		SnackMenu snackMenu = plan.getSnackMenu();
+
+		MarkedSnackMenu todaysSnackMenu = new MarkedSnackMenu(dateString);
 
 		for(Snack snack : snackMenu.getSnacks()){
-			if(! isSnackMarked(sessionDb.getCustomer(), snack, dateString)){
-				if(snack instanceof VaryingSnack){
-					Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
-					snack = resultSnack;
-				}
-				
-				UserAlert alert = Alerts.getInstance().createAlert(sessionDb.getCustomer(), snack);
-				snack.setAlert(alert);
-				return snack;
+			if(snack instanceof VaryingSnack){
+				Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
+				snack = resultSnack;
 			}
+			todaysSnackMenu.getSnacks().add(snack);
 		}
-		return new Snack();
+		return todaysSnackMenu;
+	}
+	
+	public Snack getNextSnack(Session session, String dateString){
+		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		
+		if(sessionDb.getCustomer().getPlan().getTodaysSnackMenu() == null){
+			setTodaysSnackMenu(sessionDb, dateString);
+		}
+		
+		Snack nextSnack = calcNextSnack(sessionDb);
+		
+		if(nextSnack == null){
+			setTodaysSnackMenu(sessionDb, dateString);
+			
+			nextSnack = calcNextSnack(sessionDb);
+		}
+		
+		return nextSnack;
+	}
+
+	@Transactional
+	private void setTodaysSnackMenu(Session sessionDb, String dateString) {
+		MarkedSnackMenu markedSnackMenu = calcTodaysSnackMenu(sessionDb, dateString);
+		Plan plan = sessionDb.getCustomer().getPlan();
+		plan.setTodaysSnackMenu(markedSnackMenu);
+		entityManager.get().merge(plan);
+	}
+
+	@Transactional
+	public void markCurrentSnack(Session session, Snack snack, SnackHistory snackHistory){
+		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
+
+		for(int i = 0; i < todaysSnackMenu.getSnacks().size(); ++i){
+			if(todaysSnackMenu.isMarkedSnack(i)) continue;
+			todaysSnackMenu.setMarkedSnack(i, true);
+			todaysSnackMenu.getSnack(i).getAlert().cancel();
+		}
+		entityManager.get().merge(todaysSnackMenu);
+
+		entityManager.get().persist(snackHistory);
+	}
+	@Transactional
+	private Snack calcNextSnack(Session sessionDb) {
+		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
+
+		for(int i = 0; i < todaysSnackMenu.getSnacks().size(); ++i){
+			if(todaysSnackMenu.isMarkedSnack(i)) continue;
+			Snack nextSnack = todaysSnackMenu.getSnack(i);
+			UserAlert alert = Alerts.getInstance().createAlert(sessionDb.getCustomer(), nextSnack);
+			nextSnack.setAlert(alert);
+			entityManager.get().merge(nextSnack);
+			return nextSnack;
+		}
+		return null;
 	}
 
 	@Transactional
@@ -79,28 +129,27 @@ public class PlanService {
 		}
 	}
 	
-	
-	private boolean isSnackMarked(Customer customer, Snack snack, String dayString) {
-		if(snack.getSnackProperty() == SnackProperty.REST){
-			//in case of rest snack we need to check if user already had a rest snack
-			TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.dayString = :dayString AND s.customer = :customer", SnackHistory.class).setParameter("dayString", dayString).setParameter("customer", customer);
-			List<SnackHistory> result = query.getResultList();
-			for(SnackHistory snackHistory : result){
-				if(snackHistory.getPlannedSnack().getSnackProperty() == SnackProperty.REST) return true;
-			}
-			return false;
-		}
-		else{
-			TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.plannedSnack = :snack AND s.dayString = :dayString AND s.customer = :customer", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString).setParameter("customer", customer);
-			try{
-				SnackHistory snackHistory = query.getSingleResult();
-				return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
-			}
-			catch(Exception e){
-				return false;
-			}
-		}
-	}
+//	private boolean isSnackMarked(Customer customer, Snack snack, String dayString) {
+//		if(snack.getSnackProperty() == SnackProperty.REST){
+//			//in case of rest snack we need to check if user already had a rest snack
+//			TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.dayString = :dayString AND s.customer = :customer", SnackHistory.class).setParameter("dayString", dayString).setParameter("customer", customer);
+//			List<SnackHistory> result = query.getResultList();
+//			for(SnackHistory snackHistory : result){
+//				if(snackHistory.getPlannedSnack().getSnackProperty() == SnackProperty.REST) return true;
+//			}
+//			return false;
+//		}
+//		else{
+//			TypedQuery<SnackHistory> query = entityManager.get().createQuery("SELECT s FROM SnackHistory s WHERE s.plannedSnack = :snack AND s.dayString = :dayString AND s.customer = :customer", SnackHistory.class).setParameter("snack", snack).setParameter("dayString", dayString).setParameter("customer", customer);
+//			try{
+//				SnackHistory snackHistory = query.getSingleResult();
+//				return snackHistory.getStatus() == SnackStatus.CONSUMED || snackHistory.getStatus() == SnackStatus.SKIPPED;
+//			}
+//			catch(Exception e){
+//				return false;
+//			}
+//		}
+//	}
 
 	
 	public Set<FoodItemType> getIngredients(Session session, String dateString){

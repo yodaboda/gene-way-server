@@ -29,6 +29,9 @@ public class Plan extends EntityBase implements Serializable {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private SnackMenu snackMenu;
 	
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private MarkedSnackMenu todaysSnackMenu;
+	
 	@ElementCollection(targetClass=ActivitiesType.class)
     @Enumerated(EnumType.STRING) // Possibly optional (I'm not sure) but defaults to ORDINAL.
     @CollectionTable(name="plan_activities")
@@ -96,6 +99,13 @@ public class Plan extends EntityBase implements Serializable {
 	}
 	public void setPlanPreferences(PlanPreferences planPreferences) {
 		this.planPreferences = planPreferences;
+	}
+	public MarkedSnackMenu getTodaysSnackMenu() {
+		return todaysSnackMenu;
+	}
+	
+	public void setTodaysSnackMenu(MarkedSnackMenu todaysSnackMenu){
+		this.todaysSnackMenu = todaysSnackMenu;
 	}
 
 }

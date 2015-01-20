@@ -60,27 +60,27 @@ public class ScheduledAlert extends AbstractAlert {
 		scheduled.cancel(false);
 	}
 
-	@Transactional
+//	@Transactional
 	@Override
 	public void remind() {
 		for(UserAlert alert : alerts){
 			alert.remind();
 		}
-		SnackHistory snackHistory = new SnackHistory();
-		snackHistory.setEatenSnack(snack);
-		snackHistory.setPlannedSnack(snack);
-		snackHistory.setStatus(SnackStatus.CONSUMED);
-		Date timestamp = new Date();
-		snackHistory.setTimestamp(timestamp);
-		//TODO: need to modify date string and timezone offset computation for international clients
-		String dateString = SnackHistory.getDateString(timestamp, timestamp.getTimezoneOffset());
-		snackHistory.setDayString(dateString);
-		snackHistory.setTimeZoneDiff(timestamp.getTimezoneOffset());
-		snackHistory.setCustomer(getCustomer());
-		
-		em.get().persist(snackHistory);
-		
-		new PlanService().getNextSnack(getCustomer().getSession(), dateString);
+//		SnackHistory snackHistory = new SnackHistory();
+//		snackHistory.setEatenSnack(snack);
+//		snackHistory.setPlannedSnack(snack);
+//		snackHistory.setStatus(SnackStatus.CONSUMED);
+//		Date timestamp = new Date();
+//		snackHistory.setTimestamp(timestamp);
+//		//TODO: need to modify date string and timezone offset computation for international clients
+//		String dateString = SnackHistory.getDateString(timestamp, timestamp.getTimezoneOffset());
+//		snackHistory.setDayString(dateString);
+//		snackHistory.setTimeZoneDiff(timestamp.getTimezoneOffset());
+//		snackHistory.setCustomer(getCustomer());
+//		
+//		em.get().persist(snackHistory);
+//		
+//		new PlanService().getNextSnack(getCustomer().getSession(), dateString);
 		
 	}
 }

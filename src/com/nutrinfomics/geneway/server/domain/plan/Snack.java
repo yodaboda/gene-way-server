@@ -14,6 +14,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
@@ -35,7 +36,7 @@ public class Snack extends EntityBase implements Serializable{
 	@Temporal(TemporalType.TIME)
 	private Date time = null;
 	
-	@Transient
+	@OneToOne
 	private UserAlert alert;
 	
 	public Snack(FoodItem[] foodItems) {
@@ -102,5 +103,8 @@ public class Snack extends EntityBase implements Serializable{
 
 	public void setAlert(UserAlert alert) {
 		this.alert = alert;
+	}
+	public UserAlert getAlert(){
+		return alert;
 	}
 }

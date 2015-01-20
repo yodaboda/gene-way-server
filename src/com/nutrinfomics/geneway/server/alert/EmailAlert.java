@@ -10,18 +10,18 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
 public class EmailAlert extends AbstractAlert {
 
-	protected AbstractEmailMessage emailMessage;
+	protected AbstractEmailMessage abstractMessage;
 	
 	public EmailAlert(Customer customer) {
 		super(customer);
 		
-		emailMessage = new EmailAlertEmailMessage(this);
+		abstractMessage = new EmailAlertEmailMessage(this);
 	}
 
 	@Override
 	public void remind() {
 		try {
-			emailMessage.generateAndSendEmail();//"0587555520"
+			abstractMessage.generateAndSendEmail();//"0587555520"
 		} catch (AddressException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -33,7 +33,7 @@ public class EmailAlert extends AbstractAlert {
 
 	@Override
 	public void cancel() {
-		emailMessage = null;
+		abstractMessage = null;
 	}
 
 

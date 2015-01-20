@@ -28,7 +28,6 @@ public class EmailAlertEmailMessage extends AbstractEmailMessage {
 
 	@Override
 	protected String getBody() {
-		return ResourceBundles.getGeneWayResource("itsTimeToTakeYourMeal", getAlert().getLocale()) + " https://gene-way.com";
+		return ResourceBundles.getGeneWayResource("itsTimeToTakeYourMeal", getAlert().getLocale()) + "\n\r https://gene-way.com";
 	}
-
 }
