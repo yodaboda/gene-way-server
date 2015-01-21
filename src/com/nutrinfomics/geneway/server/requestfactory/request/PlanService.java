@@ -16,6 +16,7 @@ import com.nutrinfomics.geneway.server.alert.UserAlert;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
+import com.nutrinfomics.geneway.server.domain.plan.MarkedSnack;
 import com.nutrinfomics.geneway.server.domain.plan.MarkedSnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
@@ -24,6 +25,7 @@ import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
 import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.shared.FoodItemType;
+import com.nutrinfomics.geneway.shared.SnackStatus;
 
 public class PlanService {
 	@Inject Provider<EntityManager> entityManager;
@@ -37,18 +39,22 @@ public class PlanService {
 		Plan plan = sessionDb.getCustomer().getPlan();
 		SnackMenu snackMenu = plan.getSnackMenu();
 
-		MarkedSnackMenu todaysSnackMenu = new MarkedSnackMenu(dateString);
-
+		List<Snack> snacks = new ArrayList<>();
+		
 		for(Snack snack : snackMenu.getSnacks()){
 			if(snack instanceof VaryingSnack){
 				Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
 				snack = resultSnack;
 			}
-			todaysSnackMenu.getSnacks().add(snack);
+			snacks.add(snack);
 		}
+
+		MarkedSnackMenu todaysSnackMenu = new MarkedSnackMenu(dateString, snacks);
+		
 		return todaysSnackMenu;
 	}
 	
+	@Transactional
 	public Snack getNextSnack(Session session, String dateString){
 		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
 		
@@ -57,22 +63,21 @@ public class PlanService {
 		}
 		
 		Snack nextSnack = calcNextSnack(sessionDb);
-		
 		if(nextSnack == null){
 			setTodaysSnackMenu(sessionDb, dateString);
-			
 			nextSnack = calcNextSnack(sessionDb);
 		}
 		
 		return nextSnack;
 	}
 
-	@Transactional
+	
 	private void setTodaysSnackMenu(Session sessionDb, String dateString) {
 		MarkedSnackMenu markedSnackMenu = calcTodaysSnackMenu(sessionDb, dateString);
 		Plan plan = sessionDb.getCustomer().getPlan();
+		entityManager.get().merge(markedSnackMenu);
 		plan.setTodaysSnackMenu(markedSnackMenu);
-		entityManager.get().merge(plan);
+//		entityManager.get().merge(plan);
 	}
 
 	@Transactional
@@ -80,27 +85,25 @@ public class PlanService {
 		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
 		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
-		for(int i = 0; i < todaysSnackMenu.getSnacks().size(); ++i){
-			if(todaysSnackMenu.isMarkedSnack(i)) continue;
-			todaysSnackMenu.setMarkedSnack(i, true);
-			todaysSnackMenu.getSnack(i).getAlert().cancel();
-		}
-		entityManager.get().merge(todaysSnackMenu);
+		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack();
+		markedSnack.setMarked(true);
+		Alerts.getInstance().getSnackAlert(markedSnack.getSnack().getId()).cancel();
+		
+//		entityManager.get().merge(todaysSnackMenu);
 
-		entityManager.get().persist(snackHistory);
+		entityManager.get().merge(snackHistory);
 	}
-	@Transactional
+
 	private Snack calcNextSnack(Session sessionDb) {
 		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
-		for(int i = 0; i < todaysSnackMenu.getSnacks().size(); ++i){
-			if(todaysSnackMenu.isMarkedSnack(i)) continue;
-			Snack nextSnack = todaysSnackMenu.getSnack(i);
-			UserAlert alert = Alerts.getInstance().createAlert(sessionDb.getCustomer(), nextSnack);
-			nextSnack.setAlert(alert);
-			entityManager.get().merge(nextSnack);
-			return nextSnack;
+		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack();
+
+		if(markedSnack != null){
+			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack());
+			return markedSnack.getSnack();
 		}
+		
 		return null;
 	}
 

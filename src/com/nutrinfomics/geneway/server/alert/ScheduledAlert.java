@@ -8,7 +8,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
+import javax.persistence.Entity;
 import javax.persistence.EntityManager;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -27,9 +30,6 @@ public class ScheduledAlert extends AbstractAlert {
 	public enum AlertType{
 		EMAIL, SMS, PUSH_NOTIFICATION
 	}
-	
-	@Inject
-	private Provider<EntityManager> em;
 	
 	private List<UserAlert> alerts = new ArrayList<>();
 	private ScheduledFuture<?> scheduled;
@@ -52,12 +52,12 @@ public class ScheduledAlert extends AbstractAlert {
 			}
 		};
 		scheduled = scheduler.schedule(runnable, (long) (inHours * 60), TimeUnit.MINUTES);
-
 	}
 
 	@Override
 	public void cancel() {
 		scheduled.cancel(false);
+		Alerts.getInstance().removeSnackAlert(snack);
 	}
 
 //	@Transactional
@@ -66,6 +66,8 @@ public class ScheduledAlert extends AbstractAlert {
 		for(UserAlert alert : alerts){
 			alert.remind();
 		}
+		Alerts.getInstance().removeSnackAlert(snack);
+
 //		SnackHistory snackHistory = new SnackHistory();
 //		snackHistory.setEatenSnack(snack);
 //		snackHistory.setPlannedSnack(snack);

@@ -16,17 +16,20 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMessage.RecipientType;
+import javax.persistence.Entity;
+import javax.persistence.OneToOne;
+import javax.persistence.Transient;
 
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.alert.format.SnackFormat;
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
-abstract public class AbstractAlert implements UserAlert {
-	
+abstract public class AbstractAlert extends EntityBase implements UserAlert {
 	
 	private Customer customer;
 	private Locale locale;

@@ -1,7 +1,9 @@
 package com.nutrinfomics.geneway.server.alert;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
@@ -11,6 +13,8 @@ import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
 public class Alerts {
 	private static Alerts alerts;
+	
+	private Map<Long, UserAlert> snackAlertMapping = new HashMap<>();
 	
 	public static Alerts getInstance(){
 		if(alerts == null){
@@ -46,9 +50,20 @@ public class Alerts {
 
 		double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
 
-		return new ScheduledAlert(customer, inHours, snack, alertTypes);
+		UserAlert userAlert = new ScheduledAlert(customer, inHours, snack, alertTypes);
+		
+		snackAlertMapping.put(snack.getId(), userAlert);
+		
+		return userAlert;
 	}
 
+	public UserAlert getSnackAlert(long l){
+		return snackAlertMapping.get(l);
+	}
+	
+	public void removeSnackAlert(Snack snack){
+		snackAlertMapping.remove(snack);
+	}
 
 	public static UserAlert create(Customer customer, AlertType alertType) {
 		switch(alertType){
