@@ -40,7 +40,7 @@ public class Plan extends EntityBase implements Serializable {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private MarkedSnackMenu todaysSnackMenu;
 
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private SnackOrderSpecification snackOrderSpecification;
 	
 	@ElementCollection(targetClass=ActivitiesType.class)
@@ -101,7 +101,7 @@ public class Plan extends EntityBase implements Serializable {
 		this.planPreferences = planPreferences;
 		snackOrderSpecification = new SnackOrderSpecification(snackMenu.size());
 		for(int i = 0; i < snackMenu.size(); ++i){
-			snackOrderSpecification.getSnackOrderSpecification().add(new AcceptAllSpecification());
+			snackOrderSpecification.getFoodOrderSpecification().add(new AcceptAllSpecification());
 		}
 	}
 	

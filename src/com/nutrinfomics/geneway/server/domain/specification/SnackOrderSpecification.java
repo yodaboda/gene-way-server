@@ -13,23 +13,23 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 @Entity
 public class SnackOrderSpecification extends EntityBase{
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private List<AbstractFoodSpecification> snackOrderSpecification;
+	private List<AbstractFoodSpecification> foodOrderSpecification;
 
 	public SnackOrderSpecification(){
 		this(10);
 	}
 	
 	public SnackOrderSpecification(int size){
-		snackOrderSpecification = new ArrayList<>(size);		
+		foodOrderSpecification = new ArrayList<>(size);		
 	}
 	
-	public List<AbstractFoodSpecification> getSnackOrderSpecification() {
-		return snackOrderSpecification;
+	public List<AbstractFoodSpecification> getFoodOrderSpecification() {
+		return foodOrderSpecification;
 	}
 
-	public void setSnackOrderSpecification(
-			List<AbstractFoodSpecification> snackOrderSpecification) {
-		this.snackOrderSpecification = snackOrderSpecification;
+	public void setFoodOrderSpecification(
+			List<AbstractFoodSpecification> foodOrderSpecification) {
+		this.foodOrderSpecification = foodOrderSpecification;
 	}
 	
 }
