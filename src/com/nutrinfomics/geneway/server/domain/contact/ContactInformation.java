@@ -18,11 +18,10 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 @Entity
 public class ContactInformation extends EntityBase{
 	
-	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
 	private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 	
-	@Fetch(FetchMode.SELECT) // hibernate specific: need to add it to avoid "cannot simultaneously fetch multiple bags"
-	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
 	private List<Email> emails = new ArrayList<>();
 
 	

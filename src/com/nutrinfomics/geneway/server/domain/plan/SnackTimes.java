@@ -17,7 +17,7 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 public class SnackTimes extends EntityBase{
 	private double timeBetweenSnacks = 2;
 
-	@ElementCollection(fetch=FetchType.EAGER)
+	@ElementCollection(fetch=FetchType.LAZY)
 	@Temporal(TemporalType.TIME)
 	private List<Date> snackTimes;
 

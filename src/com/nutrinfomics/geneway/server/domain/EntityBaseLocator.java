@@ -4,9 +4,7 @@ import javax.persistence.EntityManager;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
-import com.google.web.bindery.requestfactory.shared.ExtraTypes;
 import com.google.web.bindery.requestfactory.shared.Locator;
-import com.nutrinfomics.geneway.server.data.HibernateUtil;
 
 public class EntityBaseLocator extends Locator<EntityBase, Long>{
 

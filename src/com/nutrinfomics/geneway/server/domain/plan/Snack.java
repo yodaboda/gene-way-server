@@ -28,7 +28,7 @@ import com.nutrinfomics.geneway.shared.SnackProperty;
 @Entity
 public class Snack extends EntityBase implements Serializable{
 	
-	@OneToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@OneToMany(fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
 	protected List<FoodItem> foodItems;
 	
 	@Enumerated(EnumType.STRING)
@@ -54,9 +54,6 @@ public class Snack extends EntityBase implements Serializable{
 		this.foodItems = foodItems;
 	}
 
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.SnackProxy#add(com.nutrinfomics.geneway.server.domain.plan.FoodItem)
-	 */
 	public void add(FoodItem foodItem){
 		foodItems.add(foodItem);
 	}

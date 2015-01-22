@@ -37,10 +37,10 @@ public class Plan extends EntityBase implements Serializable {
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private SnackMenu snackMenu;
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private MarkedSnackMenu todaysSnackMenu;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private SnackOrderSpecification snackOrderSpecification;
 	
 	@ElementCollection(targetClass=ActivitiesType.class)

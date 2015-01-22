@@ -46,13 +46,13 @@ public class Customer extends EntityBase{
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Device device;
 	
-	@Fetch(FetchMode.SELECT) // hibernate specific: need to add it to avoid "cannot simultaneously fetch multiple bags"
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private ContactInformation contactInformation;
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Status status;
 	
+	@Transient
 	private PersonalizedLifeStyle lifeStyle;
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)

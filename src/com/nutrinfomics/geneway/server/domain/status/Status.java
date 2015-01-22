@@ -10,7 +10,7 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 @Entity
 public class Status extends EntityBase{
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private Measurements measurements;
 
 	public Measurements getMeasurements() {

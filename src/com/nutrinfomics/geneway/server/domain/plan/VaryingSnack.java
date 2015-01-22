@@ -30,7 +30,7 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 public class VaryingSnack extends Snack implements WeeklyBehaving{
 
 	
-	@OneToMany(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
+	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Snack> weeklySnacks = new ArrayList<>(7);
 
 	@Transient

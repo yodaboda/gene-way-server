@@ -14,7 +14,7 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 @Entity
 public class SnackSpecification extends AbstractFoodSpecification {
 
-	@OneToMany(fetch=FetchType.EAGER, cascade=CascadeType.ALL, targetEntity=AbstractFoodSpecification.class)
+	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, targetEntity=AbstractFoodSpecification.class)
 	private List<FoodSpecification> foodSpecifications;
 
 	public SnackSpecification(Vector<FoodSpecification> foodSpecifications){

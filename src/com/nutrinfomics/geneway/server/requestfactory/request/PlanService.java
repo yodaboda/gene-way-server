@@ -11,6 +11,7 @@ import javax.persistence.EntityManager;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
+import com.google.web.bindery.requestfactory.shared.Request;
 import com.nutrinfomics.geneway.server.alert.Alerts;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
@@ -131,6 +132,14 @@ public class PlanService {
 			entityManager.get().merge(varyingSnack);
 		}
 	}
+	
+	@Transactional
+	public void updateSpecifications(SnackOrderSpecification snackOrderSpecification,
+										AbstractFoodSpecification oldFoodSpecification){
+		entityManager.get().merge(snackOrderSpecification);
+		entityManager.get().remove(oldFoodSpecification);
+	}
+
 	
 //	private boolean isSnackMarked(Customer customer, Snack snack, String dayString) {
 //		if(snack.getSnackProperty() == SnackProperty.REST){

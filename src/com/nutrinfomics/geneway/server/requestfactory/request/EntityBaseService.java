@@ -20,4 +20,9 @@ public class EntityBaseService {
 		entityManager.get().merge(entityBase);
 	}
 
+	@Transactional
+	public void remove(EntityBase entityBase){
+		entityManager.get().remove(entityBase);
+	}
+
 }

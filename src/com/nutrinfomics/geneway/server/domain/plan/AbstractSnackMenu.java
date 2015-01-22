@@ -13,7 +13,7 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 @Entity
 abstract public class AbstractSnackMenu extends EntityBase {
 
-	@ManyToMany(fetch=FetchType.EAGER, cascade = {CascadeType.ALL})
+	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
 	private List<Snack> snacks;
 
 	public List<Snack> getSnacks() {

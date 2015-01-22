@@ -12,11 +12,10 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
 public class SnackOrderSpecification extends EntityBase{
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<AbstractFoodSpecification> foodOrderSpecification;
 
 	public SnackOrderSpecification(){
-		this(10);
 	}
 	
 	public SnackOrderSpecification(int size){
