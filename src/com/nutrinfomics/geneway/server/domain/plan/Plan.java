@@ -15,6 +15,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.Fetch;
@@ -23,6 +24,10 @@ import org.hibernate.annotations.FetchMode;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
+import com.nutrinfomics.geneway.server.domain.specification.AcceptAllSpecification;
+import com.nutrinfomics.geneway.server.domain.specification.FoodSpecification;
+import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 import com.nutrinfomics.geneway.shared.ActivitiesType;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.SupplementType;
@@ -34,6 +39,9 @@ public class Plan extends EntityBase implements Serializable {
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
 	private MarkedSnackMenu todaysSnackMenu;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+	private SnackOrderSpecification snackOrderSpecification;
 	
 	@ElementCollection(targetClass=ActivitiesType.class)
     @Enumerated(EnumType.STRING) // Possibly optional (I'm not sure) but defaults to ORDINAL.
@@ -53,49 +61,49 @@ public class Plan extends EntityBase implements Serializable {
 	public Plan(){
 		
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.PlanProxy#getSnackMenu()
-	 */
+
+	public SnackOrderSpecification getSnackOrderSpecification() {
+		return snackOrderSpecification;
+	}
+
+	public void setSnackOrderSpecification(SnackOrderSpecification snackOrderSpecification) {
+		this.snackOrderSpecification = snackOrderSpecification;
+	}
+
 	public SnackMenu getSnackMenu() {
 		return snackMenu;
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.PlanProxy#setSnackMenu(com.nutrinfomics.geneway.server.domain.plan.SnackMenu)
-	 */
+
 	public void setSnackMenu(SnackMenu snackMenu) {
 		this.snackMenu = snackMenu;
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.PlanProxy#getActivities()
-	 */
+
 	public List<ActivitiesType> getActivities() {
 		return activities;
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.PlanProxy#setActivities(java.util.Vector)
-	 */
+
 	public void setActivities(List<ActivitiesType> activities) {
 		this.activities = activities;
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.PlanProxy#getSupplements()
-	 */
+
 	public List<SupplementType> getSupplements() {
 		return supplements;
 	}
-	/* (non-Javadoc)
-	 * @see com.nutrinfomics.geneway.server.domain.plan.PlanProxy#setSupplements(java.util.Vector)
-	 */
+
 	public void setSupplements(List<SupplementType> supplements) {
 		this.supplements = supplements;
 	}
+	
 	public Plan(SnackMenu snackMenu, Vector<ActivitiesType> activities,
 				Vector<SupplementType> supplements, PlanPreferences planPreferences){
 		this.snackMenu = snackMenu;
 		this.activities = activities;
 		this.planPreferences = planPreferences;
+		snackOrderSpecification = new SnackOrderSpecification(snackMenu.size());
+		for(int i = 0; i < snackMenu.size(); ++i){
+			snackOrderSpecification.getSnackOrderSpecification().add(new AcceptAllSpecification());
+		}
 	}
-
 	
 	public PlanPreferences getPlanPreferences() {
 		return planPreferences;
@@ -110,5 +118,4 @@ public class Plan extends EntityBase implements Serializable {
 	public void setTodaysSnackMenu(MarkedSnackMenu todaysSnackMenu){
 		this.todaysSnackMenu = todaysSnackMenu;
 	}
-
 }

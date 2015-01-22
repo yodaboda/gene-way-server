@@ -12,7 +12,6 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.alert.Alerts;
-import com.nutrinfomics.geneway.server.alert.UserAlert;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
@@ -24,8 +23,9 @@ import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
 import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
+import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
+import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 import com.nutrinfomics.geneway.shared.FoodItemType;
-import com.nutrinfomics.geneway.shared.SnackStatus;
 
 public class PlanService {
 	@Inject Provider<EntityManager> entityManager;
@@ -154,6 +154,11 @@ public class PlanService {
 //		}
 //	}
 
+	
+	public SnackOrderSpecification getSnackOrderSpecification(Session session){
+		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		return sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
+	}
 	
 	public Set<FoodItemType> getIngredients(Session session, String dateString){
 		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
