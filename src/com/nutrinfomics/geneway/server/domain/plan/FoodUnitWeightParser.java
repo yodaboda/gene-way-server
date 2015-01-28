@@ -16,7 +16,7 @@ import com.nutrinfomics.geneway.shared.MeasurementUnit;
 public class FoodUnitWeightParser {
 	public static FoodUnitWeightParser instance;
 	
-	public final static String FILE_PATH = "/home/firas/Documents/wellbeing/references/nutrients/foodUnitWeight.csv";
+	public final static String FILE_PATH = System.getProperty("user.home") + "/Documents/wellbeing/references/nutrients/foodUnitWeight.csv";
 	
 	private EnumMap<FoodItemType, EnumMap<MeasurementUnit, Double>> map  = 
 			new EnumMap<FoodItemType, EnumMap<MeasurementUnit,Double>>(FoodItemType.class);
