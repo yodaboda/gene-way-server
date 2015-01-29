@@ -30,7 +30,7 @@ public class Alerts {
 	
 	private Alerts(){
 		try {
-			DetectorFactory.loadProfile(System.getProperty("user.home") + "/Documents/gene-way-workspace/langdetect/profiles");
+			DetectorFactory.loadProfile(System.getProperty("user.home") + "/Documents/gene-way-workspace/gene-way-app/extraDependencies/langdetect/profiles");
 			List<String> langs = DetectorFactory.getLangList();
 			for(String lang : langs) System.out.println(lang);
 		} catch (LangDetectException e1) {
