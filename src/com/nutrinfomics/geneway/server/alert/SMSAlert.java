@@ -5,8 +5,8 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
 public class SMSAlert extends EmailAlert {
 
-	public SMSAlert(Customer customer) {
-		super(customer);
+	public SMSAlert(Customer customer, String email) {
+		super(customer, email);
 		abstractMessage = new SMSAlertEmailMessage(this);
 
 	}

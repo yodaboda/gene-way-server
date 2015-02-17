@@ -16,6 +16,7 @@ import com.nutrinfomics.geneway.server.alert.Alerts;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
+import com.nutrinfomics.geneway.server.domain.plan.GeneralVaryingSnack;
 import com.nutrinfomics.geneway.server.domain.plan.MarkedSnack;
 import com.nutrinfomics.geneway.server.domain.plan.MarkedSnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.Plan;
@@ -47,6 +48,16 @@ public class PlanService {
 				Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
 				snack = resultSnack;
 			}
+			else if(snack instanceof GeneralVaryingSnack){
+				GeneralVaryingSnack gvSnack = (GeneralVaryingSnack)snack;
+				Snack todaySnack = gvSnack.pickTodaysSnack();
+				if(todaySnack == null){
+					gvSnack.reset();
+					todaySnack = gvSnack.pickTodaysSnack();
+				}
+				entityManager.get().merge(gvSnack);
+				snack = todaySnack;
+			}
 			snacks.add(snack);
 		}
 
@@ -63,10 +74,10 @@ public class PlanService {
 			setTodaysSnackMenu(sessionDb, dateString);
 		}
 		
-		Snack nextSnack = calcNextSnack(sessionDb);
+		Snack nextSnack = calcNextSnack(sessionDb, true);
 		if(nextSnack == null){
 			setTodaysSnackMenu(sessionDb, dateString);
-			nextSnack = calcNextSnack(sessionDb);
+			nextSnack = calcNextSnack(sessionDb, false);
 		}
 		
 		return nextSnack;
@@ -86,7 +97,9 @@ public class PlanService {
 		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
 		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
-		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack();
+		SnackOrderSpecification snackOrderSpecification = sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
+		
+		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack(snackOrderSpecification);
 		markedSnack.setMarked(true);
 		Alerts.getInstance().getSnackAlert(markedSnack.getSnack().getId()).cancel();
 		
@@ -95,13 +108,16 @@ public class PlanService {
 		entityManager.get().merge(snackHistory);
 	}
 
-	private Snack calcNextSnack(Session sessionDb) {
+	private Snack calcNextSnack(Session sessionDb, boolean sameDay) {
 		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
-		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack();
+		SnackOrderSpecification snackOrderSpecification = sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
+		
+		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack(snackOrderSpecification);
 
 		if(markedSnack != null){
-			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack());
+			//TODO: alert information should be retrieved from DB or should be fixed at creation time
+			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack(), sameDay, sessionDb.getCustomer().getContactInformation().getEmails().get(0).getEmail());
 			return markedSnack.getSnack();
 		}
 		
@@ -111,7 +127,7 @@ public class PlanService {
 	@Transactional
 	private Snack getTodaysSnack(VaryingSnack varyingSnack){
 		try{
-		List<Integer> indices = new ArrayList<>(7);
+			List<Integer> indices = new ArrayList<>(7);
 			for(int i = 0; i < 7; ++i) indices.add(i);
 			Collections.shuffle(indices);
 
@@ -137,6 +153,7 @@ public class PlanService {
 	public void updateSpecifications(SnackOrderSpecification snackOrderSpecification,
 										AbstractFoodSpecification oldFoodSpecification){
 		entityManager.get().merge(snackOrderSpecification);
+		entityManager.get().flush(); // needed after merge to preserve order of items
 		entityManager.get().remove(oldFoodSpecification);
 	}
 

@@ -58,10 +58,19 @@ public class FoodSpecificationFactory {
 
 	public FoodSpecification buildSnackSpecification(String[] nextLine) {
 		Vector<FoodSpecification> foodSpecifications = new Vector<FoodSpecification>(nextLine.length - 1);
-		for(int i = 1; i < nextLine.length; ++i){
+		int i = 1;
+		int group = SnackSpecification.NO_GROUP;
+		try{
+			group = Integer.parseInt(nextLine[i]);
+			i++;
+		}
+		catch(NumberFormatException ex){
+			//in case it is not a number, nothing to do
+		}
+		for(; i < nextLine.length; ++i){
 			FoodSpecification foodSpecification = buildFoodSpecification(nextLine[i]);
 			if(foodSpecification != null) foodSpecifications.add(foodSpecification);
 		}
-		return new SnackSpecification(foodSpecifications);
+		return new SnackSpecification(foodSpecifications, group);
 	}
 }

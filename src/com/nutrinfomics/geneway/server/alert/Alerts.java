@@ -1,6 +1,13 @@
 package com.nutrinfomics.geneway.server.alert;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.Period;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +46,7 @@ public class Alerts {
 		}
 	}
 	
-	public UserAlert createAlert(Customer customer, Snack snack){
+	public UserAlert createAlert(Customer customer, Snack snack, boolean sameDay, String email){
 		List<AlertType> alertTypes = new ArrayList<>();
  		if(customer.getPlan().getPlanPreferences().isEmailAlerts()){
  			alertTypes.add(AlertType.EMAIL);
@@ -49,8 +56,18 @@ public class Alerts {
 		}
 
 		double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
-
-		UserAlert userAlert = new ScheduledAlert(customer, inHours, snack, alertTypes);
+		if(!sameDay){
+			LocalDate tomorrow = LocalDate.now().plusDays(1);
+			LocalTime mealTime = LocalTime.of(8, 0, 0);
+			LocalDateTime mealDateTime = LocalDateTime.of(tomorrow, mealTime);
+			
+			LocalDateTime now = LocalDateTime.now();
+			
+			Duration duration = Duration.between(now, mealDateTime);
+			inHours = duration.toHours();
+		}
+		
+		UserAlert userAlert = new ScheduledAlert(customer, inHours, snack, alertTypes, email);
 		
 		snackAlertMapping.put(snack.getId(), userAlert);
 		
@@ -65,10 +82,10 @@ public class Alerts {
 		snackAlertMapping.remove(snack);
 	}
 
-	public static UserAlert create(Customer customer, AlertType alertType) {
+	public static UserAlert create(Customer customer, AlertType alertType, String email) {
 		switch(alertType){
-			case EMAIL: return new EmailAlert(customer);
-			case SMS: return new SMSAlert(customer);
+			case EMAIL: return new EmailAlert(customer, email);
+			case SMS: return new SMSAlert(customer, email);
 			default: return null;
 		}
 	}

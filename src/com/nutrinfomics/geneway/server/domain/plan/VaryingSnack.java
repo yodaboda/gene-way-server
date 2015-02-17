@@ -27,7 +27,7 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 
 @Entity
 @Access(AccessType.FIELD)
-public class VaryingSnack extends Snack implements WeeklyBehaving{
+public class VaryingSnack extends Snack{
 
 	
 	@OneToMany(fetch=FetchType.LAZY, cascade = CascadeType.ALL)
@@ -183,27 +183,15 @@ public class VaryingSnack extends Snack implements WeeklyBehaving{
 		}
 	}
 
-	@Override
 	public void nextDay(){
 		animalFoodItem.getCycle().advanceBySingleUnit();
 
 		for(FoodItem foodItem : pickedOtherFoodItems){
 			foodItem.getCycle().advanceBySingleUnit();
 		}
+		weeklyCycle.advanceBySingleUnit();
 	}
 	
-	@Override
-	public void weeklyReset(){
-		prepare();
-		
-		for(FoodItem foodItem : animalFoodItems)
-			foodItem.getCycle().reset();
-		
-		for(FoodItem otherFoodItem : otherFoodItems)
-			otherFoodItem.getCycle().reset();
-	}
-
-
 	public boolean isEaten(Integer integer) {
 		return eaten.get(integer);
 	}

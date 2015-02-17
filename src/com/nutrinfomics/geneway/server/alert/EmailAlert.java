@@ -12,10 +12,10 @@ public class EmailAlert extends AbstractAlert {
 
 	protected AbstractEmailMessage abstractMessage;
 	
-	public EmailAlert(Customer customer) {
+	public EmailAlert(Customer customer, String email) {
 		super(customer);
 		
-		abstractMessage = new EmailAlertEmailMessage(this);
+		abstractMessage = new EmailAlertEmailMessage(this, email);
 	}
 
 	@Override

@@ -14,11 +14,16 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 @Entity
 public class SnackSpecification extends AbstractFoodSpecification {
 
+	static final public int NO_GROUP = Integer.MIN_VALUE;
+	
 	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, targetEntity=AbstractFoodSpecification.class)
 	private List<FoodSpecification> foodSpecifications;
 
-	public SnackSpecification(Vector<FoodSpecification> foodSpecifications){
+	private int groupId;
+	
+	public SnackSpecification(Vector<FoodSpecification> foodSpecifications, int group){
 		this.foodSpecifications = foodSpecifications;
+		this.setGroupId(group);
 	}
 
 	public SnackSpecification(){
@@ -53,4 +58,15 @@ public class SnackSpecification extends AbstractFoodSpecification {
 		this.foodSpecifications = foodSpecifications;
 	}
 
+	public int getGroupId() {
+		return groupId;
+	}
+
+	public void setGroupId(int groupId) {
+		this.groupId = groupId;
+	}
+
+	public boolean hasGroup(){
+		return groupId != NO_GROUP;
+	}
 }

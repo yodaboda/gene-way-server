@@ -36,12 +36,12 @@ public class ScheduledAlert extends AbstractAlert {
 	private double inHours;
 	private Snack snack;
 
-	public ScheduledAlert(Customer customer, double inHours, Snack snack, List<AlertType> alertTypes ) {
+	public ScheduledAlert(Customer customer, double inHours, Snack snack, List<AlertType> alertTypes, String email ) {
 		super(customer);
 		this.inHours = inHours;
 		this.snack = snack;
 		for(AlertType alertType : alertTypes){
-			alerts.add(Alerts.create(customer, alertType));
+			alerts.add(Alerts.create(customer, alertType, email));
 		}
 		
 		Runnable runnable = new Runnable() {
