@@ -81,7 +81,21 @@ public class MarkedSnackMenu extends EntityBase {
 	private boolean isSnackSpecificationFitting(
 			AbstractFoodSpecification abstractFoodSpecification,
 			MarkedSnack markedSnack) {
-		for(FoodItem foodItem : markedSnack.getSnack().getFoodItems()){
+		Snack snack = markedSnack.getSnack();
+		if(snack instanceof GeneralVaryingSnack){
+			for(Snack s : ((GeneralVaryingSnack)snack).getSnacks() ){
+				if(isSnackSubsSpecificationFitting(abstractFoodSpecification, s)) return true;
+			}
+		}
+		else{
+			if(isSnackSubsSpecificationFitting(abstractFoodSpecification, snack)) return true;
+		}
+		return false;
+	}
+
+	private boolean isSnackSubsSpecificationFitting(
+			AbstractFoodSpecification abstractFoodSpecification, Snack snack) {
+		for(FoodItem foodItem : snack.getFoodItems()){
 			if(abstractFoodSpecification.qualifies(foodItem.getFoodType())){
 				return true;
 			}
