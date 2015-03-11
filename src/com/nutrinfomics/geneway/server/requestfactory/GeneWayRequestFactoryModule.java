@@ -1,5 +1,8 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
+import java.util.Locale;
+
+import javax.validation.MessageInterpolator;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -11,6 +14,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.requestfactory.server.DefaultExceptionHandler;
 import com.google.web.bindery.requestfactory.server.ExceptionHandler;
 import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
+import com.nutrinfomics.geneway.server.Utils;
 
 public class GeneWayRequestFactoryModule extends AbstractModule {
 
@@ -30,6 +34,7 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public ValidatorFactory getValidatorFactory(Injector injector) {
+		//this is no good, because validator is singleton and fixed 
 		return Validation.byDefaultProvider().configure().constraintValidatorFactory(new InjectingConstraintValidationFactory(injector)).buildValidatorFactory();
 	}
 	/**
@@ -41,6 +46,7 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 	@Provides
 	@Singleton
 	public Validator getValidator(ValidatorFactory validatorFactory) {
+		//this is no good, becasue validator is singleton and fixed
 		return validatorFactory.getValidator();
 	}
 }

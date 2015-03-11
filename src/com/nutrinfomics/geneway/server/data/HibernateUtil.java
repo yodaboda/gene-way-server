@@ -6,6 +6,7 @@ import javax.persistence.TypedQuery;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
+import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class HibernateUtil {
@@ -54,11 +55,23 @@ public class HibernateUtil {
 		return customer;
 	}
 
-	public Customer selectCustomer(String username, Provider<EntityManager> entityManager){
-		TypedQuery<Customer> query = entityManager.get().createQuery("SELECT c FROM Customer c WHERE c.username = :username", Customer.class).setParameter("username", username);
+	public Device selectDevice(String phoneNumber, Provider<EntityManager> entityManager){
+		TypedQuery<Device> query = entityManager.get().createQuery("SELECT d FROM Device d WHERE d.phonenumber = :phonenumber", Device.class).setParameter("phonenumber", phoneNumber);
 		return query.getSingleResult();
 	}
 
+	public Device selectDeviceByUUID(String uuid, Provider<EntityManager> entityManager){
+		TypedQuery<Device> query = entityManager.get().createQuery("SELECT d FROM Device d WHERE d.uuid = :uuid", Device.class).setParameter("uuid", uuid);
+		return query.getSingleResult();
+	}
+
+	
+	public Customer selectCustomer(String username, Provider<EntityManager> entityManager){
+		TypedQuery<Customer> query = entityManager.get().createQuery("SELECT c FROM Customer c WHERE c.credentials.username = :username", Customer.class).setParameter("username", username);
+		return query.getSingleResult();
+	}
+
+	
 	public Session getSession(String sid) {
 		return selectSession(sid, em);
 	}

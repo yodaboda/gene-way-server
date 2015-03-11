@@ -39,7 +39,7 @@ public class FoodSpecificationFactory {
 
 	private FoodCategory parseFoodCategory(String item) {
 		try{
-			return FoodCategory.valueOf(item);
+			return FoodCategory.valueOf(item.trim().toUpperCase());
 		}
 		catch(IllegalArgumentException e){
 			return null;

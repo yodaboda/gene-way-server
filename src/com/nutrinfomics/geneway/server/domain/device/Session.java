@@ -3,6 +3,7 @@ package com.nutrinfomics.geneway.server.domain.device;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
@@ -15,6 +16,7 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 @Entity
 @Table(indexes = { @Index(columnList = "sid") })
 public class Session extends EntityBase implements Serializable{
+	@Column(unique=true, nullable=false)
 	private String sid;
 	
 	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="session")

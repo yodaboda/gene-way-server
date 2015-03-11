@@ -42,6 +42,13 @@ public class GeneralVaryingSnack extends Snack{
 		return null;
 	}
 	
+	@Override
+	public void add(FoodItem foodItem){
+		for(Snack snack : getSnacks()){
+			snack.add(foodItem);
+		}
+	}
+	
 	public void reset(){
 		for(Snack snack : snacks){
 			snack.getFoodItems().get(0).getCycle().reset();

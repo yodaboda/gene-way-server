@@ -193,11 +193,20 @@ public class PlanService {
 		Set<FoodItemType> foodItemTypes = new HashSet<>();
 		
 		for(Snack snack : snackMenu.getSnacks()){
-			for(FoodItem foodItem : snack.getFoodItems()){
-				foodItemTypes.add(foodItem.getFoodType());
+			if(snack instanceof GeneralVaryingSnack){
+				for(Snack s : ((GeneralVaryingSnack) snack).getSnacks()){
+					addFoodItems(foodItemTypes, s);
+				}
 			}
+			addFoodItems(foodItemTypes, snack);
 		}
 		return foodItemTypes;
+	}
+
+	private void addFoodItems(Set<FoodItemType> foodItemTypes, Snack snack) {
+		for(FoodItem foodItem : snack.getFoodItems()){
+			foodItemTypes.add(foodItem.getFoodType());
+		}
 	}
 
 	public List<String> getMenuSummary(Session session, String dateString){

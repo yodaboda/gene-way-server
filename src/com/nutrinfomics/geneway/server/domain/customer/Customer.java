@@ -1,12 +1,14 @@
 package com.nutrinfomics.geneway.server.domain.customer;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Index;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
@@ -23,17 +25,12 @@ import com.nutrinfomics.geneway.server.domain.status.Status;
 import com.nutrinfomics.geneway.server.domain.subscription.Subscription;
 
 @Entity
-@Table(indexes = { @Index(columnList = "username") })
+//@Table(indexes = { @Index(columnList = "username") })
 public class Customer extends EntityBase{
 
-	@Size(min = 3, max = 30)
-	private String username;
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private Credentials credentials;
 	
-    private String hashedPassword;
-	
-	@Transient
-	private String password;
-
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private PersonalDetails personalDetails;
 
@@ -84,14 +81,6 @@ public class Customer extends EntityBase{
 	public void setSubscription(Subscription subscription) {
 		this.subscription = subscription;
 	}
-	
-		
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
 
 	public PersonalDetails getPersonalDetails() {
 		return personalDetails;
@@ -107,15 +96,6 @@ public class Customer extends EntityBase{
 
 	public void setSession(Session session) {
 		this.session = session;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-		hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
 	public Device getDevice() {
@@ -134,26 +114,12 @@ public class Customer extends EntityBase{
 		this.status = status;
 	}
 
-	public String getHashedPassword() {
-		return hashedPassword;
+	public Credentials getCredentials() {
+		return credentials;
 	}
 
-	public void setHashedPassword(String hashedPassword) {
-		this.hashedPassword = hashedPassword;
+	public void setCredentials(Credentials credentials) {
+		this.credentials = credentials;
 	}
-	
-	public boolean checkPassword(String plainTextPassword){
-		if(password != null){
-			return password.equals(plainTextPassword);
-		}
-		else{
-			if(hashedPassword != null){
-				return BCrypt.checkpw(plainTextPassword, hashedPassword);
-			}
-			else{
-				return false;
-			}
-		}
 
-	}
 }

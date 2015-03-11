@@ -1,23 +1,58 @@
 package com.nutrinfomics.geneway.server.domain.device;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
 @Entity
 public class Device extends EntityBase implements Serializable{
+	@NotBlank(message="{device.uuid.notblank.message}")
+	@Size(min=36, max=36, message="device.uuid.size.message")
+	@Pattern(regexp="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", 
+			message="{device.uuid.pattern.message}")
+	@Column(nullable=false, unique=true, length=36)
 	private String uuid;
+	
+	@NotBlank(message="{device.phonenumber.notblank.message}")
+	@Size(min=10, max=20, message="{device.phonenumber.size.message}")
+	@Column(nullable = false, unique = true)
 	private String phonenumber;
 	
 	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="device")
 	private Customer customer;
 
+	private String code;
+
+	@Temporal(TemporalType.TIMESTAMP)
+	private Date codeCreation;
+	
+	public Date getCodeCreation() {
+		return codeCreation;
+	}
+	public void setCodeCreation(Date codeCreation) {
+		this.codeCreation = codeCreation;
+	}
+	public String getCode() {
+		return code;
+	}
+	public void setCode(String code) {
+		this.code = code;
+	}
 	public String getUuid() {
 		return uuid;
 	}

@@ -1,11 +1,13 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import java.util.Locale;
 import java.util.Set;
 
 import javax.validation.ConstraintViolation;
+import javax.validation.MessageInterpolator;
+import javax.validation.Validation;
 import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 
 import com.google.inject.Inject;
 import com.google.inject.Injector;
@@ -14,6 +16,7 @@ import com.google.web.bindery.requestfactory.shared.Locator;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.Service;
 import com.google.web.bindery.requestfactory.shared.ServiceLocator;
+import com.nutrinfomics.geneway.server.Utils;
 
 public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
 	 /**
@@ -49,6 +52,14 @@ public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
 	 */
 	@Override
 	public <T> Set<ConstraintViolation<T>> validate(T domainObject) {
+		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+		MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
+		Locale locale = Utils.getLocale();
+//				new Locale(RequestFactoryServlet
+//				.getThreadLocalRequest().getHeader("X-GWT-Locale"));
+		GeneWayLocaleMessageInterpolator interpolator = new GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);
+		Validator validator = factory.usingContext().messageInterpolator(interpolator).getValidator();
 		return validator.validate(domainObject);
+//		return validator.validate(domainObject);
 	}
 }

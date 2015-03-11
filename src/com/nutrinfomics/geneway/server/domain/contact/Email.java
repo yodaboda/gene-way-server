@@ -6,7 +6,9 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
 public class Email extends EntityBase{
+	@org.hibernate.validator.constraints.Email
 	private String email;
+	
 	private String description;
 	public Email(){
 		

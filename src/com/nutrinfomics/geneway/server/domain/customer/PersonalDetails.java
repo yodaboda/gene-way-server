@@ -11,18 +11,18 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
+
+import org.hibernate.validator.constraints.NotBlank;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.Gender;
 
 @Entity
 public class PersonalDetails extends EntityBase{
-	public String getEmail() {
-		return email;
-	}
-	public void setEmail(String email) {
-		this.email = email;
-	}
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -53,13 +53,16 @@ public class PersonalDetails extends EntityBase{
 	public void setGender(Gender gender) {
 		this.gender = gender;
 	}
-	private String email;
+//	@Pattern(regexp="/^[\p{L}'][ \p{L}'-]*[\p{L}]$/u")
+	@NotBlank
 	private String firstName;
+	@NotBlank
 	private String lastName;
 	
 	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="personalDetails")
 	private Customer customer;
 	
+	@Past
 	@Temporal(TemporalType.DATE)
 	private Date birthday;
 	

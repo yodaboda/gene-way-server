@@ -5,6 +5,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Locale;
+
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+
+import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 
 public class Utils {
     public static Object copy(Object orig) {
@@ -30,5 +36,17 @@ public class Utils {
             cnfe.printStackTrace();
         }
         return obj;
+    }
+    static public Locale getLocale(){
+    	HttpServletRequest threadLocalRequest = RequestFactoryServlet.getThreadLocalRequest();
+    	if(threadLocalRequest != null){
+    		Cookie[] cookies = threadLocalRequest.getCookies();
+        	if(cookies != null){
+        		for(Cookie cookie : cookies){
+            		if(cookie.getName().equals("gwtLocale")) return new Locale(cookie.getValue());
+            	}        		
+        	}
+    	}
+    	return new Locale("en");
     }
 }
