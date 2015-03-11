@@ -21,15 +21,11 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 
 @Entity
 public class Device extends EntityBase implements Serializable{
-	@NotBlank(message="{device.uuid.notblank.message}")
-	@Size(min=36, max=36, message="device.uuid.size.message")
-	@Pattern(regexp="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}", 
-			message="{device.uuid.pattern.message}")
-	@Column(nullable=false, unique=true, length=36)
+	@Column(nullable=false, unique=true)
 	private String uuid;
 	
-	@NotBlank(message="{device.phonenumber.notblank.message}")
-	@Size(min=10, max=20, message="{device.phonenumber.size.message}")
+	@Pattern(regexp="[0-9]{10,20}", message="{device.phonenumber.pattern.message}")
+//	@Size(min=10, max=20, message="{device.phonenumber.size.message}")
 	@Column(nullable = false, unique = true)
 	private String phonenumber;
 	

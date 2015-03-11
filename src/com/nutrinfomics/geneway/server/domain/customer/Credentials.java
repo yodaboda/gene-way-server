@@ -13,15 +13,13 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 @Entity
 public class Credentials extends EntityBase {
 	@Column(nullable = false, unique = true)
-	@NotBlank(message="{credentials.username.notblank.message}")
-	@Size(min=6, max=30, message="{credentials.username.size.message}")
+	@Size(min=6, max=18, message="{credentials.username.size.message}")
 	private String username;
 	
     private String hashedPassword;
 	
 	@Transient
-	@NotBlank(message="{credentials.password.notblank.message}")
-	@Size(min=6, max=30, message="{credentials.password.size.message}")
+	@Size(min=6, max=18, message="{credentials.password.size.message}")
 	private String password;
 	
 	
