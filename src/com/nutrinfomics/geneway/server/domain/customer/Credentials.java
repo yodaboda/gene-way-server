@@ -12,9 +12,6 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
 public class Credentials extends EntityBase {
-	@Column(nullable = false, unique = true)
-	@Size(min=6, max=18, message="{credentials.username.size.message}")
-	private String username;
 	
     private String hashedPassword;
 	
@@ -22,23 +19,18 @@ public class Credentials extends EntityBase {
 	@Size(min=6, max=18, message="{credentials.password.size.message}")
 	private String password;
 	
-	
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	
 	public String getPassword() {
 		return password;
 	}
 
 	public void setPassword(String password) {
 		this.password = password;
-		hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
 	}
 
+	public String hashPassword(){
+		return BCrypt.hashpw(password, BCrypt.gensalt());
+	}
+	
 	public String getHashedPassword() {
 		return hashedPassword;
 	}

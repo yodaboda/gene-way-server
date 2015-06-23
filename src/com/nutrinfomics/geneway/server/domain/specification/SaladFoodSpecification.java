@@ -20,7 +20,8 @@ public class SaladFoodSpecification extends AbstractFoodSpecification {
 				foodItemType == FoodItemType.OLIVE_OIL ||
 				foodItemType == FoodItemType.COCONUT_OIL ||
 				foodItemType == FoodItemType.RICE ||
-				foodItemType == FoodItemType.BEAN_SNAP_YELLOW;
+				foodItemType == FoodItemType.BEAN_SNAP_YELLOW ||
+				foodItemType == foodItemType.MUSHROOM;
 	}
 
 }

@@ -1,5 +1,6 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -8,12 +9,22 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
+import org.hibernate.metamodel.source.binder.JpaCallbackClass;
+
+import sk.nociar.jpacloner.JpaCloner;
+import sk.nociar.jpacloner.PropertyFilter;
+
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.google.web.bindery.requestfactory.shared.Request;
+import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.alert.Alerts;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
+import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
+import com.nutrinfomics.geneway.server.domain.customer.Customer;
+import com.nutrinfomics.geneway.server.domain.customer.PersonalDetails;
+import com.nutrinfomics.geneway.server.domain.customer.SimpleDate;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
 import com.nutrinfomics.geneway.server.domain.plan.GeneralVaryingSnack;
@@ -28,9 +39,46 @@ import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 import com.nutrinfomics.geneway.shared.FoodItemType;
+import com.nutrinfomics.geneway.shared.Gender;
 
 public class PlanService {
 	@Inject Provider<EntityManager> entityManager;
+	
+	@Transactional
+	public void setDemo(Session session){
+		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+//		sessionDb.getCustomer().getDevice().setCode("demo");
+		
+		PersonalDetails personalDetails = new PersonalDetails();
+		personalDetails.setGender(Gender.FEMALE);
+		personalDetails.setBirthday(new SimpleDate(28, 7, 1975));
+		personalDetails.setCustomer(sessionDb.getCustomer());
+		sessionDb.getCustomer().setPersonalDetails(personalDetails);
+		
+		Customer demoCustomer = entityManager.get().find(Customer.class, new Long(1));
+		
+		Plan plan = demoCustomer.getPlan();
+		
+		PropertyFilter myFilter = new PropertyFilter() {
+		    public boolean test(Object entity, String property) {
+		        return ! ("id".equals(property) || "version".equals(property));
+		    }
+		};
+		Plan copyPlan = JpaCloner.clone(plan, myFilter, "*.*.*.*.*");
+		
+		sessionDb.getCustomer().setPlan(copyPlan);
+		
+//		PersonalDetails personalDetails = new PersonalDetails();
+//		personalDetails.setGender(Gender.FEMALE);
+//		personalDetails.setNickName("demo");
+//		personalDetails.setBirthday(LocalDate.of(1975, 7, 28));
+//		entityManager.get().persist(personalDetails);
+		
+//		sessionDb.getCustomer().setPersonalDetails(personalDetails);
+//		personalDetails.setCustomer(sessionDb.getCustomer());
+		
+//		entityManager.get().merge(sessionDb);
+	}
 	
 	public PlanPreferences getPlanPreferences(Session session){
 		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
@@ -117,7 +165,12 @@ public class PlanService {
 
 		if(markedSnack != null){
 			//TODO: alert information should be retrieved from DB or should be fixed at creation time
-			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack(), sameDay, sessionDb.getCustomer().getContactInformation().getEmails().get(0).getEmail());
+			String email = null;
+			ContactInformation contactInformation = sessionDb.getCustomer().getContactInformation();
+			if(contactInformation != null && contactInformation.getEmails() != null && !contactInformation.getEmails().isEmpty()){
+				email = contactInformation.getEmails().get(0).getEmail();
+			}
+			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack(), sameDay, email);
 			return markedSnack.getSnack();
 		}
 		

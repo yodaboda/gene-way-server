@@ -25,12 +25,12 @@ import com.nutrinfomics.geneway.shared.AccessConstants;
 public class GeneWayRequestFactoryServlet extends RequestFactoryServlet {
 
 //	static private boolean onlyLoginAllowed = false;
-	
-//	@Inject Provider<EntityManager> em;
+
 	
 	@Inject
-	public GeneWayRequestFactoryServlet(final ExceptionHandler exceptionHandler, final ServiceLayerDecorator guiceSL){
-		super(exceptionHandler, guiceSL, new SecurityLocalizationDecorator());
+	public GeneWayRequestFactoryServlet(final ExceptionHandler exceptionHandler, final ServiceLayerDecorator guiceSL,
+										SecurityLocalizationDecorator securityLD){
+		super(exceptionHandler, guiceSL, securityLD);
 	}
 
 //	public GeneWayRequestFactoryServlet(){

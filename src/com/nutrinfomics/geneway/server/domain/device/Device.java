@@ -1,6 +1,7 @@
 package com.nutrinfomics.geneway.server.domain.device;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.CascadeType;
@@ -24,23 +25,17 @@ public class Device extends EntityBase implements Serializable{
 	@Column(nullable=false, unique=true)
 	private String uuid;
 	
-	@Pattern(regexp="[0-9]{10,20}", message="{device.phonenumber.pattern.message}")
-//	@Size(min=10, max=20, message="{device.phonenumber.size.message}")
-	@Column(nullable = false, unique = true)
-	private String phonenumber;
-	
 	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="device")
 	private Customer customer;
 
 	private String code;
 
-	@Temporal(TemporalType.TIMESTAMP)
-	private Date codeCreation;
+	private LocalDateTime codeCreation;
 	
-	public Date getCodeCreation() {
+	public LocalDateTime getCodeCreation() {
 		return codeCreation;
 	}
-	public void setCodeCreation(Date codeCreation) {
+	public void setCodeCreation(LocalDateTime codeCreation) {
 		this.codeCreation = codeCreation;
 	}
 	public String getCode() {
@@ -60,12 +55,6 @@ public class Device extends EntityBase implements Serializable{
 	}
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
-	}
-	public void setPhonenumber(String phonenumber) {
-		this.phonenumber = phonenumber;
-	}
-	public String getPhonenumber(){
-		return phonenumber;
 	}
 
 }

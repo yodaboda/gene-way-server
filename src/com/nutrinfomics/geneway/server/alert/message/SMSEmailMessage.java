@@ -8,10 +8,12 @@ public class SMSEmailMessage extends AbstractEmailMessage {
 
 	private String phoneNumber;
 	private String code;
+	private String nickName;
 	
-	public SMSEmailMessage(String phoneNumber, String code) {
+	public SMSEmailMessage(String phoneNumber, String nickName, String code) {
 		this.phoneNumber = phoneNumber;
 		this.code = code;
+		this.nickName = nickName;
 	}
 	
 	@Override
@@ -26,7 +28,7 @@ public class SMSEmailMessage extends AbstractEmailMessage {
 
 	@Override
 	protected String getBody() {
-		return ResourceBundles.getGeneWayResource("dearCustomer", Utils.getLocale()) + ". " + 
+		return ResourceBundles.getGeneWayResource("dear", Utils.getLocale()) + " " + nickName + ". " + 
 				ResourceBundles.getGeneWayResource("yourCodeIs", Utils.getLocale()) + ": " + code;
 	}
 

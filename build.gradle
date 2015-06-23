@@ -39,6 +39,7 @@ dependencies {
 	compile 'net.sf.opencsv:opencsv:2.3'
 	compile 'org.mindrot:jbcrypt:0.3m'
 	compile 'com.google.web.bindery:requestfactory-server:2.7.0'
+	compile 'com.github.nociar:jpa-cloner:1.0.3'
 	compile 'javax.mail:mail:1.4.7'
 	compile project(':shared')
 	

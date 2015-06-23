@@ -1,34 +1,29 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.lang.reflect.Method;
-import java.util.Locale;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.ConstraintViolation;
-import javax.validation.MessageInterpolator;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
+import com.google.inject.Guice;
 import com.google.inject.Inject;
+import com.google.inject.Injector;
 import com.google.inject.Provider;
+import com.google.inject.persist.Transactional;
 import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
-import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
 import com.nutrinfomics.geneway.server.requestfactory.request.AuthenticationService;
 import com.nutrinfomics.geneway.shared.AccessConstants;
 
 public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 
-	@Inject
-	Provider<EntityManager> em;
-
+	@Inject Injector injector;
+	
 	@Override
 	public Object invoke(Method domainMethod, Object... args) {
 		if (!isAllowed(domainMethod)) {
@@ -45,9 +40,10 @@ public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 				return domainMethod.equals(AuthenticationService.class
 						.getMethod("authenticateCustomer", Customer.class))
 						|| domainMethod.equals(AuthenticationService.class
-								.getMethod("register", Session.class))
+								.getMethod("register", Customer.class))
 						|| domainMethod.equals(AuthenticationService.class
-								.getMethod("authenticateCode", Session.class));
+								.getMethod("authenticateCode", Customer.class))
+						|| domainMethod.equals(AuthenticationService.class.getMethod("unlock", Identifier.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -62,13 +58,13 @@ public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 		if (sid == null)
 			return false;
 
-		Session sessionDb = new HibernateUtil().selectSession(sid, em);
-
+		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
+		
 		Customer customerDb = sessionDb.getCustomer();
 		Device deviceDb = customerDb.getDevice();
 
-		return (deviceDb.getUuid().equalsIgnoreCase(uuid) && sessionDb.getSid()
-				.equalsIgnoreCase(sid));
+		return (deviceDb.getUuid().equalsIgnoreCase(uuid) && 
+				sessionDb.getSid().equalsIgnoreCase(sid));
 	}
 
 	protected Object doReport(Method domainMethod) {

@@ -24,6 +24,7 @@ import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.nutrinfomics.geneway.server.ResourceBundles;
+import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.alert.format.SnackFormat;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
@@ -36,7 +37,8 @@ abstract public class AbstractAlert extends EntityBase implements UserAlert {
 	
 	public AbstractAlert(Customer customer){
 		this.customer = customer;
-		locale = new Locale(calcLanguage());
+		locale = Utils.getLocale();
+//		locale = new Locale(calcLanguage());
 
 	}
 	public Customer getCustomer() {
@@ -48,16 +50,16 @@ abstract public class AbstractAlert extends EntityBase implements UserAlert {
 		return locale;
 	}
 	
-	private String calcLanguage(){
-		try{
-			Detector detector = DetectorFactory.create();
-			detector.append(customer.getPersonalDetails().getFirstName());
-			return detector.detect();
-		}
-		catch(LangDetectException e){
-			e.printStackTrace();
-		}
-		return "en";
-	}
+//	private String calcLanguage(){
+//		try{
+//			Detector detector = DetectorFactory.create();
+//			detector.append(customer.getPersonalDetails().getFirstName());
+//			return detector.detect();
+//		}
+//		catch(LangDetectException e){
+//			e.printStackTrace();
+//		}
+//		return "en";
+//	}
 
 }

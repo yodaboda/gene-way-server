@@ -8,6 +8,7 @@ import com.google.inject.Provider;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
 
 public class HibernateUtil {
 
@@ -71,6 +72,12 @@ public class HibernateUtil {
 		return query.getSingleResult();
 	}
 
+	public Customer selectCustomerBasedOnPhoneNumber(
+			String registeredPhoneNumber, Provider<EntityManager> entityManager) {
+		TypedQuery<Customer> query = entityManager.get().createQuery("SELECT c FROM Customer c WHERE c.contactInformation.phonenumber = :phonenumber", Customer.class).setParameter("phonenumber", registeredPhoneNumber);
+		return query.getSingleResult();
+	}
+
 	
 	public Session getSession(String sid) {
 		return selectSession(sid, em);
@@ -80,5 +87,16 @@ public class HibernateUtil {
 		TypedQuery<Session> query = entityManager.get().createQuery("SELECT s FROM Session s WHERE s.sid = :sid", Session.class).setParameter("sid", sid);
 		Session sessionDb = query.getSingleResult();
 		return sessionDb;
+	}
+
+	public Session selectSession(String sid) {
+		return selectSession(sid, em);
+	}
+
+	public Identifier selectIdentifier(String identifierCode,
+			Provider<EntityManager> entityManager) {
+		TypedQuery<Identifier> query = entityManager.get().createQuery("SELECT iden FROM Identifier iden WHERE iden.identifierCode = :identifierCode", Identifier.class).setParameter("identifierCode", identifierCode);
+		Identifier identifierDb = query.getSingleResult();
+		return identifierDb;
 	}
 }

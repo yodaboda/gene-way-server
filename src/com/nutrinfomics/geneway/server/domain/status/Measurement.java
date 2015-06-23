@@ -9,6 +9,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.shared.MeasurementType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 @Entity

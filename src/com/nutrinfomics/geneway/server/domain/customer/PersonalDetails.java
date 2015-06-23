@@ -1,7 +1,6 @@
 package com.nutrinfomics.geneway.server.domain.customer;
 
-import java.io.Serializable;
-import java.util.Date;
+
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -9,11 +8,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -41,10 +35,10 @@ public class PersonalDetails extends EntityBase{
 	public void setCustomer(Customer customer) {
 		this.customer = customer;
 	}
-	public Date getBirthday() {
+	public SimpleDate getBirthday() {
 		return birthday;
 	}
-	public void setBirthday(Date birthday) {
+	public void setBirthday(SimpleDate birthday) {
 		this.birthday = birthday;
 	}
 	public Gender getGender() {
@@ -54,17 +48,16 @@ public class PersonalDetails extends EntityBase{
 		this.gender = gender;
 	}
 //	@Pattern(regexp="/^[\p{L}'][ \p{L}'-]*[\p{L}]$/u")
-	@NotBlank
 	private String firstName;
-	@NotBlank
+
 	private String lastName;
 	
 	@OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL, mappedBy="personalDetails")
 	private Customer customer;
 	
-	@Past
-	@Temporal(TemporalType.DATE)
-	private Date birthday;
+//	@Past
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+	private SimpleDate birthday;
 	
 	@Enumerated(EnumType.STRING)
 	private Gender gender;

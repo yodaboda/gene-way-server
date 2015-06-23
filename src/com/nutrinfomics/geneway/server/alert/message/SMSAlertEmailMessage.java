@@ -9,7 +9,7 @@ public class SMSAlertEmailMessage extends EmailAlertEmailMessage {
 	}
 	@Override
 	protected String getSubject(){
-		String phonenumber = getAlert().getCustomer().getDevice().getPhonenumber();
+		String phonenumber = getAlert().getCustomer().getContactInformation().getRegisteredPhoneNumber();
 		return phonenumber;
 //		if(phonenumber != null) return phonenumber;
 //		

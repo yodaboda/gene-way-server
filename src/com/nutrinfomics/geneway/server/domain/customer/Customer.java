@@ -13,6 +13,7 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.validator.constraints.NotBlank;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
@@ -54,6 +55,9 @@ public class Customer extends EntityBase{
 
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
 	private Plan plan;
+	
+	@NotBlank(message="{customer.nickname.notblank.message}")
+	private String nickName;
 	
 	public Customer(){
 	}
@@ -120,6 +124,14 @@ public class Customer extends EntityBase{
 
 	public void setCredentials(Credentials credentials) {
 		this.credentials = credentials;
+	}
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
 	}
 
 }

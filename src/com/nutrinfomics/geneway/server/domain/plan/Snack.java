@@ -66,7 +66,7 @@ public class Snack extends EntityBase implements Serializable{
 		foodItems.addAll(snack.getFoodItems());
 	}
 
-	public void add(Vector<FoodItem> foodItems) {
+	public void add(Collection<FoodItem> foodItems) {
 		this.foodItems.addAll(foodItems);
 	}
 
