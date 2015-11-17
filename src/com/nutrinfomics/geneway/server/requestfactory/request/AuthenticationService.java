@@ -3,6 +3,7 @@ package com.nutrinfomics.geneway.server.requestfactory.request;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
@@ -12,6 +13,8 @@ import javax.persistence.NoResultException;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
+import com.google.web.bindery.requestfactory.shared.Request;
+import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.alert.message.SMSEmailMessage;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
@@ -41,24 +44,40 @@ public class AuthenticationService {
 	}
 	
 	@Transactional
+	public String confirmValuationTermsOfService(String uuid){
+		Identifier dbIdentifier = new HibernateUtil().selectIdentifierFromUUID(uuid, entityManager);
+		String ip = Utils.getIP();
+		dbIdentifier.setEvaluationTermsAcceptanceIP(ip);
+		dbIdentifier.setEvaluationTermsAcceptanceTime(new Date());
+		return ip;
+	}
+
+	
+	@Transactional
 	public void register(Customer customer){
 		SecureRandom random = new SecureRandom();
 
 		String code = new BigInteger(130, random).toString(32).substring(0, 6);
+		code = "123456"; //TODO: comment this line out
 		
 		customer.getDevice().setCode(code);
 		customer.getDevice().setCodeCreation(LocalDateTime.now());
 
-		try{
-			Customer customerDb = new HibernateUtil().selectCustomerBasedOnPhoneNumber(customer.getContactInformation().getRegisteredPhoneNumber(), entityManager);
-			entityManager.get().remove(customerDb.getContactInformation());
-			entityManager.get().remove(customerDb.getDevice());
-			entityManager.get().remove(customerDb); // delete this device
-		}
-		catch(NoResultException ex){
-			//all good - device not in db
-		}
+		//allow new users when they register to connect to existing plans based on phone number
+		//this is temporary. should be uncommented eventually.
+//		try{
+//			Customer customerDb = new HibernateUtil().selectCustomerBasedOnPhoneNumber(customer.getContactInformation().getRegisteredPhoneNumber(), entityManager);
+//			if(customerDb.getContactInformation() != null)
+//				entityManager.get().remove(customerDb.getContactInformation());
+//			if(customerDb.getDevice() != null)
+//				entityManager.get().remove(customerDb.getDevice());
+//			entityManager.get().remove(customerDb); // delete this device
+//		}
+//		catch(NoResultException ex){
+//			//all good - device not in db
+//		}
 
+		
 		//TODO - if phone number associated with another device - check if it is inactive, then delete entry. Otherwise, return an exception of used phone-number
 		//this is bad - could be a privacy breach. Need to think of workaround.
 		

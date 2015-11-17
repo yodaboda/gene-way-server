@@ -134,4 +134,8 @@ public class Customer extends EntityBase{
 		this.nickName = nickName;
 	}
 
+	@Override
+	public String toString(){
+		return getNickName();
+	}
 }

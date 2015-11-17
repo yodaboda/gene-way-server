@@ -11,6 +11,7 @@ public class SaladFoodSpecification extends AbstractFoodSpecification {
 		return foodCategory == FoodCategory.VEGETABLE_FRUIT ||
 				foodCategory == FoodCategory.VEGETABLE ||
 				foodCategory == FoodCategory.ROOT ||
+				foodItemType == FoodItemType.BABY_SALAD ||
 				foodItemType == FoodItemType.ZUCCHINI ||
 				foodItemType == FoodItemType.SQUASH_SUMMER ||
 				foodItemType == FoodItemType.PUMPKIN ||

@@ -1,5 +1,7 @@
 package com.nutrinfomics.geneway.server.data;
 
+import java.util.List;
+
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
@@ -98,5 +100,18 @@ public class HibernateUtil {
 		TypedQuery<Identifier> query = entityManager.get().createQuery("SELECT iden FROM Identifier iden WHERE iden.identifierCode = :identifierCode", Identifier.class).setParameter("identifierCode", identifierCode);
 		Identifier identifierDb = query.getSingleResult();
 		return identifierDb;
+	}
+
+	public Identifier selectIdentifierFromUUID(String uuid,
+			Provider<EntityManager> entityManager) {
+		TypedQuery<Identifier> query = entityManager.get().createQuery("SELECT iden FROM Identifier iden WHERE iden.uuid = :uuid", Identifier.class).setParameter("uuid", uuid);
+		Identifier identifierDb = query.getSingleResult();
+		return identifierDb;
+	}
+
+	public List<Customer> getCustomers(Provider<EntityManager> entityManager) {
+		TypedQuery<Customer> query = entityManager.get().createQuery("SELECT c FROM Customer", Customer.class);
+		return query.getResultList();
+
 	}
 }

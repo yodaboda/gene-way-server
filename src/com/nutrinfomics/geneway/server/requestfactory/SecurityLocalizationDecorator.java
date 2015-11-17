@@ -43,7 +43,8 @@ public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 								.getMethod("register", Customer.class))
 						|| domainMethod.equals(AuthenticationService.class
 								.getMethod("authenticateCode", Customer.class))
-						|| domainMethod.equals(AuthenticationService.class.getMethod("unlock", Identifier.class));
+						|| domainMethod.equals(AuthenticationService.class.getMethod("unlock", Identifier.class))
+						|| domainMethod.equals(AuthenticationService.class.getMethod("confirmValuationTermsOfService", String.class));
 		} catch (NoSuchMethodException | SecurityException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -49,13 +49,13 @@ public class PlanService {
 		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
 //		sessionDb.getCustomer().getDevice().setCode("demo");
 		
-		PersonalDetails personalDetails = new PersonalDetails();
-		personalDetails.setGender(Gender.FEMALE);
-		personalDetails.setBirthday(new SimpleDate(28, 7, 1975));
-		personalDetails.setCustomer(sessionDb.getCustomer());
-		sessionDb.getCustomer().setPersonalDetails(personalDetails);
+//		PersonalDetails personalDetails = new PersonalDetails();
+//		personalDetails.setGender(Gender.FEMALE);
+//		personalDetails.setBirthday(new SimpleDate(28, 7, 1975));
+//		personalDetails.setCustomer(sessionDb.getCustomer());
+//		sessionDb.getCustomer().setPersonalDetails(personalDetails);
 		
-		Customer demoCustomer = entityManager.get().find(Customer.class, new Long(1));
+		Customer demoCustomer = entityManager.get().find(Customer.class, new Long(4));
 		
 		Plan plan = demoCustomer.getPlan();
 		

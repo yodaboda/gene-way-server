@@ -50,4 +50,12 @@ public class Utils {
     	return new Locale("en");
     }
 
+    static public String getIP(){
+    	HttpServletRequest threadLocalRequest = RequestFactoryServlet.getThreadLocalRequest();
+    	if(threadLocalRequest != null){
+    		return threadLocalRequest.getRemoteAddr();
+    	}
+    	return null;
+    }
+    
 }
