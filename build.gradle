@@ -1,11 +1,19 @@
 apply plugin: 'java'
 
+apply from: '/Users/firas1/Documents/gene-way-workspace/gene-way-app/config.gradle'
+
 sourceSets {
         main {
                 java {
                         srcDir 'src'
                 }
         }
+        
+        test {
+        	java {
+            	srcDirs = ["test"] 
+        	}
+    	}
 }
 
 
@@ -15,7 +23,7 @@ jar {
   	}
     manifest {
         attributes 'Implementation-Title': 'Gene-Way domain',
-                   'Implementation-Version': version
+                   'Implementation-Version': project.ext.version
     }
 }
 
@@ -41,12 +49,14 @@ dependencies {
 	compile 'com.google.web.bindery:requestfactory-server:2.7.0'
 	compile 'com.github.nociar:jpa-cloner:1.0.3'
 	compile 'javax.mail:mail:1.4.7'
-	compile project(':shared')
+	compile files('/Users/firas1/Documents/gene-way-workspace-separate-repos/gene-way-shared/build/libs/gene-way-shared.jar')
 	
 	compile name: 'langdetect'
 	compile name: 'jsonic-1.2.0'
 		
 	providedCompile "javax.servlet:servlet-api:2.5"
+	
+	testCompile "junit:junit:4.12" 
 }
 
 sourceSets.main.compileClasspath += configurations.providedCompile

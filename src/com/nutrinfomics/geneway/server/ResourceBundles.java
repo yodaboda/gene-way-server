@@ -7,6 +7,12 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 import com.nutrinfomics.geneway.shared.SupplementType;
 
+/**
+ * This class provides an interface for accessing all the resource bundles needed for 
+ * internationalization.
+ * @author firas1
+ *
+ */
 public class ResourceBundles {
 	private final static String PATH = "com/nutrinfomics/geneway/shared/constants/";
 
