@@ -24,16 +24,26 @@ public class Utils {
     	if(threadLocalRequest != null){
     		Cookie[] cookies = threadLocalRequest.getCookies();
         	if(cookies != null){
+        		boolean hasGWTLocaleCookie = false;
         		for(Cookie cookie : cookies){
             		if(cookie.getName().equals("gwtLocale")){
-            			try{
-            				return LocaleUtils.toLocale(cookie.getValue());
+            			hasGWTLocaleCookie = true;
+            			if(cookie.getValue() == null){
+            				LOGGER.log(Level.WARN, "Null gwtLocale cookie value!");
             			}
-            			catch(IllegalArgumentException ex){
-            				LOGGER.log( Level.FATAL, ex.toString(), ex );
+            			else{
+                			try{
+                				return LocaleUtils.toLocale(cookie.getValue());
+                			}
+                			catch(IllegalArgumentException ex){
+                				LOGGER.log( Level.FATAL, ex.toString(), ex );
+                			}            				
             			}
             		}
-            	}        		
+            	}
+        		if(!hasGWTLocaleCookie){
+        			LOGGER.log(Level.WARN, "Http Request has no gwtLocale cookie!");
+        		}
         	}
         	else{
         		LOGGER.log(Level.WARN, "Http Request has null cookies!");
@@ -54,9 +64,8 @@ public class Utils {
     		return threadLocalRequest.getRemoteAddr();
     	}
     	else{
-    		LOGGER.log(Level.WARN, "Null Http Request!");    		
+    		LOGGER.log(Level.WARN, "Null Http Request!");
+    		return null;
     	}
-    	return null;
     }
-    
 }
