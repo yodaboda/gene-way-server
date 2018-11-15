@@ -1,21 +1,6 @@
 apply plugin: 'java'
 
-apply from: '/Users/firas1/Documents/gene-way-workspace/gene-way-app/config.gradle'
-
-//sourceSets {
-//        main {
-//                java {
-//                        srcDir 'src'
-//                }
-//        }
-        
-//        test {
-//        	java {
-//            	srcDirs = ["test"] 
-//        	}
-//    	}
-//}
-
+apply from: '../gene-way-shared/config.gradle'
 
 jar {
 	from ('src') {
