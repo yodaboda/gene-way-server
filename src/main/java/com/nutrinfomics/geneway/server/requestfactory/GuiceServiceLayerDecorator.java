@@ -16,6 +16,7 @@ import com.google.web.bindery.requestfactory.shared.Locator;
 import com.google.web.bindery.requestfactory.shared.RequestContext;
 import com.google.web.bindery.requestfactory.shared.Service;
 import com.google.web.bindery.requestfactory.shared.ServiceLocator;
+import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
 
 public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
@@ -54,7 +55,7 @@ public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
 	public <T> Set<ConstraintViolation<T>> validate(T domainObject) {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
-		Locale locale = Utils.getLocale();
+		Locale locale = new Utils().getLocale(new RequestUtils());
 //				new Locale(RequestFactoryServlet
 //				.getThreadLocalRequest().getHeader("X-GWT-Locale"));
 		GeneWayLocaleMessageInterpolator interpolator = new GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);

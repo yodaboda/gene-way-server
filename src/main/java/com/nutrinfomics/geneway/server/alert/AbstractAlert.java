@@ -23,6 +23,7 @@ import javax.persistence.Transient;
 import com.cybozu.labs.langdetect.Detector;
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
+import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.alert.format.SnackFormat;
@@ -37,7 +38,7 @@ abstract public class AbstractAlert extends EntityBase implements UserAlert {
 	
 	public AbstractAlert(Customer customer){
 		this.customer = customer;
-		locale = Utils.getLocale();
+		locale = new Utils().getLocale(new RequestUtils());
 //		locale = new Locale(calcLanguage());
 
 	}

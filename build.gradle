@@ -30,33 +30,65 @@ jar {
 configurations { providedCompile }
 
 dependencies {
+	//Interpreting the licenses (whether permissive, private use, or restricted) is taken from 
+	//https://en.wikipedia.org/wiki/Comparison_of_free_and_open-source_software_licenses
+
+	//Licenses were obtained from project GitHub, MVNRepository, or project homepage
+
+	//LGPL 2.1, dynamically linked is fine
+	//See https://stackoverflow.com/questions/10130143/gpl-lgpl-and-static-linking#10179181
+	//Java always links dynamically
+	//https://stackoverflow.com/questions/26246875/is-linking-in-java-runtime-always-done-dynamically
 	compile 'org.hibernate:hibernate-core:4.3.8.Final'
+	//LGPL 2.1
 	compile 'org.hibernate:hibernate-c3p0:4.3.8.Final'
+	//LGPL 2.1 or Eclipse Public License
 	compile 'c3p0:c3p0:0.9.1.2'
+	//LGPL 2.1
 	compile 'org.hibernate:hibernate-entitymanager:4.3.8.Final'
+	//Apache License, v. 2.0.
 	compile 'org.hibernate:hibernate-validator:4.3.2.Final'
+	//Apache 2.0
 	compile 'com.google.inject:guice:4.0-beta5'
+	//Apache 2.0
 	compile 'com.google.inject.extensions:guice-servlet:4.0-beta5'
+	//Apache 2.0
 	compile 'com.google.inject.extensions:guice-persist:4.0-beta5'
-//	compile 'com.google.collections:google-collections:1.0'
+	//Apache 2.0
 	compile 'org.jboss.logging:jboss-logging:3.1.0.CR1'
-//	compile 'org.mybatis:mybatis:3.2.8'
-//	compile 'com.h2database:h2:1.4.182'
-//	compile 'org.mariadb.jdbc:mariadb-java-client:1.1.7'
-	compile 'mysql:mysql-connector-java:5.1.34'
+	//LGPL 2.1
+	compile 'org.mariadb.jdbc:mariadb-java-client:1.1.7'
+	//GPL 2
+	//compile 'mysql:mysql-connector-java:5.1.34'
 	compile 'net.sf.opencsv:opencsv:2.3'
+	//BSD, permissive, ISC, permissive
 	compile 'org.mindrot:jbcrypt:0.3m'
+	//Apache License, v. 2.0., permissive
 	compile 'com.google.web.bindery:requestfactory-server:2.7.0'
+	//Apache License, Version 2.0
 	compile 'com.github.nociar:jpa-cloner:1.0.3'
+	//CDDL 1.0, permissive
+	//https://en.wikipedia.org/wiki/Common_Development_and_Distribution_License
 	compile 'javax.mail:mail:1.4.7'
+	//Apache License, v. 2.0.
+	compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.8.1'
+	//Apache License, v. 2.0.
+	compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.11.1'
+	//Apache License, v. 2.0.
+	compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1'
 	compile files('/Users/firas1/Documents/gene-way-workspace-separate-repos/gene-way-shared/build/libs/gene-way-shared.jar')
-	
-	compile name: 'langdetect'
-	compile name: 'jsonic-1.2.0'
-		
+	//Apache 2.0
+	compile group: 'com.cybozu.labs', name: 'langdetect', version: '1.1-20120112'
+	//CDDL, GPL, GPL 2.0
 	providedCompile "javax.servlet:servlet-api:2.5"
 	
+	//Eclipse Public License 1.0, private use
 	testCompile "junit:junit:4.12" 
+	//MIT License, permissive
+	testCompile 'org.mockito:mockito-core:2.23.0'
+	//Apache License, v. 2.0., permissive
+	testCompile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.11.1', classifier: 'tests'	
+	
 }
 
 sourceSets.main.compileClasspath += configurations.providedCompile

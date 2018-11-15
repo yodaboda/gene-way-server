@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.google.web.bindery.requestfactory.shared.Request;
+import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.alert.message.SMSEmailMessage;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
@@ -46,7 +47,7 @@ public class AuthenticationService {
 	@Transactional
 	public String confirmValuationTermsOfService(String uuid){
 		Identifier dbIdentifier = new HibernateUtil().selectIdentifierFromUUID(uuid, entityManager);
-		String ip = Utils.getIP();
+		String ip = new Utils().getIP(new RequestUtils());
 		dbIdentifier.setEvaluationTermsAcceptanceIP(ip);
 		dbIdentifier.setEvaluationTermsAcceptanceTime(new Date());
 		return ip;

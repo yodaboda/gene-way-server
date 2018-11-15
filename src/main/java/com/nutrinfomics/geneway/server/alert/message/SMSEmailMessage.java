@@ -1,6 +1,9 @@
 package com.nutrinfomics.geneway.server.alert.message;
 
+import java.util.Locale;
+
 import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
+import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.Utils;
 
@@ -17,8 +20,9 @@ public class SMSEmailMessage extends AbstractSMSEmailMessage {
 	
 	@Override
 	protected String getBody() {
-		return ResourceBundles.getGeneWayResource("dear", Utils.getLocale()) + " " + nickName + ". " + 
-				ResourceBundles.getGeneWayResource("yourCodeIs", Utils.getLocale()) + ": " + code;
+		Locale locale = new Utils().getLocale(new RequestUtils());
+		return ResourceBundles.getGeneWayResource("dear", locale) + " " + nickName + ". " + 
+				ResourceBundles.getGeneWayResource("yourCodeIs", locale) + ": " + code;
 	}
 
 }
