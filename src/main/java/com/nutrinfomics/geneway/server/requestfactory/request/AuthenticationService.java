@@ -7,16 +7,20 @@ import java.util.Date;
 import java.util.UUID;
 
 import javax.mail.MessagingException;
+import javax.mail.internet.AddressException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
+import com.geneway.alerts.mechanism.SMSOverEmailAlertMechanism;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
-import com.google.web.bindery.requestfactory.shared.Request;
 import com.nutrinfomics.geneway.server.RequestUtils;
+import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.Utils;
-import com.nutrinfomics.geneway.server.alert.message.SMSEmailMessage;
+import com.nutrinfomics.geneway.server.alerts.GeneWaySMSAlertRecipient;
+import com.nutrinfomics.geneway.server.alerts.codeSMS.GeneWayCodeSMSAlertLocalization;
+import com.nutrinfomics.geneway.server.alerts.codeSMS.GeneWayCodeSMSAlertMessage;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
@@ -91,13 +95,21 @@ public class AuthenticationService {
 		//the phone number might not be attached to the session - it could be already in the DB
 		Device deviceDb = new HibernateUtil().selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
 		
-		SMSEmailMessage smsCode = new SMSEmailMessage(deviceDb.getCustomer().getContactInformation().getRegisteredPhoneNumber(), deviceDb.getCustomer().getNickName(), code);
+		SMSOverEmailAlertMechanism alertMechanism = new SMSOverEmailAlertMechanism(new GeneWayCodeSMSAlertMessage( deviceDb.getCustomer().getNickName(), code), 
+				new GeneWaySMSAlertRecipient(), 
+				new GeneWayCodeSMSAlertLocalization(new ResourceBundles(), new Utils().getLocale(new RequestUtils())),
+				deviceDb.getCustomer().getContactInformation().getRegisteredPhoneNumber());
+
 		try {
-			smsCode.generateAndSendEmail();
-		} catch (MessagingException e) {
+			alertMechanism.send();
+		} catch (AddressException e) {
 			// TODO Auto-generated catch block
 			// TODO return error
 			e.printStackTrace();
+		} catch(MessagingException  e){
+			// TODO Auto-generated catch block
+			// TODO return error
+			e.printStackTrace();			
 		}
 		//do not return anything from Db at this stage. Only after logging in we do so.
 		customer.getDevice().setCode(null);// do not send code by mistake to client

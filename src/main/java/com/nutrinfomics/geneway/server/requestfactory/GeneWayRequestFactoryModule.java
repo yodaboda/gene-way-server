@@ -2,7 +2,6 @@ package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.util.Locale;
 
-import javax.validation.MessageInterpolator;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -14,6 +13,7 @@ import com.google.inject.Singleton;
 import com.google.web.bindery.requestfactory.server.DefaultExceptionHandler;
 import com.google.web.bindery.requestfactory.server.ExceptionHandler;
 import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
+import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
 
 public class GeneWayRequestFactoryModule extends AbstractModule {
@@ -25,6 +25,10 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 		bind(GeneWayServiceLocator.class);	
 	}
 
+	@Provides
+	public Locale provideLocale(){
+		return new Utils().getLocale(new RequestUtils());
+	}
 	/**
 	 * Creates and reuses injecting JSR 303 Validator factory.
 	 *

@@ -19,8 +19,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.nutrinfomics.geneway.server.alert.AbstractAlert;
-import com.nutrinfomics.geneway.server.alert.UserAlert;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.SnackProperty;

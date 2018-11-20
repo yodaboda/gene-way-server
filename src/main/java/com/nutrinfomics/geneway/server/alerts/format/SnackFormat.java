@@ -1,30 +1,26 @@
-package com.nutrinfomics.geneway.server.alert.format;
+package com.nutrinfomics.geneway.server.alerts.format;
 
 import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+import javax.inject.Inject;
+import javax.inject.Singleton;
+
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
 import com.nutrinfomics.geneway.server.domain.plan.GeneralVaryingSnack;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
+@Singleton
 public class SnackFormat {
-	private static SnackFormat instance;
-	
-	public static SnackFormat getInstance(){
-		if(instance == null){
-			synchronized (SnackFormat.class) {
-				if(instance == null){
-					instance = new SnackFormat();
-				}
-			}
-		}
-		return instance;
-	}
-	
-	private SnackFormat(){
+	private final FoodItemFormat foodItemFormat;
+	private final ResourceBundles resourceBundles;
+	@Inject
+	public SnackFormat(FoodItemFormat foodItemFormat, ResourceBundles resourceBundles){
+		this.foodItemFormat = foodItemFormat;
+		this.resourceBundles = resourceBundles;
 	}
 	
 	public String format(Snack snack, Locale locale){
@@ -34,7 +30,7 @@ public class SnackFormat {
 		Collection<FoodItem> foodItems = snack.getFoodItems();
 		String s = "";
 		for(FoodItem foodItem : foodItems){
-			s += FoodItemFormat.getInstance().format(foodItem, locale) + " + ";			
+			s += foodItemFormat.format(foodItem, locale) + " + ";			
 		}
 		return s.isEmpty() ? s : s.substring(0, s.length() - 2); // string ends with "+ "
 	}
@@ -48,7 +44,7 @@ public class SnackFormat {
 				minCycleLength = Math.min(minCycleLength, foodItem.getCycle().getCycleLength());				
 			}
 			res += format(snck, locale) + " - " + NumberFormat.getIntegerInstance(locale).format(minCycleLength) + " " +
-					ResourceBundles.getMiscBundleResource("days", locale) + System.getProperty("line.separator");
+					resourceBundles.getMiscBundleResource("days", locale) + System.getProperty("line.separator");
 		}
 		return res;
 	}
@@ -57,10 +53,10 @@ public class SnackFormat {
 		Collection<FoodItem> foodItems = snack.getFoodItems();
 		String s = "";
 		for(FoodItem foodItem : foodItems){
-			s += FoodItemFormat.getInstance().format(new FoodItem(foodItem.getAmount(), foodItem.getMeasurementUnit(), foodItem.getFoodType()), 
+			s += foodItemFormat.format(new FoodItem(foodItem.getAmount(), foodItem.getMeasurementUnit(), foodItem.getFoodType()), 
 					locale) +
 					" - " + NumberFormat.getIntegerInstance(locale).format(foodItem.getCycle().getCycleLength()) + " " +
-					ResourceBundles.getMiscBundleResource("days", locale) + System.getProperty("line.separator");			
+					resourceBundles.getMiscBundleResource("days", locale) + System.getProperty("line.separator");			
 		}
 		return s.isEmpty() ? s : s.substring(0, s.length() - 1); // string ends with "\n"
 	}

@@ -1,4 +1,4 @@
-package com.nutrinfomics.geneway.server.alert;
+package com.nutrinfomics.geneway.server.alerts;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,17 +13,26 @@ import javax.persistence.EntityManager;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 
+import com.geneway.alerts.AbstractAlert;
+import com.geneway.alerts.EmailAlert;
+import com.geneway.alerts.SMSAlert;
+import com.geneway.alerts.UserAlert;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
 import com.nutrinfomics.geneway.server.requestfactory.request.PlanService;
 import com.nutrinfomics.geneway.shared.SnackStatus;
 
-public class ScheduledAlert extends AbstractAlert {
+public class ScheduledAlert extends EntityBase implements UserAlert {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -6756667893271410965L;
 	static private final ScheduledExecutorService scheduler =
 		     Executors.newScheduledThreadPool(1);
 
@@ -33,15 +42,12 @@ public class ScheduledAlert extends AbstractAlert {
 	
 	private List<UserAlert> alerts = new ArrayList<>();
 	private ScheduledFuture<?> scheduled;
-	private double inHours;
 	private Snack snack;
 
 	public ScheduledAlert(Customer customer, double inHours, Snack snack, List<AlertType> alertTypes, String email ) {
-		super(customer);
-		this.inHours = inHours;
 		this.snack = snack;
 		for(AlertType alertType : alertTypes){
-			alerts.add(Alerts.create(customer, alertType, email));
+			alerts.add(create(customer, alertType, email));
 		}
 		
 		Runnable runnable = new Runnable() {
@@ -54,6 +60,14 @@ public class ScheduledAlert extends AbstractAlert {
 		scheduled = scheduler.schedule(runnable, (long) (inHours * 60), TimeUnit.MINUTES);
 	}
 
+	public UserAlert create(Customer customer, AlertType alertType, String email) {
+		switch(alertType){
+			case EMAIL: return new GeneWayEmailAlert(email);
+			case SMS: return new GeneWaySMSAlert(customer.getContactInformation().getRegisteredPhoneNumber());
+			default: return null;
+		}
+	}
+	
 	@Override
 	public void cancel() {
 		scheduled.cancel(false);

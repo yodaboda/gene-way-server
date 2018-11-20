@@ -20,69 +20,69 @@ public class ResourceBundlesTest {
     
 	@Test
 	public void testGetFoodItemResource() {
-		String appleEnglishLocalized = ResourceBundles.getFoodItemResource(FoodItemType.APPLE, Locale.ENGLISH);
+		String appleEnglishLocalized = new ResourceBundles().getFoodItemResource(FoodItemType.APPLE, Locale.ENGLISH);
 		assertEquals("apple", appleEnglishLocalized);
 	}
 
 	@Test
 	public void testGetFoodItemResourceArabic() {
-		String bananaArabicLocalized = ResourceBundles.getFoodItemResource(FoodItemType.BANANA, Locale.forLanguageTag("ar"));
+		String bananaArabicLocalized = new ResourceBundles().getFoodItemResource(FoodItemType.BANANA, Locale.forLanguageTag("ar"));
 		assertEquals("موز", bananaArabicLocalized);
 	}
 
 	@Test
 	public void testGetFoodItemResourceHebrew() {
-		String eggHebrewLocalized = ResourceBundles.getFoodItemResource(FoodItemType.EGG, Locale.forLanguageTag("iw"));
+		String eggHebrewLocalized = new ResourceBundles().getFoodItemResource(FoodItemType.EGG, Locale.forLanguageTag("iw"));
 		assertEquals("ביצה", eggHebrewLocalized);
 	}
 
 	@Test
 	public void testGetFoodItemResourceSwedish() {
-		String peachSwedishLocalized = ResourceBundles.getFoodItemResource(FoodItemType.PEACH, Locale.forLanguageTag("sv"));
+		String peachSwedishLocalized = new ResourceBundles().getFoodItemResource(FoodItemType.PEACH, Locale.forLanguageTag("sv"));
 		assertEquals("peach", peachSwedishLocalized);
 	}
 
 	@Test
 	public void testGetFoodItemResourceNull() {
 		thrown.expect(NullPointerException.class);
-		ResourceBundles.getFoodItemResource(null, Locale.getDefault());
+		new ResourceBundles().getFoodItemResource(null, Locale.getDefault());
 	}
 
 	@Test
 	public void testGetMeasurementResource() {
 		thrown.expect(MissingResourceException.class);
 		thrown.expectMessage("Can't find resource for bundle java.util.PropertyResourceBundle, key CENTIMETRE");
-		ResourceBundles.getMeasurementResource(MeasurementUnit.CENTIMETRE, Locale.forLanguageTag("no"));
+		new ResourceBundles().getMeasurementResource(MeasurementUnit.CENTIMETRE, Locale.forLanguageTag("no"));
 	}
 
 	@Test
 	public void testGetMeasurementResourceArabic() {
-		String teaSpoonArabicLocalized = ResourceBundles.getMeasurementResource(MeasurementUnit.TEA_SPOON, Locale.forLanguageTag("ar"));
+		String teaSpoonArabicLocalized = new ResourceBundles().getMeasurementResource(MeasurementUnit.TEA_SPOON, Locale.forLanguageTag("ar"));
 		assertEquals("ملعقة صغيرة", teaSpoonArabicLocalized);
 	}
 
 	@Test
 	public void testGetSupplementsResourceChinese() {
-		String zincChineseLocalized = ResourceBundles.getSupplementsResource(SupplementType.ZINC, Locale.CHINESE);
+		String zincChineseLocalized = new ResourceBundles().getSupplementsResource(SupplementType.ZINC, Locale.CHINESE);
 		assertEquals("Zinc", zincChineseLocalized);
 	}
 
 	@Test
 	public void testGetSupplementsResourceGerman() {
-		String vitaminDGermanLocalized = ResourceBundles.getSupplementsResource(SupplementType.VITAMIN_D, Locale.GERMAN);
+		String vitaminDGermanLocalized = new ResourceBundles().getSupplementsResource(SupplementType.VITAMIN_D, Locale.GERMAN);
 		assertEquals("Vitamin D", vitaminDGermanLocalized);
 	}
 
 	@Test
 	public void testGetSupplementsResourceFrench() {
-		String calciumFrenchLocalized =  ResourceBundles.getSupplementsResource(SupplementType.CALCIUM, Locale.FRENCH);
+		String calciumFrenchLocalized =  new ResourceBundles().getSupplementsResource(SupplementType.CALCIUM, Locale.FRENCH);
 		assertEquals("Calcium", calciumFrenchLocalized);
 	}
 
 	
 	@Test
 	public void testGetMiscResource() {
-		String energyRussianLocalized = ResourceBundles.getMiscResource("ENERGY", Locale.forLanguageTag("ru"));
+		String energyRussianLocalized = new ResourceBundles().getMiscResource("ENERGY", Locale.forLanguageTag("ru"));
 		assertEquals("energy", energyRussianLocalized);
 	}
 
@@ -90,12 +90,12 @@ public class ResourceBundlesTest {
 	public void testGetMiscResourceMissing() {
 		thrown.expect(MissingResourceException.class);
 		thrown.expectMessage("Can't find resource for bundle java.util.PropertyResourceBundle, key Other");
-		ResourceBundles.getMiscResource("Other", Locale.getDefault());
+		new ResourceBundles().getMiscResource("Other", Locale.getDefault());
 	}
 
 	@Test
 	public void testGetMiscBundleResource() {
-		String dinnerHebrewLocalized = ResourceBundles.getMiscBundleResource("snack", Locale.forLanguageTag("iw"));
+		String dinnerHebrewLocalized = new ResourceBundles().getMiscBundleResource("snack", Locale.forLanguageTag("iw"));
 		assertEquals("מנה", dinnerHebrewLocalized);
 	}
 
@@ -103,18 +103,18 @@ public class ResourceBundlesTest {
 	public void testGetMiscBundleResourceMissing() {
 		thrown.expect(MissingResourceException.class);
 		thrown.expectMessage("Can't find resource for bundle java.util.PropertyResourceBundle, key weeks");
-		ResourceBundles.getMiscBundleResource("weeks", Locale.forLanguageTag("iw"));
+		new ResourceBundles().getMiscBundleResource("weeks", Locale.forLanguageTag("iw"));
 	}
 
 	@Test
 	public void testGetActivitiesResource() {
-		String sunbathingArabicLocalized = ResourceBundles.getActivitiesResource("SUNBATHING", Locale.forLanguageTag("ar"));
+		String sunbathingArabicLocalized = new ResourceBundles().getActivitiesResource("SUNBATHING", Locale.forLanguageTag("ar"));
 		assertEquals("التعرض للشمس - التعرض للشمس خلال الساعات الصحية لمدة ساعة يوميا", sunbathingArabicLocalized);
 	}
 
 	@Test
 	public void testGetGeneWayResource() {
-		String weightItalianLocalized = ResourceBundles.getGeneWayResource("weight", Locale.ITALIAN);
+		String weightItalianLocalized = new ResourceBundles().getGeneWayResource("weight", Locale.ITALIAN);
 		assertEquals("Weight", weightItalianLocalized);
 	}
 
@@ -122,12 +122,12 @@ public class ResourceBundlesTest {
 	public void testGetGeneWayResourceMissing() {
 		thrown.expect(MissingResourceException.class);
 		thrown.expectMessage("Can't find resource for bundle java.util.PropertyResourceBundle, key errors");
-		ResourceBundles.getGeneWayResource("errors", Locale.KOREAN);
+		new ResourceBundles().getGeneWayResource("errors", Locale.KOREAN);
 	}
 
 	@Test
 	public void testGetOpeningHoursResource() {
-		String sundayJapaneseLocalized = ResourceBundles.getOpeningHoursResource("Sunday", Locale.JAPANESE);
+		String sundayJapaneseLocalized = new ResourceBundles().getOpeningHoursResource("Sunday", Locale.JAPANESE);
 		assertEquals("Sunday", sundayJapaneseLocalized);
 	}
 
@@ -135,12 +135,12 @@ public class ResourceBundlesTest {
 	public void testGetOpeningHoursResourceMissing() {
 		thrown.expect(MissingResourceException.class);
 		thrown.expectMessage("Can't find resource for bundle java.util.PropertyResourceBundle, key address");
-		ResourceBundles.getOpeningHoursResource("address", Locale.CANADA);
+		new ResourceBundles().getOpeningHoursResource("address", Locale.CANADA);
 	}
 
 	@Test
 	public void testGetCongratulationsResource() {
-		String happyNewYearSimplifiedChineseLocalized = ResourceBundles.getCongratulationsResource("happy new year", Locale.SIMPLIFIED_CHINESE);
+		String happyNewYearSimplifiedChineseLocalized = new ResourceBundles().getCongratulationsResource("happy new year", Locale.SIMPLIFIED_CHINESE);
 		assertEquals("Happy New Year", happyNewYearSimplifiedChineseLocalized);
 	}
 
@@ -148,7 +148,7 @@ public class ResourceBundlesTest {
 	public void testGetCongratulationsResourceMissing() {
 		thrown.expect(MissingResourceException.class);
 		thrown.expectMessage("Can't find resource for bundle java.util.PropertyResourceBundle, key name");
-		ResourceBundles.getCongratulationsResource("name", Locale.forLanguageTag("es"));
+		new ResourceBundles().getCongratulationsResource("name", Locale.forLanguageTag("es"));
 	}
 
 }

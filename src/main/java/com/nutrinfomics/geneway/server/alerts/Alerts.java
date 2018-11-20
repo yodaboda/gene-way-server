@@ -1,4 +1,4 @@
-package com.nutrinfomics.geneway.server.alert;
+package com.nutrinfomics.geneway.server.alerts;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -14,7 +14,10 @@ import java.util.Map;
 
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
-import com.nutrinfomics.geneway.server.alert.ScheduledAlert.AlertType;
+import com.geneway.alerts.EmailAlert;
+import com.geneway.alerts.SMSAlert;
+import com.geneway.alerts.UserAlert;
+import com.nutrinfomics.geneway.server.alerts.ScheduledAlert.AlertType;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
@@ -80,13 +83,5 @@ public class Alerts {
 	
 	public void removeSnackAlert(Snack snack){
 		snackAlertMapping.remove(snack);
-	}
-
-	public static UserAlert create(Customer customer, AlertType alertType, String email) {
-		switch(alertType){
-			case EMAIL: return new EmailAlert(customer, email);
-			case SMS: return new SMSAlert(customer, email);
-			default: return null;
-		}
 	}
 }

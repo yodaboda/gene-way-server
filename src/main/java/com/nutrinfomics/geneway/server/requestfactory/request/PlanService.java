@@ -1,6 +1,5 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,22 +8,16 @@ import java.util.Set;
 
 import javax.persistence.EntityManager;
 
-import org.hibernate.metamodel.source.binder.JpaCallbackClass;
-
 import sk.nociar.jpacloner.JpaCloner;
 import sk.nociar.jpacloner.PropertyFilter;
 
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
-import com.google.web.bindery.requestfactory.shared.Request;
-import com.nutrinfomics.geneway.server.Utils;
-import com.nutrinfomics.geneway.server.alert.Alerts;
+import com.nutrinfomics.geneway.server.alerts.Alerts;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
-import com.nutrinfomics.geneway.server.domain.customer.PersonalDetails;
-import com.nutrinfomics.geneway.server.domain.customer.SimpleDate;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
 import com.nutrinfomics.geneway.server.domain.plan.GeneralVaryingSnack;
@@ -39,7 +32,6 @@ import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 import com.nutrinfomics.geneway.shared.FoodItemType;
-import com.nutrinfomics.geneway.shared.Gender;
 
 public class PlanService {
 	@Inject Provider<EntityManager> entityManager;

@@ -13,7 +13,6 @@ import javax.persistence.OneToOne;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
-import com.nutrinfomics.geneway.server.alert.Alerts;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
 import com.nutrinfomics.geneway.server.domain.specification.AcceptAllSpecification;
