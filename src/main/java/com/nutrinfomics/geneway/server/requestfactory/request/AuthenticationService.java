@@ -1,26 +1,17 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
-import java.math.BigInteger;
-import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.AddressException;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import com.geneway.alerts.mechanism.SMSOverEmailAlertMechanism;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.RequestUtils;
-import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.Utils;
-import com.nutrinfomics.geneway.server.alerts.GeneWaySMSAlertRecipient;
-import com.nutrinfomics.geneway.server.alerts.codeSMS.GeneWayCodeSMSAlertLocalization;
-import com.nutrinfomics.geneway.server.alerts.codeSMS.GeneWayCodeSMSAlertMessage;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
@@ -58,63 +49,6 @@ public class AuthenticationService {
 	}
 
 	
-	@Transactional
-	public void register(Customer customer){
-		SecureRandom random = new SecureRandom();
-
-		String code = new BigInteger(130, random).toString(32).substring(0, 6);
-		code = "123456"; //TODO: comment this line out
-		
-		customer.getDevice().setCode(code);
-		customer.getDevice().setCodeCreation(LocalDateTime.now());
-
-		//allow new users when they register to connect to existing plans based on phone number
-		//this is temporary. should be uncommented eventually.
-//		try{
-//			Customer customerDb = new HibernateUtil().selectCustomerBasedOnPhoneNumber(customer.getContactInformation().getRegisteredPhoneNumber(), entityManager);
-//			if(customerDb.getContactInformation() != null)
-//				entityManager.get().remove(customerDb.getContactInformation());
-//			if(customerDb.getDevice() != null)
-//				entityManager.get().remove(customerDb.getDevice());
-//			entityManager.get().remove(customerDb); // delete this device
-//		}
-//		catch(NoResultException ex){
-//			//all good - device not in db
-//		}
-
-		
-		//TODO - if phone number associated with another device - check if it is inactive, then delete entry. Otherwise, return an exception of used phone-number
-		//this is bad - could be a privacy breach. Need to think of workaround.
-		
-		String hashedPassword = customer.getCredentials().hashPassword();
-		
-		customer.getCredentials().setHashedPassword(hashedPassword);
-		
-		entityManager.get().merge(customer);
-		
-		//the phone number might not be attached to the session - it could be already in the DB
-		Device deviceDb = new HibernateUtil().selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
-		
-		SMSOverEmailAlertMechanism alertMechanism = new SMSOverEmailAlertMechanism(new GeneWayCodeSMSAlertMessage( deviceDb.getCustomer().getNickName(), code), 
-				new GeneWaySMSAlertRecipient(), 
-				new GeneWayCodeSMSAlertLocalization(new ResourceBundles(), new Utils().getLocale(new RequestUtils())),
-				deviceDb.getCustomer().getContactInformation().getRegisteredPhoneNumber());
-
-		try {
-			alertMechanism.send();
-		} catch (AddressException e) {
-			// TODO Auto-generated catch block
-			// TODO return error
-			e.printStackTrace();
-		} catch(MessagingException  e){
-			// TODO Auto-generated catch block
-			// TODO return error
-			e.printStackTrace();			
-		}
-		//do not return anything from Db at this stage. Only after logging in we do so.
-		customer.getDevice().setCode(null);// do not send code by mistake to client
-		
-	}
 	
 	@Transactional
 	public boolean authenticateCode(Customer customer) throws AuthenticationException{

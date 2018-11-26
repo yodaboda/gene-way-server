@@ -1,8 +1,7 @@
 package com.nutrinfomics.geneway.server.alerts.codeSMS;
 
-import com.geneway.alerts.message.AlertMessage;
 
-public class GeneWayCodeSMSAlertMessage implements AlertMessage {
+public class GeneWayCodeSMSAlertMessage implements com.geneway.alerts.AlertMessage {
 
 	private String[] body;
 	

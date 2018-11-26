@@ -1,30 +1,17 @@
 package com.nutrinfomics.geneway.server.alerts;
 
-import java.time.Duration;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.Period;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
-import com.geneway.alerts.EmailAlert;
-import com.geneway.alerts.SMSAlert;
-import com.geneway.alerts.UserAlert;
-import com.nutrinfomics.geneway.server.alerts.ScheduledAlert.AlertType;
-import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
 public class Alerts {
 	private static Alerts alerts;
 	
-	private Map<Long, UserAlert> snackAlertMapping = new HashMap<>();
+	private Map<Long, ScheduledAlert> snackAlertMapping = new HashMap<>();
 	
 	public static Alerts getInstance(){
 		if(alerts == null){
@@ -49,35 +36,35 @@ public class Alerts {
 		}
 	}
 	
-	public UserAlert createAlert(Customer customer, Snack snack, boolean sameDay, String email){
-		List<AlertType> alertTypes = new ArrayList<>();
- 		if(customer.getPlan().getPlanPreferences().isEmailAlerts()){
- 			alertTypes.add(AlertType.EMAIL);
-		}
-		if(customer.getPlan().getPlanPreferences().isSmsAlerts()){
-			alertTypes.add(AlertType.SMS);
-		}
+//	public Alert createAlert(Customer customer, Snack snack, boolean sameDay, String email){
+//		List<AlertType> alertTypes = new ArrayList<>();
+// 		if(customer.getPlan().getPlanPreferences().isEmailAlerts()){
+// 			alertTypes.add(AlertType.EMAIL);
+//		}
+//		if(customer.getPlan().getPlanPreferences().isSmsAlerts()){
+//			alertTypes.add(AlertType.SMS);
+//		}
+//
+//		double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
+//		if(!sameDay){
+//			LocalDate tomorrow = LocalDate.now().plusDays(1);
+//			LocalTime mealTime = LocalTime.of(8, 0, 0);
+//			LocalDateTime mealDateTime = LocalDateTime.of(tomorrow, mealTime);
+//			
+//			LocalDateTime now = LocalDateTime.now();
+//			
+//			Duration duration = Duration.between(now, mealDateTime);
+//			inHours = duration.toHours();
+//		}
+//		
+//		UserAlert userAlert = new ScheduledAlert(customer, inHours, snack, alertTypes, email);
+//		
+//		snackAlertMapping.put(snack.getId(), userAlert);
+//		
+//		return userAlert;
+//	}
 
-		double inHours = customer.getPlan().getPlanPreferences().getSnackTimes().getTimeBetweenSnacks();
-		if(!sameDay){
-			LocalDate tomorrow = LocalDate.now().plusDays(1);
-			LocalTime mealTime = LocalTime.of(8, 0, 0);
-			LocalDateTime mealDateTime = LocalDateTime.of(tomorrow, mealTime);
-			
-			LocalDateTime now = LocalDateTime.now();
-			
-			Duration duration = Duration.between(now, mealDateTime);
-			inHours = duration.toHours();
-		}
-		
-		UserAlert userAlert = new ScheduledAlert(customer, inHours, snack, alertTypes, email);
-		
-		snackAlertMapping.put(snack.getId(), userAlert);
-		
-		return userAlert;
-	}
-
-	public UserAlert getSnackAlert(long l){
+	public ScheduledAlert getSnackAlert(long l){
 		return snackAlertMapping.get(l);
 	}
 	

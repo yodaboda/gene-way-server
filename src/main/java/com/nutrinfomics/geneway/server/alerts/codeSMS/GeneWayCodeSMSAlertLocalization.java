@@ -2,29 +2,30 @@ package com.nutrinfomics.geneway.server.alerts.codeSMS;
 
 import java.util.Locale;
 
-import javax.inject.Inject;
-
-import com.geneway.alerts.localization.AlertLocalization;
-import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.ResourceBundles;
-import com.nutrinfomics.geneway.server.Utils;
-import com.nutrinfomics.geneway.server.alerts.GeneWayEmailAlertLocalization;
-import com.nutrinfomics.geneway.server.domain.EntityBase;
 
-public class GeneWayCodeSMSAlertLocalization extends GeneWayEmailAlertLocalization implements
-		AlertLocalization {
+public class GeneWayCodeSMSAlertLocalization implements
+		com.geneway.alerts.AlertLocalization {
 
-	@Inject
-	public GeneWayCodeSMSAlertLocalization(ResourceBundles resourceBundles,
-			Locale locale) {
-		super(resourceBundles, locale);
-	}
-
+	private ResourceBundles resourceBundles;
+	
 	@Override
 	public String localizeBody(String... body) {
 		String nickName = body[0];
 		String code = body[1];
-		return this.getResourceBundles().getGeneWayResource("dear", this.getLocale()) + " " + nickName + ". " + 
-				this.getResourceBundles().getGeneWayResource("yourCodeIs", this.getLocale()) + ": " + code;
+		return resourceBundles.getGeneWayResource("dear", this.getLocale()) + " " + nickName + ". " + 
+				resourceBundles.getGeneWayResource("yourCodeIs", this.getLocale()) + ": " + code;
+	}
+
+	@Override
+	public Locale getLocale() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String localizeSubject(String arg0) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
