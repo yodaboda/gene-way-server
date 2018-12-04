@@ -22,12 +22,20 @@ import com.nutrinfomics.geneway.shared.AuthenticationException.AuthenticationExc
 
 public class AuthenticationService {
 	
-	@Inject Provider<EntityManager> entityManager;
+	private Provider<EntityManager> entityManager;
+	private HibernateUtil hibernateUtil;
 	
+	@Inject
+	public AuthenticationService(Provider<EntityManager> entityManager, 
+								HibernateUtil hibernateUtil) {
+		this.entityManager = entityManager;
+		this.hibernateUtil = hibernateUtil;
+	}
+
 	@Transactional
 	public boolean unlock(Identifier identifier){
 		try{
-			Identifier dbIdentifier = new HibernateUtil().selectIdentifier(identifier.getIdentifierCode(), entityManager);
+			Identifier dbIdentifier = hibernateUtil.selectIdentifier(identifier.getIdentifierCode(), entityManager);
 			if(dbIdentifier.getUuid() == null || dbIdentifier.getUuid().isEmpty()){
 				dbIdentifier.setUuid(identifier.getUuid());
 				return true;
@@ -38,21 +46,19 @@ public class AuthenticationService {
 			return false;
 		}
 	}
-	
+
 	@Transactional
 	public String confirmValuationTermsOfService(String uuid){
-		Identifier dbIdentifier = new HibernateUtil().selectIdentifierFromUUID(uuid, entityManager);
+		Identifier dbIdentifier = hibernateUtil.selectIdentifierFromUUID(uuid, entityManager);
 		String ip = new Utils().getIP(new RequestUtils());
 		dbIdentifier.setEvaluationTermsAcceptanceIP(ip);
 		dbIdentifier.setEvaluationTermsAcceptanceTime(new Date());
 		return ip;
 	}
 
-	
-	
 	@Transactional
 	public boolean authenticateCode(Customer customer) throws AuthenticationException{
-		Device deviceDb = new HibernateUtil().selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
+		Device deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
 		LocalDateTime creationTime = deviceDb.getCodeCreation();
 		LocalDateTime expiry = creationTime.plusMinutes(20);
 		if(expiry.isBefore(LocalDateTime.now())){
@@ -79,7 +85,7 @@ public class AuthenticationService {
 		Device deviceDb;
 
 		try{
-			deviceDb = new HibernateUtil().selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
+			deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
 			customerDb = deviceDb.getCustomer();
 		}
 		catch(Exception e){
@@ -130,7 +136,7 @@ public class AuthenticationService {
 	@Transactional
 	public Session authenticateSession(Session session) throws AuthenticationException{
 
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 
 		Customer customerDb = sessionDb.getCustomer();
 		Device deviceDb = customerDb.getDevice();

@@ -4,7 +4,7 @@
              version="2.0">
 
     <persistence-unit name="domainPersistence" transaction-type="RESOURCE_LOCAL">
-        <description> Domain persistent</description>
+        <description>Domain persistent</description>
 		
 		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
 

@@ -18,10 +18,6 @@ public class ScheduledAlert extends EntityBase implements Alert {
 	private static final long serialVersionUID = -6756667893271410965L;
 	private static final ScheduledExecutorService scheduler =
 		     Executors.newScheduledThreadPool(1);
-
-	public enum AlertType{
-		EMAIL, SMS, PUSH_NOTIFICATION
-	}
 	
 	@Transient
 	private Alert alert;

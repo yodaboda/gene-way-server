@@ -31,7 +31,7 @@ public class RegisterService {
 	private String code;
 	private HibernateUtil hibernateUtil;
 	private Clock clock;
-	
+
 	@Inject
 	public RegisterService(Provider<EntityManager> entityManagerProvider, 
 							AlertMechanism alertMechanism,

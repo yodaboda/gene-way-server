@@ -55,7 +55,6 @@ public class RegisterServiceTest {
 
 	private ListAppender listAppender;
 
-
 	@Mock
 	private Provider<EntityManager> mockEntityManagerProvider;
 	@Mock

@@ -12,7 +12,15 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class EntityBaseService {
 
-	@Inject Provider<EntityManager> entityManager;
+	private Provider<EntityManager> entityManager;
+	private HibernateUtil hibernateUtil;
+	
+	@Inject
+	public EntityBaseService(Provider<EntityManager> entityManager, 
+							HibernateUtil hibernateUtil) {
+		this.entityManager = entityManager;
+		this.hibernateUtil = hibernateUtil;
+	}
 	
 	@Transactional
 	public void persist(EntityBase entityBase){
@@ -29,7 +37,7 @@ public class EntityBaseService {
 	}
 	@Transactional
 	public void mergePersonalDetails(Session session, PersonalDetails personalDetails){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		sessionDb.getCustomer().setPersonalDetails(personalDetails);
 		personalDetails.setCustomer(sessionDb.getCustomer());
 	}

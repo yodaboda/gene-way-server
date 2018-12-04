@@ -34,11 +34,19 @@ import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecificat
 import com.nutrinfomics.geneway.shared.FoodItemType;
 
 public class PlanService {
-	@Inject Provider<EntityManager> entityManager;
+	private Provider<EntityManager> entityManager;
+	private HibernateUtil hibernateUtil;
+	
+	@Inject
+	public PlanService(Provider<EntityManager> entityManager,
+						HibernateUtil hibernateUtil) {
+		this.entityManager = entityManager;
+		this.hibernateUtil = hibernateUtil;
+	}
 	
 	@Transactional
 	public void setDemo(Session session){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 //		sessionDb.getCustomer().getDevice().setCode("demo");
 		
 //		PersonalDetails personalDetails = new PersonalDetails();
@@ -73,17 +81,13 @@ public class PlanService {
 	}
 	
 	public PlanPreferences getPlanPreferences(Session session){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		return sessionDb.getCustomer().getPlan().getPlanPreferences();
 	}
-	
-	
-
-	
 
 	@Transactional
 	public void markCurrentSnack(Session session, Snack snack, SnackHistory snackHistory){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
 		SnackOrderSpecification snackOrderSpecification = sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
@@ -130,12 +134,12 @@ public class PlanService {
 
 	
 	public SnackOrderSpecification getSnackOrderSpecification(Session session){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		return sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
 	}
 	
 	public Set<FoodItemType> getIngredients(Session session, String dateString){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
 		Set<FoodItemType> foodItemTypes = new HashSet<>();
@@ -158,7 +162,7 @@ public class PlanService {
 	}
 
 	public List<String> getMenuSummary(Session session, String dateString){
-		Session sessionDb = new HibernateUtil().selectSession(session.getSid(), entityManager);
+		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
 		List<String> snackSummary = new ArrayList<>();

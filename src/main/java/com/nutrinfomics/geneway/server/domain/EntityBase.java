@@ -19,11 +19,11 @@ import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Inheritance(strategy = InheritanceType.JOINED)
 public class EntityBase implements Serializable{
 		
 	@Id
-	@GeneratedValue(strategy = GenerationType.TABLE)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "pkGen")
 //    @TableGenerator(allocationSize = 1, initialValue = 0, name = "pkGen", table = "PRIMARY_KEYS")
 	private long id;
