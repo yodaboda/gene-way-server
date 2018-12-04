@@ -1,0 +1,48 @@
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd"
+             version="2.0">
+
+    <persistence-unit name="testUnit" transaction-type="RESOURCE_LOCAL">
+        <description> Domain persistent</description>
+		
+		<provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+		
+		<!-- Set the path to the java classes directory where to auto-detect annotated entities -->
+		<jar-file>file:/Users/firas1/Documents/gene-way-workspace-separate-repos/gene-way-domain/bin/com/nutrinfomics/geneway/server</jar-file>
+		
+        <properties>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver" />
+<!--             <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect"></property> -->
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://localhost/gene_way_test?useUnicode=yes&amp;characterEncoding=UTF-8&amp;createDatabaseIfNotExist=true" />
+            <property name="javax.persistence.jdbc.user" value="root" />
+            <property name="javax.persistence.jdbc.password" value="SsFFWnyi" />
+			<property name="javax.persistence.schema-generation.database.action" value="drop-and-create" />
+			
+			<property name="hibernate.max_fetch_depth" value="5"/>
+            
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+            
+            <!-- Auto detect annotated entities in Java classes -->
+            <property name="hibernate.archive.autodetection" value="class"/>
+            
+            <property name="hibernate.id.new_generator_mappings" value="true"/>
+            
+            <property name="hibernate.connection.autocommit" value="true"/>
+            
+            <!-- Important -->
+        	<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />
+
+        	<property name="hibernate.c3p0.max_size" value="100" />
+        	<property name="hibernate.c3p0.min_size" value="0" />
+        	<property name="hibernate.c3p0.acquire_increment" value="1" />
+        	<property name="hibernate.c3p0.idle_test_period" value="300" />
+        	<property name="hibernate.c3p0.max_statements" value="0" />
+        	<property name="hibernate.c3p0.timeout" value="100" />
+
+        </properties>
+
+    </persistence-unit>
+
+</persistence>
