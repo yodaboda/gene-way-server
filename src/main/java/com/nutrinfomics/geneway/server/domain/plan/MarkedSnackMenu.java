@@ -126,6 +126,21 @@ public class MarkedSnackMenu extends EntityBase {
 		}
 	}
 	
+	@Override
+	public boolean equals(Object otherMarkedSnackMenu) {
+		if(otherMarkedSnackMenu == null || this.getClass() != otherMarkedSnackMenu.getClass()) {
+			return false;
+		}
+		MarkedSnackMenu markedSnackMenu = (MarkedSnackMenu)otherMarkedSnackMenu;
+		return getDate().equals(markedSnackMenu.getDate()) &&
+				getMarkedSnacks().equals(markedSnackMenu.getMarkedSnacks());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getDate().hashCode() + getMarkedSnacks().hashCode();
+	}
+	
 	public String getDate() {
 		return date;
 	}

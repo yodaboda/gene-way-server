@@ -38,4 +38,18 @@ public class MarkedSnack extends EntityBase {
 	public void setMarked(boolean marked){
 		this.marked = marked;
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || this.getClass() != obj.getClass()) {
+			return false;
+		}
+		MarkedSnack markedSnack = (MarkedSnack)obj;
+		return getSnack().equals(markedSnack.getSnack());
+	}
+	
+	@Override
+	public int hashCode() {
+		return getSnack().hashCode();
+	}
 }

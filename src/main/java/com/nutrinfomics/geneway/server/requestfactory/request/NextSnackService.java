@@ -108,6 +108,7 @@ public class NextSnackService {
 		entityManager.get().merge(plan);
 	}
 
+	@Transactional
 	MarkedSnackMenu calcTodaysSnackMenu(Session sessionDb, String dateString){
 		Plan plan = sessionDb.getCustomer().getPlan();
 		SnackMenu snackMenu = plan.getSnackMenu();
@@ -132,11 +133,10 @@ public class NextSnackService {
 			snacks.add(snack);
 		}
 
-		MarkedSnackMenu todaysSnackMenu = new MarkedSnackMenu(dateString, snacks);
-		
-		return todaysSnackMenu;
+		return new MarkedSnackMenu(dateString, snacks);
 	}
 
+	//TODO: Consider moving functionality to VaryingSnack
 	@Transactional
 	Snack getTodaysSnack(VaryingSnack varyingSnack){
 		try{
