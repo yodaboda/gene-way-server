@@ -6,13 +6,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import sk.nociar.jpacloner.JpaCloner;
 import sk.nociar.jpacloner.PropertyFilter;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.alerts.Alerts;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;

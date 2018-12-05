@@ -111,7 +111,7 @@ public class NextSnackServiceTest {
     };
 	
 	@Before 
-	public void mock() {
+	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 		clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
 		nextSnackService = new NextSnackService(mockEntityManagerProvider, mockScheduledAlert,
