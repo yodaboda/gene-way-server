@@ -30,6 +30,7 @@ import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
+import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 
 public class PlanServiceTest {
@@ -135,8 +136,12 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void testUpdateSpecifications() {
-		fail("Not yet implemented");
+	public void updateSpecifications_AsExpected() {
+		AbstractFoodSpecification foodSpecification = null;
+		planService.updateSpecifications(mockDbSnackOrderSpecification, foodSpecification);
+		verify(mockEntityManager, times(1)).merge(mockDbSnackOrderSpecification);
+		verify(mockEntityManager, times(1)).flush();
+		verify(mockEntityManager, times(1)).remove(foodSpecification);
 	}
 
 	@Test
