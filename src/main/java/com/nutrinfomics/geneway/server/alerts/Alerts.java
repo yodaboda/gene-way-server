@@ -4,35 +4,36 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.inject.Singleton;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.cybozu.labs.langdetect.DetectorFactory;
 import com.cybozu.labs.langdetect.LangDetectException;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 
+@Singleton
 public class Alerts {
-	private static Alerts alerts;
-	
+	/**
+	 * Logger for unexpected events.
+	 */
+	private static final Logger LOGGER = LogManager.getLogger();
+
 	private Map<Long, ScheduledAlert> snackAlertMapping = new HashMap<>();
+		
 	
-	public static Alerts getInstance(){
-		if(alerts == null){
-			synchronized(Alerts.class){
-				if(alerts == null){
-					alerts = new Alerts();
-				}
-			}
-		}
-		return alerts;
-	}
-	
-	
-	private Alerts(){
+	public Alerts(){
 		try {
 			DetectorFactory.loadProfile(System.getProperty("user.home") + "/Documents/gene-way-workspace/gene-way-app/extraDependencies/langdetect/profiles");
 			List<String> langs = DetectorFactory.getLangList();
-			for(String lang : langs) System.out.println(lang);
+			LOGGER.log(Level.INFO, "Detection supported for the following languages:");
+			for(String lang : langs) {
+				LOGGER.log(Level.INFO, lang);
+			}
 		} catch (LangDetectException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			LOGGER.log(Level.FATAL, e1.toString(), e1);
 		}
 	}
 	

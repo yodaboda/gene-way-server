@@ -32,6 +32,7 @@ import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.alerts.Alert;
+import com.nutrinfomics.geneway.server.alerts.Alerts;
 import com.nutrinfomics.geneway.server.alerts.EmailAlert;
 import com.nutrinfomics.geneway.server.alerts.ScheduledAlert;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
@@ -47,10 +48,14 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 		bind(ServiceLayerDecorator.class).to(GuiceServiceLayerDecorator.class);
 		bind(GeneWayServiceLocator.class);
 		bind(ResourceBundles.class);
-		bind(Alert.class).to(EmailAlert.class);
-		bind(HibernateUtil.class);
+		bind(Alert.class).to(EmailAlert.class).in(RequestScoped.class);
+		bind(HibernateUtil.class).in(RequestScoped.class);
+		bind(Alerts.class);
+		bind(ScheduledAlert.class).in(RequestScoped.class);
+		bind(AlertSender.class).to(DefaultEmailAlertSender.class).in(RequestScoped.class);
 	}
 
+	
 	@Provides
 	@RequestScoped
 	public @Named("dbSession") Session provideDbSession(Session clientSession, 
@@ -155,16 +160,7 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 			}
 		};
 	}
-			
-	@Provides
-	public AlertSender provideAlertSender(){
-		return new DefaultEmailAlertSender();
-	}
-		
-	@Provides
-	public ScheduledAlert provideScheduledAlert(Alert alert){
-		return new ScheduledAlert(alert);
-	}
+					
 	
 	@Provides
 	@Named("code")

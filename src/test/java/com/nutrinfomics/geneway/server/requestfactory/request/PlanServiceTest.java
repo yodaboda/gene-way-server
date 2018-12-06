@@ -24,8 +24,13 @@ import org.mockito.MockitoAnnotations;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.domain.plan.MarkedSnack;
+import com.nutrinfomics.geneway.server.domain.plan.MarkedSnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.Plan;
+import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
+import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
+import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 
 public class PlanServiceTest {
 
@@ -48,6 +53,18 @@ public class PlanServiceTest {
 	private Session mockDbSession;
 	@Mock
 	private Customer mockDbCustomer;
+	@Mock
+	private Plan mockDbPlan;
+	@Mock
+	private PlanPreferences mockDbPlanPreferences;
+	@Mock
+	private MarkedSnackMenu mockDbMarkedSnackMenu;
+	@Mock
+	private SnackOrderSpecification mockDbSnackOrderSpecification;
+	@Mock
+	private MarkedSnack mockDbMarkedSnack;
+	@Mock
+	private SnackHistory mockDbSnackHistory;
 
 	@Before 
 	public void initMocks() {
@@ -60,6 +77,13 @@ public class PlanServiceTest {
 
 	private void setupMockDbSession() {
 		doReturn(mockDbCustomer).when(mockDbSession).getCustomer();
+		doReturn(mockDbPlan).when(mockDbCustomer).getPlan();
+		doReturn(mockDbPlanPreferences).when(mockDbPlan).getPlanPreferences();
+		doReturn(mockDbMarkedSnackMenu).when(mockDbPlan).getTodaysSnackMenu();
+		doReturn(mockDbSnackOrderSpecification).when(mockDbPlan).getSnackOrderSpecification();
+		when(mockDbMarkedSnackMenu.calcCurrentSnack(mockDbSnackOrderSpecification)).thenReturn(mockDbMarkedSnack);
+		doNothing().when(mockDbMarkedSnack).setMarked(true);
+		when(mockEntityManager.merge(mockDbSnackHistory)).thenReturn(null);
 //		doReturn(mockDbPlan).when(mockDbCustomer).getPlan();
 //		doReturn(mockDbMarkedSnackMenu).when(mockDbPlan).getTodaysSnackMenu();
 //		doReturn(mockDbSnackOrderSpecification).when(mockDbPlan).getSnackOrderSpecification();
@@ -106,13 +130,8 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void testGetPlanPreferences() {
-		fail("Not yet implemented");
-	}
-
-	@Test
-	public void testMarkCurrentSnack() {
-		fail("Not yet implemented");
+	public void getPlanPreferences_AsExpected() {
+		assertEquals(mockDbPlanPreferences, planService.getPlanPreferences(mockSession));
 	}
 
 	@Test
@@ -121,8 +140,8 @@ public class PlanServiceTest {
 	}
 
 	@Test
-	public void testGetSnackOrderSpecification() {
-		fail("Not yet implemented");
+	public void getSnackOrderSpecification_AsExpected() {
+		
 	}
 
 	@Test

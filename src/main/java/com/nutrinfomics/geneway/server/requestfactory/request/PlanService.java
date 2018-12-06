@@ -84,22 +84,6 @@ public class PlanService {
 		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 		return sessionDb.getCustomer().getPlan().getPlanPreferences();
 	}
-
-	@Transactional
-	public void markCurrentSnack(Session session, Snack snack, SnackHistory snackHistory){
-		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
-		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
-
-		SnackOrderSpecification snackOrderSpecification = sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
-		
-		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack(snackOrderSpecification);
-		markedSnack.setMarked(true);
-		Alerts.getInstance().getSnackAlert(markedSnack.getSnack().getId()).cancel();
-		
-//		entityManager.get().merge(todaysSnackMenu);
-
-		entityManager.get().merge(snackHistory);
-	}
 	
 	@Transactional
 	public void updateSpecifications(SnackOrderSpecification snackOrderSpecification,

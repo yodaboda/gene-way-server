@@ -25,6 +25,7 @@ public class ScheduledAlert extends EntityBase implements Alert {
 	private ScheduledFuture<?> scheduled;
 //	private Snack snack;
 
+	@Inject
 	public ScheduledAlert(Alert alert){
 		this.alert = alert;
 	}
