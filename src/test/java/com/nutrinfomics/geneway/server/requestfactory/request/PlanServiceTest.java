@@ -10,13 +10,17 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -24,14 +28,19 @@ import org.mockito.MockitoAnnotations;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.domain.plan.FoodItem;
+import com.nutrinfomics.geneway.server.domain.plan.GeneralVaryingSnack;
 import com.nutrinfomics.geneway.server.domain.plan.MarkedSnack;
 import com.nutrinfomics.geneway.server.domain.plan.MarkedSnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
+import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecification;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
+import com.nutrinfomics.geneway.shared.FoodItemType;
+import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 public class PlanServiceTest {
 
@@ -66,6 +75,14 @@ public class PlanServiceTest {
 	private MarkedSnack mockDbMarkedSnack;
 	@Mock
 	private SnackHistory mockDbSnackHistory;
+	@Mock
+	private SnackMenu mockDbSnackMenu;
+	
+	private final static List<String> SNACKS_SUMMARY = new ArrayList<>();
+	private final static List<FoodItemType> FOOD_ITEM_TYPES = 
+									Arrays.asList(FoodItemType.BEEF_SIRLOIN, FoodItemType.ALMOND);
+	private final static List<Snack> SNACKS = new ArrayList<>();
+
 
 	@Before 
 	public void initMocks() {
@@ -85,6 +102,10 @@ public class PlanServiceTest {
 		when(mockDbMarkedSnackMenu.calcCurrentSnack(mockDbSnackOrderSpecification)).thenReturn(mockDbMarkedSnack);
 		doNothing().when(mockDbMarkedSnack).setMarked(true);
 		when(mockEntityManager.merge(mockDbSnackHistory)).thenReturn(null);
+		doReturn(mockDbSnackMenu).when(mockDbPlan).getSnackMenu();
+		doReturn(SNACKS).when(mockDbSnackMenu).getSnacks();
+		
+		
 //		doReturn(mockDbPlan).when(mockDbCustomer).getPlan();
 //		doReturn(mockDbMarkedSnackMenu).when(mockDbPlan).getTodaysSnackMenu();
 //		doReturn(mockDbSnackOrderSpecification).when(mockDbPlan).getSnackOrderSpecification();
@@ -105,6 +126,21 @@ public class PlanServiceTest {
 //		when(mockVaryingSnack.isEaten(any())).thenReturn(false);
 //		doNothing().when(mockVaryingSnack).setEaten(anyInt(), anyBoolean());
 //		doReturn(weeklySnacks).when(mockVaryingSnack).getWeeklySnacks();
+	}
+
+	@BeforeClass
+	public static void initSnacks() {		
+		FoodItem foodItem = new FoodItem(.4, MeasurementUnit.GRAM, FOOD_ITEM_TYPES.get(0));
+		Snack snack = new Snack(foodItem);
+		GeneralVaryingSnack varyingSnack = new GeneralVaryingSnack();
+		varyingSnack.add(snack);
+		SNACKS.add(varyingSnack);
+		SNACKS_SUMMARY.add(varyingSnack.getSummary());
+		
+		FoodItem beefFoodItem = new FoodItem(.12345678, MeasurementUnit.GRAM, FOOD_ITEM_TYPES.get(1));
+		Snack beefSnack = new Snack(beefFoodItem);
+		SNACKS.add(beefSnack);
+		SNACKS_SUMMARY.add(beefSnack.getSummary());
 	}
 
 	private void setupMockHibernateUtil() {
@@ -146,17 +182,29 @@ public class PlanServiceTest {
 
 	@Test
 	public void getSnackOrderSpecification_AsExpected() {
-		
+		assertEquals(mockDbSnackOrderSpecification, 
+					planService.getSnackOrderSpecification(mockSession));
 	}
 
 	@Test
-	public void testGetIngredients() {
-		fail("Not yet implemented");
+	public void getIngredients_AsExpected() {
+		Set<FoodItemType> expected = new HashSet<>(FOOD_ITEM_TYPES);
+		String dateString = "24-12-63";
+		assertEquals(expected, planService.getIngredients(mockSession, dateString));
 	}
 
 	@Test
-	public void testGetMenuSummary() {
-		fail("Not yet implemented");
+	public void getMenuSummary_AsExpected() {
+		String dateString = "17-9-17";
+		assertEquals(SNACKS_SUMMARY, planService.getMenuSummary(mockSession, dateString));
+	}
+
+	@Test
+	public void getMenuSummary_EmptySnackMenu_AsExpecetd() {
+		List<Snack> emptySnacks = new ArrayList<>();
+		doReturn(emptySnacks).when(mockDbSnackMenu).getSnacks();
+		String dateString = "17-9-17";
+		assertTrue(planService.getMenuSummary(mockSession, dateString).isEmpty());
 	}
 
 }
