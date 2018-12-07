@@ -1,9 +1,9 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
 import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
