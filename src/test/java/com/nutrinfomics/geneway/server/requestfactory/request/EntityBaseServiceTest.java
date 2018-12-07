@@ -95,7 +95,6 @@ public class EntityBaseServiceTest {
 		
 		entityBaseService.mergePersonalDetails(mockSession, mockPersonalDetails);
 
-		verify(mockEntityManager, times(1)).merge(mockPersonalDetails);
 		verify(mockDbCustomer, times(1)).setPersonalDetails(mockPersonalDetails);
 		verify(mockPersonalDetails, times(1)).setCustomer(mockDbCustomer);
 	}
