@@ -1,14 +1,19 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.inject.Inject;
+import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
-import com.google.inject.Inject;
-import com.google.inject.Provider;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.inject.persist.Transactional;
 import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
@@ -22,20 +27,32 @@ import com.nutrinfomics.geneway.shared.AuthenticationException.AuthenticationExc
 
 public class AuthenticationService {
 	
+	/**
+	 * Logger for unexpected events.
+	 */
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 	private Provider<EntityManager> entityManager;
 	private HibernateUtil hibernateUtil;
+	private Clock clock;
+	private Utils utils;
 	
 	@Inject
 	public AuthenticationService(Provider<EntityManager> entityManager, 
-								HibernateUtil hibernateUtil) {
+								HibernateUtil hibernateUtil,
+								Clock clock,
+								Utils utils) {
 		this.entityManager = entityManager;
 		this.hibernateUtil = hibernateUtil;
+		this.clock = clock;
+		this.utils = utils;
 	}
 
 	@Transactional
 	public boolean unlock(Identifier identifier){
 		try{
-			Identifier dbIdentifier = hibernateUtil.selectIdentifier(identifier.getIdentifierCode(), entityManager);
+			Identifier dbIdentifier = hibernateUtil.selectIdentifier(identifier.getIdentifierCode(), 
+																	entityManager);
 			if(dbIdentifier.getUuid() == null || dbIdentifier.getUuid().isEmpty()){
 				dbIdentifier.setUuid(identifier.getUuid());
 				return true;
@@ -43,6 +60,7 @@ public class AuthenticationService {
 			return dbIdentifier.getUuid().equalsIgnoreCase(identifier.getUuid());
 		}
 		catch(NoResultException ex){
+			LOGGER.log(Level.DEBUG, ex.toString(), ex);
 			return false;
 		}
 	}
@@ -50,9 +68,14 @@ public class AuthenticationService {
 	@Transactional
 	public String confirmValuationTermsOfService(String uuid){
 		Identifier dbIdentifier = hibernateUtil.selectIdentifierFromUUID(uuid, entityManager);
-		String ip = new Utils().getIP(new RequestUtils());
+		if(dbIdentifier == null) {
+			String errorMessage = "UUID " + uuid + " is not on record";
+			LOGGER.log(Level.WARN, errorMessage);
+			throw new IllegalArgumentException(errorMessage);
+		}
+		String ip = utils.getIP();
 		dbIdentifier.setEvaluationTermsAcceptanceIP(ip);
-		dbIdentifier.setEvaluationTermsAcceptanceTime(new Date());
+		dbIdentifier.setEvaluationTermsAcceptanceTime(Date.from(clock.instant()));
 		return ip;
 	}
 
@@ -61,13 +84,13 @@ public class AuthenticationService {
 		Device deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
 		LocalDateTime creationTime = deviceDb.getCodeCreation();
 		LocalDateTime expiry = creationTime.plusMinutes(20);
-		if(expiry.isBefore(LocalDateTime.now())){
+		if(expiry.isBefore(LocalDateTime.now(clock))){
 			throw new AuthenticationException(AuthenticationExceptionType.EXPIRED);
 		}
 		if(deviceDb.getCode().equals(customer.getDevice().getCode())){
 			deviceDb.setCode(null);
 			deviceDb.setCodeCreation(null);
-			entityManager.get().merge(deviceDb);
+			//entityManager.get().merge(deviceDb);
 			
 			//do this *after* merging!!!
 //			deviceDb.getCustomer().getCredentials().setHashedPassword(null); // do not send this to client
@@ -141,8 +164,7 @@ public class AuthenticationService {
 		Customer customerDb = sessionDb.getCustomer();
 		Device deviceDb = customerDb.getDevice();
 
-		if( ! deviceDb.getUuid().equalsIgnoreCase(session.getCustomer().getDevice().getUuid()) ||
-				! sessionDb.getSid().equalsIgnoreCase(session.getSid()) ){
+		if( ! deviceDb.getUuid().equalsIgnoreCase(session.getCustomer().getDevice().getUuid()) ){
 			throw new AuthenticationException(AuthenticationExceptionType.INVALID_SESSION);
 		}
 
