@@ -2,6 +2,7 @@ package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -34,6 +35,7 @@ import org.mockito.MockitoAnnotations;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
+import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
@@ -240,10 +242,199 @@ public class AuthenticationServiceTest {
 
 	
 	@Test
-	public void authenticateCustomer_AsExpected() {
-		fail("Not yet implemented");
+	public void authenticateCustomer_AsExpected() throws AuthenticationException {
+		Customer mockCustomer = mock(Customer.class);
+		Device mockDevice = mock(Device.class);
+		Credentials mockCredentials = mock(Credentials.class);
+		String password = "random";
+		doReturn(mockDevice).when(mockCustomer).getDevice();
+		doReturn(UUID).when(mockDevice).getUuid();
+		doReturn(mockCredentials).when(mockCustomer).getCredentials();
+		doReturn(password).when(mockCredentials).getPassword();
+		
+		Device mockDbDevice = mock(Device.class);
+		Customer mockDbCustomer = mock(Customer.class);
+		Credentials mockDbCredentials = mock(Credentials.class);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider)).thenReturn(mockDbDevice);
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
+		when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+		doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
+		doReturn(UUID).when(mockDbDevice).getUuid();
+		doReturn(null).when(mockDbDevice).getCode();
+		doReturn(null).when(mockDbDevice).getCodeCreation();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		
+
+		doNothing().when(mockEntityManager).persist(any());
+		
+		assertEquals(mockDbSession, authenticationService.authenticateCustomer(mockCustomer));
 	}
 
+	@Test
+	public void authenticateCustomer_invalidUUID_ThrowsException() throws AuthenticationException {
+		Customer mockCustomer = mock(Customer.class);
+		Device mockDevice = mock(Device.class);
+		Credentials mockCredentials = mock(Credentials.class);
+		String password = "random";
+		doReturn(mockDevice).when(mockCustomer).getDevice();
+		doReturn(UUID).when(mockDevice).getUuid();
+		doReturn(mockCredentials).when(mockCustomer).getCredentials();
+		doReturn(password).when(mockCredentials).getPassword();
+		
+		Device mockDbDevice = mock(Device.class);
+		Customer mockDbCustomer = mock(Customer.class);
+		Credentials mockDbCredentials = mock(Credentials.class);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider)).thenThrow(new NoResultException());
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
+		when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+		doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
+		doReturn(UUID).when(mockDbDevice).getUuid();
+		doReturn(null).when(mockDbDevice).getCode();
+		doReturn(null).when(mockDbDevice).getCodeCreation();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		
+
+		doNothing().when(mockEntityManager).persist(any());
+		
+		thrown.expect(AuthenticationException.class);
+		thrown.expectMessage("INVALID_DEVICE_UUID");
+		authenticationService.authenticateCustomer(mockCustomer);
+	}
+
+	@Test
+	public void authenticateCustomer_nullDbSession_AsExpected() throws AuthenticationException {
+		Customer mockCustomer = mock(Customer.class);
+		Device mockDevice = mock(Device.class);
+		Credentials mockCredentials = mock(Credentials.class);
+		String password = "random";
+		doReturn(mockDevice).when(mockCustomer).getDevice();
+		doReturn(UUID).when(mockDevice).getUuid();
+		doReturn(mockCredentials).when(mockCustomer).getCredentials();
+		doReturn(password).when(mockCredentials).getPassword();
+		
+		Device mockDbDevice = mock(Device.class);
+		Customer mockDbCustomer = mock(Customer.class);
+		Credentials mockDbCredentials = mock(Credentials.class);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider)).thenReturn(mockDbDevice);
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(null).when(mockDbCustomer).getSession();
+		doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
+		when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+		doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
+		doReturn(UUID).when(mockDbDevice).getUuid();
+		doReturn(null).when(mockDbDevice).getCode();
+		doReturn(null).when(mockDbDevice).getCodeCreation();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		
+
+		doNothing().when(mockEntityManager).persist(any());
+		
+		assertEquals(mockDbSession, authenticationService.authenticateCustomer(mockCustomer));
+	}
+
+	@Test
+	public void authenticateCustomer_invalidDevice_ThrowsException() throws AuthenticationException {
+		Customer mockCustomer = mock(Customer.class);
+		Device mockDevice = mock(Device.class);
+		Credentials mockCredentials = mock(Credentials.class);
+		String password = "random";
+		doReturn(mockDevice).when(mockCustomer).getDevice();
+		doReturn(UUID + "737").when(mockDevice).getUuid();
+		doReturn(mockCredentials).when(mockCustomer).getCredentials();
+		doReturn(password).when(mockCredentials).getPassword();
+		
+		Device mockDbDevice = mock(Device.class);
+		Customer mockDbCustomer = mock(Customer.class);
+		Credentials mockDbCredentials = mock(Credentials.class);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider)).thenReturn(mockDbDevice);
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
+		when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+		doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
+		doReturn(UUID).when(mockDbDevice).getUuid();
+		doReturn(null).when(mockDbDevice).getCode();
+		doReturn(null).when(mockDbDevice).getCodeCreation();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		
+
+		doNothing().when(mockEntityManager).persist(any());
+		
+		thrown.expect(AuthenticationException.class);
+		thrown.expectMessage("INVALID_DEVICE_UUID");
+		authenticationService.authenticateCustomer(mockCustomer);
+	}
+
+	
+	@Test
+	public void authenticateCustomer_invalidPassword_ThrowsException() throws AuthenticationException {
+		Customer mockCustomer = mock(Customer.class);
+		Device mockDevice = mock(Device.class);
+		Credentials mockCredentials = mock(Credentials.class);
+		String password = "random";
+		doReturn(mockDevice).when(mockCustomer).getDevice();
+		doReturn(UUID).when(mockDevice).getUuid();
+		doReturn(mockCredentials).when(mockCustomer).getCredentials();
+		doReturn(password).when(mockCredentials).getPassword();
+		
+		Device mockDbDevice = mock(Device.class);
+		Customer mockDbCustomer = mock(Customer.class);
+		Credentials mockDbCredentials = mock(Credentials.class);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider)).thenReturn(mockDbDevice);
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(null).when(mockDbCustomer).getSession();
+		doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
+		when(mockDbCredentials.checkPassword(password)).thenReturn(false);
+		doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
+		doReturn(UUID).when(mockDbDevice).getUuid();
+		doReturn(null).when(mockDbDevice).getCode();
+		doReturn(null).when(mockDbDevice).getCodeCreation();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		
+
+		doNothing().when(mockEntityManager).persist(any());
+		
+		thrown.expect(AuthenticationException.class);
+		thrown.expectMessage("INVALID_PASSWORD");
+		authenticationService.authenticateCustomer(mockCustomer);
+	}
+
+	@Test
+	public void authenticateCustomer_nullDbDevice_AsExpected() throws AuthenticationException {
+		Customer mockCustomer = mock(Customer.class);
+		Device mockDevice = mock(Device.class);
+		Credentials mockCredentials = mock(Credentials.class);
+		String password = "random";
+		doReturn(mockDevice).when(mockCustomer).getDevice();
+		doReturn(UUID).when(mockDevice).getUuid();
+		doReturn(mockCredentials).when(mockCustomer).getCredentials();
+		doReturn(password).when(mockCredentials).getPassword();
+		
+		Device mockDbDevice = mock(Device.class);
+		Customer mockDbCustomer = mock(Customer.class);
+		Credentials mockDbCredentials = mock(Credentials.class);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider)).thenReturn(mockDbDevice);
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
+		when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+		doReturn(null).when(mockDbCustomer).getDevice();
+		doReturn(UUID).when(mockDbDevice).getUuid();
+		doReturn(null).when(mockDbDevice).getCode();
+		doReturn(null).when(mockDbDevice).getCodeCreation();
+		doReturn(mockDbSession).when(mockDbCustomer).getSession();
+		
+
+		doNothing().when(mockEntityManager).persist(any());
+		
+		assertEquals(mockDbSession, authenticationService.authenticateCustomer(mockCustomer));
+	}
+
+	
 	@Test
 	public void authenticateSession_AsExpected() throws AuthenticationException {
 		Customer mockDbCustomer = mock(Customer.class);

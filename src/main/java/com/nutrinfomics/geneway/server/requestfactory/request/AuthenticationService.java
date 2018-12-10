@@ -130,6 +130,7 @@ public class AuthenticationService {
 		entityManager.get().persist(session);
 
 		
+		
 		if(valid){
 			Device device = customerDb.getDevice();
 
