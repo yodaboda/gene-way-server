@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.inject.Inject;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
@@ -15,11 +16,17 @@ import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
 
 public class Utils {
 	private static final Logger LOGGER = LogManager.getLogger();
+	private RequestUtils requestUtils;
+	
+	@Inject
+	public Utils(RequestUtils requestUtils) {
+		this.requestUtils = requestUtils;
+	}
     /**
      * Gets the locale from the HTTP request.
      * @return HTTP request locale or English otherwise
      */
-    public Locale getLocale(RequestUtils requestUtils){
+    public Locale getLocale(){
     	HttpServletRequest threadLocalRequest = requestUtils.getHttpServletRequest();
     	if(threadLocalRequest != null){
     		Cookie[] cookies = threadLocalRequest.getCookies();
@@ -58,7 +65,7 @@ public class Utils {
      * Gets the IP address from the HTTP request
      * @return client IP address
      */
-    public String getIP(RequestUtils requestUtils){
+    public String getIP(){
     	HttpServletRequest threadLocalRequest = requestUtils.getHttpServletRequest();
     	if(threadLocalRequest != null){
     		return threadLocalRequest.getRemoteAddr();

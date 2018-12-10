@@ -37,9 +37,14 @@ public class UtilsTest {
     
     private ListAppender listAppender;
     
+    private Utils utils;
+    private RequestUtils mockedRequestUtils;
+    
 	@Before
 	public void setupLoggingForTests(){
-        listAppender = loggerContextRule.getListAppender("List").clear();		
+		mockedRequestUtils = mock(RequestUtils.class);
+		utils = new Utils(mockedRequestUtils);
+        listAppender = loggerContextRule.getListAppender("List").clear();
 	}
 
 	/**
@@ -80,26 +85,24 @@ public class UtilsTest {
 	
 	@Test
 	public void testGetLocale() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		HttpServletRequest mockedHttpServletRequest = mock(HttpServletRequest.class);
 		Cookie[] cookies = buildCookies(true, "ar");
 		when(mockedHttpServletRequest.getCookies()).thenReturn(cookies);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(mockedHttpServletRequest);
-				
-		assertEquals(Locale.forLanguageTag("ar"), new Utils().getLocale(mockedRequestUtils));
+						
+		assertEquals(Locale.forLanguageTag("ar"), utils.getLocale());
 		List<LogEvent> events = listAppender.getEvents();
 		assertEquals(0, events.size());
 	}
 
 	@Test
 	public void testGetLocaleNoGwtCookie() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		HttpServletRequest mockedHttpServletRequest = mock(HttpServletRequest.class);
 		Cookie[] cookies = buildCookies(false, null);
 		when(mockedHttpServletRequest.getCookies()).thenReturn(cookies);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(mockedHttpServletRequest);
 		
-		assertEquals(Locale.ENGLISH, new Utils().getLocale(mockedRequestUtils));
+		assertEquals(Locale.ENGLISH, utils.getLocale());
 		List<LogEvent> events = listAppender.getEvents();
 		assertEquals(1, events.size());
 		LogEvent logEvent = events.get(0);
@@ -109,12 +112,11 @@ public class UtilsTest {
 
 	@Test
 	public void testGetLocaleNullCookies() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		HttpServletRequest mockedHttpServletRequest = mock(HttpServletRequest.class);
 		when(mockedHttpServletRequest.getCookies()).thenReturn(null);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(mockedHttpServletRequest);
 		
-		assertEquals(Locale.ENGLISH, new Utils().getLocale(mockedRequestUtils));
+		assertEquals(Locale.ENGLISH, utils.getLocale());
 		List<LogEvent> events = listAppender.getEvents();
 		LogEvent logEvent = events.get(0);
 		assertEquals(Level.WARN, logEvent.getLevel());
@@ -123,10 +125,9 @@ public class UtilsTest {
 
 	@Test
 	public void testGetLocaleNullHttpServerRequest() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(null);
 		
-		assertEquals(Locale.ENGLISH, new Utils().getLocale(mockedRequestUtils));
+		assertEquals(Locale.ENGLISH, utils.getLocale());
 		List<LogEvent> events = listAppender.getEvents();
 		LogEvent logEvent = events.get(0);
 		assertEquals(Level.WARN, logEvent.getLevel());
@@ -135,13 +136,12 @@ public class UtilsTest {
 	
 	@Test
 	public void testGetLocaleNullGwtLocaleValue() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		HttpServletRequest mockedHttpServletRequest = mock(HttpServletRequest.class);
 		Cookie[] cookies = buildCookies(true, null);
 		when(mockedHttpServletRequest.getCookies()).thenReturn(cookies);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(mockedHttpServletRequest);
-		
-		assertEquals(Locale.ENGLISH, new Utils().getLocale(mockedRequestUtils));
+				
+		assertEquals(Locale.ENGLISH, utils.getLocale());
 		
 		List<LogEvent> events = listAppender.getEvents();
 		LogEvent logEvent = events.get(0);
@@ -152,13 +152,12 @@ public class UtilsTest {
 
 	@Test
 	public void testGetLocaleIllegalGwtLocaleValue() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		HttpServletRequest mockedHttpServletRequest = mock(HttpServletRequest.class);
 		Cookie[] cookies = buildCookies(true, "arrrr");
 		when(mockedHttpServletRequest.getCookies()).thenReturn(cookies);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(mockedHttpServletRequest);
 		
-		assertEquals(Locale.ENGLISH, new Utils().getLocale(mockedRequestUtils));
+		assertEquals(Locale.ENGLISH, utils.getLocale());
 		
 		List<LogEvent> events = listAppender.getEvents();
 		LogEvent logEvent = events.get(0);
@@ -169,21 +168,19 @@ public class UtilsTest {
 	
 	@Test
 	public void testGetIP() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		String IP = "127.0.0.1";
 		HttpServletRequest mockedHttpServletRequest = mock(HttpServletRequest.class);
 		when(mockedHttpServletRequest.getRemoteAddr()).thenReturn(IP);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(mockedHttpServletRequest);
 		
-		assertEquals(IP, new Utils().getIP(mockedRequestUtils));
+		assertEquals(IP, utils.getIP());
 	}
 	
 	@Test
 	public void testGetIPNullHttpRequest() {
-		RequestUtils mockedRequestUtils = mock(RequestUtils.class);
 		when(mockedRequestUtils.getHttpServletRequest()).thenReturn(null);
 		
-		assertEquals(null, new Utils().getIP(mockedRequestUtils));
+		assertEquals(null, utils.getIP());
 		List<LogEvent> events = listAppender.getEvents();
 		LogEvent logEvent = events.get(0);
 		assertEquals(Level.WARN, logEvent.getLevel());
