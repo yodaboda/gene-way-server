@@ -25,11 +25,14 @@ public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
 	*/
 	private final Validator validator;
 	private final Injector injector;
+	private Utils utils;
 	@Inject
-	protected GuiceServiceLayerDecorator(final Injector injector, final Validator validator) {
+	protected GuiceServiceLayerDecorator(final Injector injector, final Validator validator,
+										Utils utils) {
 		super();
 		this.injector = injector;
 		this.validator = validator;
+		this.utils = utils;
 	}
 	@Override
 	public <T extends Locator<?, ?>> T createLocator(Class<T> clazz) {
@@ -55,7 +58,7 @@ public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
 	public <T> Set<ConstraintViolation<T>> validate(T domainObject) {
 		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
 		MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
-		Locale locale = new Utils().getLocale(new RequestUtils());
+		Locale locale = utils.getLocale();
 //				new Locale(RequestFactoryServlet
 //				.getThreadLocalRequest().getHeader("X-GWT-Locale"));
 		GeneWayLocaleMessageInterpolator interpolator = new GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);

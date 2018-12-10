@@ -53,6 +53,8 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 		bind(Alerts.class);
 		bind(ScheduledAlert.class).in(RequestScoped.class);
 		bind(AlertSender.class).to(DefaultEmailAlertSender.class).in(RequestScoped.class);
+		bind(Utils.class);
+		bind(RequestUtils.class);
 	}
 
 	
@@ -97,8 +99,8 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 	
 	@Provides
 	@RequestScoped
-	public Locale provideLocale(){
-		return new Utils().getLocale(new RequestUtils());
+	public Locale provideLocale(Utils utils){
+		return utils.getLocale();
 	}
 		
 	@Provides
