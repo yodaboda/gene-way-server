@@ -3,7 +3,6 @@ package com.nutrinfomics.geneway.server.requestfactory.request;
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.Date;
-import java.util.UUID;
 
 import javax.inject.Inject;
 import javax.inject.Provider;
@@ -15,7 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.inject.persist.Transactional;
-import com.nutrinfomics.geneway.server.RequestUtils;
+import com.nutrinfomics.geneway.server.UUIDGenerator;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
@@ -36,12 +35,14 @@ public class AuthenticationService {
 	private HibernateUtil hibernateUtil;
 	private Clock clock;
 	private Utils utils;
+	private UUIDGenerator uuidGenerator;
 	
 	@Inject
 	public AuthenticationService(Provider<EntityManager> entityManager, 
 								HibernateUtil hibernateUtil,
 								Clock clock,
-								Utils utils) {
+								Utils utils,
+								UUIDGenerator randomUUID) {
 		this.entityManager = entityManager;
 		this.hibernateUtil = hibernateUtil;
 		this.clock = clock;
@@ -122,7 +123,7 @@ public class AuthenticationService {
 			customerDb.setSession(session);
 			session.setCustomer(customerDb);
 		}
-		session.setSid(UUID.randomUUID().toString());
+		session.setSid(uuidGenerator.randomUUID().toString());
 
 
 		boolean valid = customerDb.getCredentials().checkPassword(customer.getCredentials().getPassword());

@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
@@ -32,6 +33,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.nutrinfomics.geneway.server.UUIDGenerator;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
@@ -81,15 +83,22 @@ public class AuthenticationServiceTest {
 	private Clock clock;
 	@Mock
 	private Utils mockUtils;
+	@Mock
+	private UUIDGenerator mockUuidGenerator;
+	
+	private final UUID RANDOM_UUID = null;
 	
 	@Before 
 	public void initMocks() {
 		MockitoAnnotations.initMocks(this);
 		clock = Clock.fixed(Instant.EPOCH, ZoneId.of("Europe/Stockholm"));
 		authenticationService = new AuthenticationService(mockEntityManagerProvider, 
-														mockHibernateUtil, clock, mockUtils);
+														mockHibernateUtil, clock, 
+														mockUtils, mockUuidGenerator);
 		setupMockEntityProvider();
 		setupMockHibernateUtil();
+		 //UUID.fromString("warm");
+		doReturn(RANDOM_UUID).when(mockUuidGenerator).randomUUID();
 	}
 
 	private void setupMockHibernateUtil() {
