@@ -1,5 +1,6 @@
 package com.nutrinfomics.geneway.server.alerts;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,22 +22,24 @@ public class Alerts {
 	 */
 	private static final Logger LOGGER = LogManager.getLogger();
 
-	private Map<Long, ScheduledAlert> snackAlertMapping = new HashMap<>();
-		
+	private static final String PATH_TO_DETECTOR_PROFILE = System.getProperty("user.dir") + "/langdetect/profiles/";
 	
-	public Alerts(){
+	static {
 		try {
-			DetectorFactory.loadProfile(System.getProperty("user.home") + "/Documents/gene-way-workspace/gene-way-app/extraDependencies/langdetect/profiles");
-			List<String> langs = DetectorFactory.getLangList();
-			LOGGER.log(Level.INFO, "Detection supported for the following languages:");
-			for(String lang : langs) {
-				LOGGER.log(Level.INFO, lang);
-			}
+			DetectorFactory.loadProfile(PATH_TO_DETECTOR_PROFILE);
 		} catch (LangDetectException e1) {
 			LOGGER.log(Level.FATAL, e1.toString(), e1);
+		}		
+	}
+	private Map<Long, ScheduledAlert> scheduledAlertMapping = new HashMap<>();
+			
+	public Alerts() {
+		List<String> langs = DetectorFactory.getLangList();
+		LOGGER.log(Level.INFO, "Detection supported for the following languages:");
+		for(String lang : langs) {
+			LOGGER.log(Level.INFO, lang);
 		}
 	}
-	
 //	public Alert createAlert(Customer customer, Snack snack, boolean sameDay, String email){
 //		List<AlertType> alertTypes = new ArrayList<>();
 // 		if(customer.getPlan().getPlanPreferences().isEmailAlerts()){
@@ -65,11 +68,15 @@ public class Alerts {
 //		return userAlert;
 //	}
 
-	public ScheduledAlert getSnackAlert(long l){
-		return snackAlertMapping.get(l);
+	public ScheduledAlert addAlert(long key, ScheduledAlert scheduledAlert) {
+		return scheduledAlertMapping.put(key, scheduledAlert);
 	}
 	
-	public void removeSnackAlert(Snack snack){
-		snackAlertMapping.remove(snack);
+	public ScheduledAlert getAlert(long key){
+		return scheduledAlertMapping.get(key);
+	}
+	
+	public ScheduledAlert removeAlert(long key){
+		return scheduledAlertMapping.remove(key);
 	}
 }
