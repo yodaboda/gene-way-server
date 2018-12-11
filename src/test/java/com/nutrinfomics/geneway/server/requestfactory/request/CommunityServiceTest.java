@@ -1,7 +1,5 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
-import static org.junit.Assert.*;
-
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
