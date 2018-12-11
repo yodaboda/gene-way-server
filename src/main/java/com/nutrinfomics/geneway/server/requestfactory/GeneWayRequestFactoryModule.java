@@ -3,6 +3,8 @@ package com.nutrinfomics.geneway.server.requestfactory;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Locale;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 import javax.inject.Named;
 import javax.inject.Provider;
@@ -55,6 +57,7 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 		bind(AlertSender.class).to(DefaultEmailAlertSender.class).in(RequestScoped.class);
 		bind(Utils.class);
 		bind(RequestUtils.class);
+		bind(ScheduledExecutorService.class).toInstance(Executors.newScheduledThreadPool(1));
 	}
 
 	

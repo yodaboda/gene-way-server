@@ -7,39 +7,42 @@ import java.util.concurrent.TimeUnit;
 
 import javax.persistence.Transient;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.inject.Inject;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 public class ScheduledAlert extends EntityBase implements Alert {
 
 	/**
+	 * Logger for unexpected events.
+	 */
+	private static final Logger LOGGER = LogManager.getLogger();
+
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = -6756667893271410965L;
-	private static final ScheduledExecutorService scheduler =
-		     Executors.newScheduledThreadPool(1);
+
 	
 	@Transient
 	private Alert alert;
 	@Transient
 	private ScheduledFuture<?> scheduled;
-//	private Snack snack;
+	@Transient
+	private ScheduledExecutorService schedulerService;
 
 	@Inject
-	public ScheduledAlert(Alert alert){
+	public ScheduledAlert(Alert alert, ScheduledExecutorService schedulerService){
 		this.alert = alert;
+		this.schedulerService = schedulerService;
 	}
 
 	public void schedule(double inHours){
 		Runnable runnable = () -> remind();
-//		new Runnable() {
-//	
-//	@Override
-//	public void run() {
-//		remind();
-//	}
-//};
-		scheduled = scheduler.schedule(runnable, (long) (inHours * 60), TimeUnit.MINUTES);
+		scheduled = schedulerService.schedule(runnable, (long) (inHours * 60), TimeUnit.MINUTES);
 
 	}
 	
@@ -68,7 +71,12 @@ public class ScheduledAlert extends EntityBase implements Alert {
 //	}
 	
 	public void cancel() {
-		scheduled.cancel(false);
+		if(scheduled != null) {
+			scheduled.cancel(false);			
+		}
+		else {
+			LOGGER.log(Level.INFO, "Attempting to cancel a null scheduled field");
+		}
 //		Alerts.getInstance().removeSnackAlert(snack);
 	}
 
