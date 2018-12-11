@@ -42,11 +42,12 @@ public class AuthenticationService {
 								HibernateUtil hibernateUtil,
 								Clock clock,
 								Utils utils,
-								UUIDGenerator randomUUID) {
+								UUIDGenerator uuidGenerator) {
 		this.entityManager = entityManager;
 		this.hibernateUtil = hibernateUtil;
 		this.clock = clock;
 		this.utils = utils;
+		this.uuidGenerator = uuidGenerator;
 	}
 
 	@Transactional
