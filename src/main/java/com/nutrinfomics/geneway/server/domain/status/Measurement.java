@@ -13,48 +13,48 @@ import com.nutrinfomics.geneway.shared.MeasurementType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 @Entity
-public class Measurement extends EntityBase{
-	
-	@Temporal(TemporalType.DATE)
-	private Date date;
-	
-	@Enumerated(EnumType.STRING)
-	private MeasurementType type;
+public class Measurement extends EntityBase {
 
-	private double value;
+  @Temporal(TemporalType.DATE)
+  private Date date;
 
-	@Enumerated(EnumType.STRING)
-	private MeasurementUnit unit;
-	
-	public MeasurementUnit getUnit() {
-		return unit;
-	}
+  @Enumerated(EnumType.STRING)
+  private MeasurementType type;
 
-	public void setUnit(MeasurementUnit unit) {
-		this.unit = unit;
-	}
+  private double value;
 
-	public Date getDate() {
-		return date;
-	}
+  @Enumerated(EnumType.STRING)
+  private MeasurementUnit unit;
 
-	public void setDate(Date date) {
-		this.date = date;
-	}
+  public MeasurementUnit getUnit() {
+    return unit;
+  }
 
-	public MeasurementType getType() {
-		return type;
-	}
+  public void setUnit(MeasurementUnit unit) {
+    this.unit = unit;
+  }
 
-	public void setType(MeasurementType type) {
-		this.type = type;
-	}
+  public Date getDate() {
+    return date;
+  }
 
-	public double getValue() {
-		return value;
-	}
+  public void setDate(Date date) {
+    this.date = date;
+  }
 
-	public void setValue(double value) {
-		this.value = value;
-	}
+  public MeasurementType getType() {
+    return type;
+  }
+
+  public void setType(MeasurementType type) {
+    this.type = type;
+  }
+
+  public double getValue() {
+    return value;
+  }
+
+  public void setValue(double value) {
+    this.value = value;
+  }
 }

@@ -5,28 +5,26 @@ import javax.persistence.Entity;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
-public class Email extends EntityBase{
-	@org.hibernate.validator.constraints.Email
-	private String email;
-	
-	private String description;
-	public Email(){
-		
-	}
+public class Email extends EntityBase {
+  @org.hibernate.validator.constraints.Email private String email;
 
-	public String getEmail() {
-		return email;
-	}
+  private String description;
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+  public Email() {}
 
-	public String getDescription() {
-		return description;
-	}
+  public String getEmail() {
+    return email;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }

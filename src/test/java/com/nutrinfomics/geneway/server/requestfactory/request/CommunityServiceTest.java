@@ -10,17 +10,13 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class CommunityServiceTest {
 
-	@Mock
-	private Provider<EntityManager> mockEntityManagerProvider;
-	@Mock
-	private Session mockSession;
-	
-	
-	private CommunityService communityService = new CommunityService(mockEntityManagerProvider);
-	
-	@Test
-	public void testCommunityUpdates() {
-		communityService.communityUpdates(mockSession);
-	}
+  @Mock private Provider<EntityManager> mockEntityManagerProvider;
+  @Mock private Session mockSession;
 
+  private CommunityService communityService = new CommunityService(mockEntityManagerProvider);
+
+  @Test
+  public void testCommunityUpdates() {
+    communityService.communityUpdates(mockSession);
+  }
 }

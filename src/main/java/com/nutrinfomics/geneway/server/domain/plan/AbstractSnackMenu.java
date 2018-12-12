@@ -6,22 +6,22 @@ import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
-abstract public class AbstractSnackMenu extends EntityBase {
+public abstract class AbstractSnackMenu extends EntityBase {
 
-	@ManyToMany(fetch=FetchType.LAZY, cascade = {CascadeType.ALL})
-	private List<Snack> snacks;
+  @ManyToMany(
+      fetch = FetchType.LAZY,
+      cascade = {CascadeType.ALL})
+  private List<Snack> snacks;
 
-	public List<Snack> getSnacks() {
-		return snacks;
-	}
+  public List<Snack> getSnacks() {
+    return snacks;
+  }
 
-	public void setSnacks(List<Snack> snacks) {
-		this.snacks = snacks;
-	}
-
+  public void setSnacks(List<Snack> snacks) {
+    this.snacks = snacks;
+  }
 }

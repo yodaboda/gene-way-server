@@ -28,137 +28,142 @@ import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecificat
 
 public class NextSnackService {
 
-	public static final LocalTime FIRST_MEAL_TIME = LocalTime.of(8, 0, 0);
-	
-	private Provider<EntityManager> entityManager;
-	private ScheduledAlert scheduledAlert;
-	private HibernateUtil hibernateUtil;
-	private Clock clock;
-	
-	@Inject
-	public NextSnackService(Provider<EntityManager> entityManager, 
-							ScheduledAlert scheduledAlert,
-							HibernateUtil hibernateUtil,
-							Clock clock){
-		this.entityManager = entityManager;
-		this.scheduledAlert = scheduledAlert;
-		this.hibernateUtil = hibernateUtil;
-		this.clock = clock;
-	}
+  public static final LocalTime FIRST_MEAL_TIME = LocalTime.of(8, 0, 0);
 
-	public Snack getNextSnack(Session session, String dateString){
-		Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+  private Provider<EntityManager> entityManager;
+  private ScheduledAlert scheduledAlert;
+  private HibernateUtil hibernateUtil;
+  private Clock clock;
 
-		if(sessionDb.getCustomer().getPlan().getTodaysSnackMenu() == null){
-			setTodaysSnackMenu(sessionDb, dateString);
-		}
+  @Inject
+  public NextSnackService(
+      Provider<EntityManager> entityManager,
+      ScheduledAlert scheduledAlert,
+      HibernateUtil hibernateUtil,
+      Clock clock) {
+    this.entityManager = entityManager;
+    this.scheduledAlert = scheduledAlert;
+    this.hibernateUtil = hibernateUtil;
+    this.clock = clock;
+  }
 
-		Snack nextSnack = calcNextSnack(sessionDb, true);
-		if(nextSnack == null){
-			setTodaysSnackMenu(sessionDb, dateString);
-			nextSnack = calcNextSnack(sessionDb, false);
-		}
-		
-		return nextSnack;
-	}
+  public Snack getNextSnack(Session session, String dateString) {
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
 
-	Snack calcNextSnack(Session sessionDb, boolean sameDay) {
-		MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
+    if (sessionDb.getCustomer().getPlan().getTodaysSnackMenu() == null) {
+      setTodaysSnackMenu(sessionDb, dateString);
+    }
 
-		SnackOrderSpecification snackOrderSpecification = sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
-		
-		MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack(snackOrderSpecification);
+    Snack nextSnack = calcNextSnack(sessionDb, true);
+    if (nextSnack == null) {
+      setTodaysSnackMenu(sessionDb, dateString);
+      nextSnack = calcNextSnack(sessionDb, false);
+    }
 
-		if(markedSnack != null){
-			//TODO: alert information should be retrieved from DB or should be fixed at creation time
-			double inHours = getAlertDelayInHours(sessionDb, sameDay);
+    return nextSnack;
+  }
 
-			this.scheduledAlert.schedule(inHours);
-//			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack(), sameDay, email);
-			return markedSnack.getSnack();
-		}
+  Snack calcNextSnack(Session sessionDb, boolean sameDay) {
+    MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
-		return null;
-	}
+    SnackOrderSpecification snackOrderSpecification =
+        sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
 
-	double getAlertDelayInHours(Session sessionDb, boolean sameDay) {
-		double inHours;
-		if(!sameDay){
-			LocalDate tomorrow = LocalDate.now(clock).plusDays(1);
-			LocalDateTime mealDateTime = LocalDateTime.of(tomorrow, FIRST_MEAL_TIME);
+    MarkedSnack markedSnack = todaysSnackMenu.calcCurrentSnack(snackOrderSpecification);
 
-			LocalDateTime now = LocalDateTime.now(clock);
+    if (markedSnack != null) {
+      // TODO: alert information should be retrieved from DB or should be fixed at creation time
+      double inHours = getAlertDelayInHours(sessionDb, sameDay);
 
-			Duration duration = Duration.between(now, mealDateTime);
-			inHours = duration.toHours();
-		}
-		else {
-			inHours = sessionDb.getCustomer().getPlan().getPlanPreferences()
-								.getSnackTimes().getTimeBetweenSnacks();
-		}
-		return inHours;
-	}
+      this.scheduledAlert.schedule(inHours);
+      //			Alerts.getInstance().createAlert(sessionDb.getCustomer(), markedSnack.getSnack(),
+      // sameDay, email);
+      return markedSnack.getSnack();
+    }
 
-	@Transactional
-	void setTodaysSnackMenu(Session sessionDb, String dateString) {
-		MarkedSnackMenu markedSnackMenu = calcTodaysSnackMenu(sessionDb, dateString);
-		Plan plan = sessionDb.getCustomer().getPlan();
-		entityManager.get().merge(markedSnackMenu);
-		plan.setTodaysSnackMenu(markedSnackMenu);
-		entityManager.get().merge(plan);
-	}
+    return null;
+  }
 
-	@Transactional
-	MarkedSnackMenu calcTodaysSnackMenu(Session sessionDb, String dateString){
-		Plan plan = sessionDb.getCustomer().getPlan();
-		SnackMenu snackMenu = plan.getSnackMenu();
+  double getAlertDelayInHours(Session sessionDb, boolean sameDay) {
+    double inHours;
+    if (!sameDay) {
+      LocalDate tomorrow = LocalDate.now(clock).plusDays(1);
+      LocalDateTime mealDateTime = LocalDateTime.of(tomorrow, FIRST_MEAL_TIME);
 
-		List<Snack> snacks = new ArrayList<>();
-		
-		for(Snack snack : snackMenu.getSnacks()){
-			if(snack instanceof VaryingSnack){
-				Snack resultSnack = getTodaysSnack((VaryingSnack)snack);
-				snack = resultSnack;
-			}
-			else if(snack instanceof GeneralVaryingSnack){
-				GeneralVaryingSnack gvSnack = (GeneralVaryingSnack)snack;
-				Snack todaySnack = gvSnack.pickTodaysSnack();
-				if(todaySnack == null){
-					gvSnack.reset();
-					todaySnack = gvSnack.pickTodaysSnack();
-				}
-				entityManager.get().merge(gvSnack);
-				snack = todaySnack;
-			}
-			snacks.add(snack);
-		}
+      LocalDateTime now = LocalDateTime.now(clock);
 
-		return new MarkedSnackMenu(dateString, snacks);
-	}
+      Duration duration = Duration.between(now, mealDateTime);
+      inHours = duration.toHours();
+    } else {
+      inHours =
+          sessionDb
+              .getCustomer()
+              .getPlan()
+              .getPlanPreferences()
+              .getSnackTimes()
+              .getTimeBetweenSnacks();
+    }
+    return inHours;
+  }
 
-	//TODO: Consider moving functionality to VaryingSnack
-	@Transactional
-	Snack getTodaysSnack(VaryingSnack varyingSnack){
-		try{
-			List<Integer> indices = new ArrayList<>(7);
-			for(int i = 0; i < 7; ++i) indices.add(i);
-			Collections.shuffle(indices);
+  @Transactional
+  void setTodaysSnackMenu(Session sessionDb, String dateString) {
+    MarkedSnackMenu markedSnackMenu = calcTodaysSnackMenu(sessionDb, dateString);
+    Plan plan = sessionDb.getCustomer().getPlan();
+    entityManager.get().merge(markedSnackMenu);
+    plan.setTodaysSnackMenu(markedSnackMenu);
+    entityManager.get().merge(plan);
+  }
 
-			for(int i = 0; i <indices.size(); ++i){
-				if(!varyingSnack.isEaten(indices.get(i))){
-					varyingSnack.setEaten(indices.get(i), true);
-					return varyingSnack.getWeeklySnacks().get(indices.get(i));
-				}
-			}
+  @Transactional
+  MarkedSnackMenu calcTodaysSnackMenu(Session sessionDb, String dateString) {
+    Plan plan = sessionDb.getCustomer().getPlan();
+    SnackMenu snackMenu = plan.getSnackMenu();
 
-			//otherwise, all snacks already eaten - end of week - reset
-			for(int i = 0; i < 7; ++i) varyingSnack.setEaten(i, false);
+    List<Snack> snacks = new ArrayList<>();
 
-			varyingSnack.setEaten(indices.get(0), true);
-			return varyingSnack.getWeeklySnacks().get(indices.get(0));
-		}
-		finally{
-			entityManager.get().merge(varyingSnack);
-		}
-	}
+    for (Snack snack : snackMenu.getSnacks()) {
+      if (snack instanceof VaryingSnack) {
+        Snack resultSnack = getTodaysSnack((VaryingSnack) snack);
+        snack = resultSnack;
+      } else if (snack instanceof GeneralVaryingSnack) {
+        GeneralVaryingSnack gvSnack = (GeneralVaryingSnack) snack;
+        Snack todaySnack = gvSnack.pickTodaysSnack();
+        if (todaySnack == null) {
+          gvSnack.reset();
+          todaySnack = gvSnack.pickTodaysSnack();
+        }
+        entityManager.get().merge(gvSnack);
+        snack = todaySnack;
+      }
+      snacks.add(snack);
+    }
+
+    return new MarkedSnackMenu(dateString, snacks);
+  }
+
+  // TODO: Consider moving functionality to VaryingSnack
+  @Transactional
+  Snack getTodaysSnack(VaryingSnack varyingSnack) {
+    try {
+      List<Integer> indices = new ArrayList<>(7);
+      for (int i = 0; i < 7; ++i) indices.add(i);
+      Collections.shuffle(indices);
+
+      for (int i = 0; i < indices.size(); ++i) {
+        if (!varyingSnack.isEaten(indices.get(i))) {
+          varyingSnack.setEaten(indices.get(i), true);
+          return varyingSnack.getWeeklySnacks().get(indices.get(i));
+        }
+      }
+
+      // otherwise, all snacks already eaten - end of week - reset
+      for (int i = 0; i < 7; ++i) varyingSnack.setEaten(i, false);
+
+      varyingSnack.setEaten(indices.get(0), true);
+      return varyingSnack.getWeeklySnacks().get(indices.get(0));
+    } finally {
+      entityManager.get().merge(varyingSnack);
+    }
+  }
 }

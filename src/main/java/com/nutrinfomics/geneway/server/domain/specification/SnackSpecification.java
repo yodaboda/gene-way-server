@@ -14,59 +14,61 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 @Entity
 public class SnackSpecification extends AbstractFoodSpecification {
 
-	static final public int NO_GROUP = Integer.MIN_VALUE;
-	
-	@OneToMany(fetch=FetchType.LAZY, cascade=CascadeType.ALL, targetEntity=AbstractFoodSpecification.class)
-	private List<FoodSpecification> foodSpecifications;
+  public static final int NO_GROUP = Integer.MIN_VALUE;
 
-	private int groupId;
-	
-	public SnackSpecification(Vector<FoodSpecification> foodSpecifications, int group){
-		this.foodSpecifications = foodSpecifications;
-		this.setGroupId(group);
-	}
+  @OneToMany(
+      fetch = FetchType.LAZY,
+      cascade = CascadeType.ALL,
+      targetEntity = AbstractFoodSpecification.class)
+  private List<FoodSpecification> foodSpecifications;
 
-	public SnackSpecification(){
-	}
-	
-	@Override
-	public boolean qualifies(FoodItemType foodItemType) {
-		for(FoodSpecification foodSpecification : foodSpecifications){
-			if(foodSpecification.qualifies(foodItemType)) return true;
-		}
-		return false;
-	}
+  private int groupId;
 
-	public boolean satisfying(Vector<FoodItem> potentialItems) {
-		for(FoodSpecification foodSpecification : foodSpecifications){
-			boolean satisfyingSpecifications = false;
-			for(FoodItem foodItem : potentialItems){
-				if(foodSpecification.qualifies(foodItem.getFoodType())){
-					satisfyingSpecifications = true;
-				}
-			}
-			if(!satisfyingSpecifications) return false;
-		}
-		return true;
-	}
+  public SnackSpecification(Vector<FoodSpecification> foodSpecifications, int group) {
+    this.foodSpecifications = foodSpecifications;
+    this.setGroupId(group);
+  }
 
-	public List<FoodSpecification> getFoodSpecifications() {
-		return foodSpecifications;
-	}
+  public SnackSpecification() {}
 
-	public void setFoodSpecifications(List<FoodSpecification> foodSpecifications) {
-		this.foodSpecifications = foodSpecifications;
-	}
+  @Override
+  public boolean qualifies(FoodItemType foodItemType) {
+    for (FoodSpecification foodSpecification : foodSpecifications) {
+      if (foodSpecification.qualifies(foodItemType)) return true;
+    }
+    return false;
+  }
 
-	public int getGroupId() {
-		return groupId;
-	}
+  public boolean satisfying(Vector<FoodItem> potentialItems) {
+    for (FoodSpecification foodSpecification : foodSpecifications) {
+      boolean satisfyingSpecifications = false;
+      for (FoodItem foodItem : potentialItems) {
+        if (foodSpecification.qualifies(foodItem.getFoodType())) {
+          satisfyingSpecifications = true;
+        }
+      }
+      if (!satisfyingSpecifications) return false;
+    }
+    return true;
+  }
 
-	public void setGroupId(int groupId) {
-		this.groupId = groupId;
-	}
+  public List<FoodSpecification> getFoodSpecifications() {
+    return foodSpecifications;
+  }
 
-	public boolean hasGroup(){
-		return groupId != NO_GROUP;
-	}
+  public void setFoodSpecifications(List<FoodSpecification> foodSpecifications) {
+    this.foodSpecifications = foodSpecifications;
+  }
+
+  public int getGroupId() {
+    return groupId;
+  }
+
+  public void setGroupId(int groupId) {
+    this.groupId = groupId;
+  }
+
+  public boolean hasGroup() {
+    return groupId != NO_GROUP;
+  }
 }

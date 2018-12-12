@@ -8,31 +8,27 @@ import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 
 @Entity
-public class FoodCategoryFoodSpecification extends AbstractFoodSpecification{
-	
-	@Enumerated(EnumType.STRING)
-	private FoodCategory foodCategory;
+public class FoodCategoryFoodSpecification extends AbstractFoodSpecification {
 
-	public FoodCategoryFoodSpecification(FoodCategory foodCategory){
-		this.foodCategory = foodCategory;
-	}
+  @Enumerated(EnumType.STRING)
+  private FoodCategory foodCategory;
 
-	public FoodCategoryFoodSpecification(){
-	}
-	
-	public FoodCategory getFoodCategory() {
-		return foodCategory;
-	}
+  public FoodCategoryFoodSpecification(FoodCategory foodCategory) {
+    this.foodCategory = foodCategory;
+  }
 
-	public void setFoodCategory(FoodCategory foodCategory) {
-		this.foodCategory = foodCategory;
-	}
+  public FoodCategoryFoodSpecification() {}
 
-	
-	@Override
-	public boolean qualifies(FoodItemType foodItemType) {
-		return foodItemType.getFoodCategory() == foodCategory;
-	}
-	
-	
+  public FoodCategory getFoodCategory() {
+    return foodCategory;
+  }
+
+  public void setFoodCategory(FoodCategory foodCategory) {
+    this.foodCategory = foodCategory;
+  }
+
+  @Override
+  public boolean qualifies(FoodItemType foodItemType) {
+    return foodItemType.getFoodCategory() == foodCategory;
+  }
 }

@@ -25,74 +25,67 @@ import org.mockito.MockitoAnnotations;
 
 public class ScheduledAlertTest {
 
+  private static final String CONFIG = "log4j-appender.xml";
 
-	private static final String CONFIG = "log4j-appender.xml";
-	
-    @ClassRule
-    public static LoggerContextRule loggerContextRule = new LoggerContextRule(CONFIG);
-    
-    private ListAppender listAppender;
-    
-	@Before
-	public void setupLoggingForTests(){
-        listAppender = loggerContextRule.getListAppender("List").clear();		
-	}
+  @ClassRule public static LoggerContextRule loggerContextRule = new LoggerContextRule(CONFIG);
 
-	@Mock
-	private Alert mockAlert;
-	@Mock
-	private ScheduledExecutorService mockScheduledService;
-	@Mock
-	private ScheduledFuture<?> mockScheduled;
-	
-	private ScheduledAlert scheduledAlert;
-	
-	@Before
-	public void initMocks() {
-		MockitoAnnotations.initMocks(this);
-		scheduledAlert = new ScheduledAlert(mockAlert, mockScheduledService);
-	}
-	
-	@Test
-	public void schedule_AsExpected() {
-		int delayInHours = 6;
-		doReturn(mockScheduled).when(mockScheduledService).schedule(any(Runnable.class), 
-																	eq((long) (delayInHours * 60)), 
-																	eq(TimeUnit.MINUTES));
-		scheduledAlert.schedule(delayInHours);
-		verify(mockScheduledService, times(1)).schedule(any(Runnable.class), 
-														eq((long) (delayInHours * 60)), 
-														eq(TimeUnit.MINUTES));
-	}
+  private ListAppender listAppender;
 
-	@Test
-	public void cancel_AsExpected() {
-		int delayInHours = 6;
-		doReturn(mockScheduled).when(mockScheduledService).schedule(any(Runnable.class), 
-															eq((long) (delayInHours * 60)), 
-																	eq(TimeUnit.MINUTES));
-		scheduledAlert.schedule(delayInHours);
+  @Before
+  public void setupLoggingForTests() {
+    listAppender = loggerContextRule.getListAppender("List").clear();
+  }
 
-		scheduledAlert.cancel();
-		verify(mockScheduled, times(1)).cancel(false);
-	}
+  @Mock private Alert mockAlert;
+  @Mock private ScheduledExecutorService mockScheduledService;
+  @Mock private ScheduledFuture<?> mockScheduled;
 
-	@Test
-	public void cancel_nullScheduled_Log() {
-		scheduledAlert.cancel();
-		
-		List<LogEvent> events = listAppender.getEvents();
-		LogEvent logEvent = events.get(0);
-		assertEquals(Level.INFO, logEvent.getLevel());
-		assertEquals("Attempting to cancel a null scheduled field", 
-					logEvent.getMessage().getFormattedMessage());	
-	}
+  private ScheduledAlert scheduledAlert;
 
-	@Test
-	public void remind_AsExpected() {
-		doNothing().when(mockAlert).remind();
-		scheduledAlert.remind();
-		verify(mockAlert, times(1)).remind();
-	}
+  @Before
+  public void initMocks() {
+    MockitoAnnotations.initMocks(this);
+    scheduledAlert = new ScheduledAlert(mockAlert, mockScheduledService);
+  }
 
+  @Test
+  public void schedule_AsExpected() {
+    int delayInHours = 6;
+    doReturn(mockScheduled)
+        .when(mockScheduledService)
+        .schedule(any(Runnable.class), eq((long) (delayInHours * 60)), eq(TimeUnit.MINUTES));
+    scheduledAlert.schedule(delayInHours);
+    verify(mockScheduledService, times(1))
+        .schedule(any(Runnable.class), eq((long) (delayInHours * 60)), eq(TimeUnit.MINUTES));
+  }
+
+  @Test
+  public void cancel_AsExpected() {
+    int delayInHours = 6;
+    doReturn(mockScheduled)
+        .when(mockScheduledService)
+        .schedule(any(Runnable.class), eq((long) (delayInHours * 60)), eq(TimeUnit.MINUTES));
+    scheduledAlert.schedule(delayInHours);
+
+    scheduledAlert.cancel();
+    verify(mockScheduled, times(1)).cancel(false);
+  }
+
+  @Test
+  public void cancel_nullScheduled_Log() {
+    scheduledAlert.cancel();
+
+    List<LogEvent> events = listAppender.getEvents();
+    LogEvent logEvent = events.get(0);
+    assertEquals(Level.INFO, logEvent.getLevel());
+    assertEquals(
+        "Attempting to cancel a null scheduled field", logEvent.getMessage().getFormattedMessage());
+  }
+
+  @Test
+  public void remind_AsExpected() {
+    doNothing().when(mockAlert).remind();
+    scheduledAlert.remind();
+    verify(mockAlert, times(1)).remind();
+  }
 }

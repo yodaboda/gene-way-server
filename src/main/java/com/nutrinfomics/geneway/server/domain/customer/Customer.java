@@ -1,20 +1,12 @@
 package com.nutrinfomics.geneway.server.domain.customer;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.Index;
 import javax.persistence.OneToOne;
-import javax.persistence.Table;
 import javax.persistence.Transient;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
 import org.hibernate.validator.constraints.NotBlank;
-import org.mindrot.jbcrypt.BCrypt;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
@@ -26,116 +18,114 @@ import com.nutrinfomics.geneway.server.domain.status.Status;
 import com.nutrinfomics.geneway.server.domain.subscription.Subscription;
 
 @Entity
-//@Table(indexes = { @Index(columnList = "username") })
-public class Customer extends EntityBase{
+// @Table(indexes = { @Index(columnList = "username") })
+public class Customer extends EntityBase {
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Credentials credentials;
-	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private PersonalDetails personalDetails;
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private Credentials credentials;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Subscription subscription;
-	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Session session;
-	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Device device;
-	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private ContactInformation contactInformation;
-	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Status status;
-	
-	@Transient
-	private PersonalizedLifeStyle lifeStyle;
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private PersonalDetails personalDetails;
 
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-	private Plan plan;
-	
-	@NotBlank(message="{customer.nickname.notblank.message}")
-	private String nickName;
-	
-	public Customer(){
-	}
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private Subscription subscription;
 
-	public Plan getPlan(){
-		return plan;
-	}
-	
-	public void setPlan(Plan plan){
-		this.plan = plan;
-	}
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private Session session;
 
-	public ContactInformation getContactInformation() {
-		return contactInformation;
-	}
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private Device device;
 
-	public void setContactInformation(ContactInformation contactInformation) {
-		this.contactInformation = contactInformation;
-	}
-	
-	public Subscription getSubscription() {
-		return subscription;
-	}
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private ContactInformation contactInformation;
 
-	public void setSubscription(Subscription subscription) {
-		this.subscription = subscription;
-	}
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private Status status;
 
-	public PersonalDetails getPersonalDetails() {
-		return personalDetails;
-	}
+  @Transient private PersonalizedLifeStyle lifeStyle;
 
-	public void setPersonalDetails(PersonalDetails personalDetails) {
-		this.personalDetails = personalDetails;
-	}
+  @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
+  private Plan plan;
 
-	public Session getSession() {
-		return session;
-	}
+  @NotBlank(message = "{customer.nickname.notblank.message}")
+  private String nickName;
 
-	public void setSession(Session session) {
-		this.session = session;
-	}
+  public Customer() {}
 
-	public Device getDevice() {
-		return device;
-	}
+  public Plan getPlan() {
+    return plan;
+  }
 
-	public void setDevice(Device device) {
-		this.device = device;
-	}
+  public void setPlan(Plan plan) {
+    this.plan = plan;
+  }
 
-	public Status getStatus() {
-		return status;
-	}
+  public ContactInformation getContactInformation() {
+    return contactInformation;
+  }
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}
+  public void setContactInformation(ContactInformation contactInformation) {
+    this.contactInformation = contactInformation;
+  }
 
-	public Credentials getCredentials() {
-		return credentials;
-	}
+  public Subscription getSubscription() {
+    return subscription;
+  }
 
-	public void setCredentials(Credentials credentials) {
-		this.credentials = credentials;
-	}
+  public void setSubscription(Subscription subscription) {
+    this.subscription = subscription;
+  }
 
-	public String getNickName() {
-		return nickName;
-	}
+  public PersonalDetails getPersonalDetails() {
+    return personalDetails;
+  }
 
-	public void setNickName(String nickName) {
-		this.nickName = nickName;
-	}
+  public void setPersonalDetails(PersonalDetails personalDetails) {
+    this.personalDetails = personalDetails;
+  }
 
-	@Override
-	public String toString(){
-		return getNickName();
-	}
+  public Session getSession() {
+    return session;
+  }
+
+  public void setSession(Session session) {
+    this.session = session;
+  }
+
+  public Device getDevice() {
+    return device;
+  }
+
+  public void setDevice(Device device) {
+    this.device = device;
+  }
+
+  public Status getStatus() {
+    return status;
+  }
+
+  public void setStatus(Status status) {
+    this.status = status;
+  }
+
+  public Credentials getCredentials() {
+    return credentials;
+  }
+
+  public void setCredentials(Credentials credentials) {
+    this.credentials = credentials;
+  }
+
+  public String getNickName() {
+    return nickName;
+  }
+
+  public void setNickName(String nickName) {
+    this.nickName = nickName;
+  }
+
+  @Override
+  public String toString() {
+    return getNickName();
+  }
 }

@@ -3,48 +3,39 @@ package com.nutrinfomics.geneway.server.domain;
 import java.io.Serializable;
 
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.TableGenerator;
-import javax.persistence.Transient;
 import javax.persistence.Version;
-
-import com.google.inject.Inject;
-import com.google.inject.Provider;
-import com.google.inject.persist.Transactional;
-import com.nutrinfomics.geneway.server.data.HibernateUtil;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class EntityBase implements Serializable{
-		
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @GeneratedValue(strategy = GenerationType.TABLE, generator = "pkGen")
-//    @TableGenerator(allocationSize = 1, initialValue = 0, name = "pkGen", table = "PRIMARY_KEYS")
-	private long id;
+public class EntityBase implements Serializable {
 
-	@Version
-	private long version;
-	
-	public long getVersion() {
-		return version;
-	}
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "pkGen")
+  //    @TableGenerator(allocationSize = 1, initialValue = 0, name = "pkGen", table =
+  // "PRIMARY_KEYS")
+  private long id;
 
-	public void setVersion(long version) {
-		this.version = version;
-	}
+  @Version private long version;
 
-	public long getId() {
-		return id;
-	}
+  public long getVersion() {
+    return version;
+  }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+  public void setVersion(long version) {
+    this.version = version;
+  }
 
+  public long getId() {
+    return id;
+  }
+
+  public void setId(long id) {
+    this.id = id;
+  }
 }

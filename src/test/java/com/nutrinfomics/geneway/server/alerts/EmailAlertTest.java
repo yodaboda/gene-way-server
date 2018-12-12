@@ -21,45 +21,46 @@ import com.geneway.alerts.AlertMechanism;
 
 public class EmailAlertTest {
 
-	private static final String CONFIG = "log4j-appender.xml";
-	
-    @ClassRule
-    public static LoggerContextRule loggerContextRule = new LoggerContextRule(CONFIG);
-    
-    private ListAppender listAppender;
-    
-	@Before
-	public void setupLoggingForTests(){
-        listAppender = loggerContextRule.getListAppender("List").clear();		
-	}
-	    
-	@Test
-	public void testRemindAddressException() throws AddressException, MessagingException {
-		AlertMechanism mockedAlertMechanism = mock(AlertMechanism.class);
-		doThrow(new AddressException("wrong address")).when(mockedAlertMechanism).send();
-		EmailAlert emailAlert = new EmailAlert(mockedAlertMechanism);
-	
-		emailAlert.remind();
+  private static final String CONFIG = "log4j-appender.xml";
 
-		List<LogEvent> events = listAppender.getEvents();
-		assertEquals(1, events.size());
-		LogEvent logEvent = events.get(0);
-		assertEquals(Level.FATAL, logEvent.getLevel());
-		assertEquals("javax.mail.internet.AddressException: wrong address", logEvent.getMessage().toString());
-	}
+  @ClassRule public static LoggerContextRule loggerContextRule = new LoggerContextRule(CONFIG);
 
-	@Test
-	public void testRemindMessagingException() throws AddressException, MessagingException {
-		AlertMechanism mockedAlertMechanism = mock(AlertMechanism.class);
-		doThrow(new MessagingException("messaging exception")).when(mockedAlertMechanism).send();
-		EmailAlert emailAlert = new EmailAlert(mockedAlertMechanism);
-	
-		emailAlert.remind();
+  private ListAppender listAppender;
 
-		List<LogEvent> events = listAppender.getEvents();
-		assertEquals(1, events.size());
-		LogEvent logEvent = events.get(0);
-		assertEquals(Level.FATAL, logEvent.getLevel());
-		assertEquals("javax.mail.MessagingException: messaging exception", logEvent.getMessage().toString());
-	}
+  @Before
+  public void setupLoggingForTests() {
+    listAppender = loggerContextRule.getListAppender("List").clear();
+  }
+
+  @Test
+  public void testRemindAddressException() throws AddressException, MessagingException {
+    AlertMechanism mockedAlertMechanism = mock(AlertMechanism.class);
+    doThrow(new AddressException("wrong address")).when(mockedAlertMechanism).send();
+    EmailAlert emailAlert = new EmailAlert(mockedAlertMechanism);
+
+    emailAlert.remind();
+
+    List<LogEvent> events = listAppender.getEvents();
+    assertEquals(1, events.size());
+    LogEvent logEvent = events.get(0);
+    assertEquals(Level.FATAL, logEvent.getLevel());
+    assertEquals(
+        "javax.mail.internet.AddressException: wrong address", logEvent.getMessage().toString());
+  }
+
+  @Test
+  public void testRemindMessagingException() throws AddressException, MessagingException {
+    AlertMechanism mockedAlertMechanism = mock(AlertMechanism.class);
+    doThrow(new MessagingException("messaging exception")).when(mockedAlertMechanism).send();
+    EmailAlert emailAlert = new EmailAlert(mockedAlertMechanism);
+
+    emailAlert.remind();
+
+    List<LogEvent> events = listAppender.getEvents();
+    assertEquals(1, events.size());
+    LogEvent logEvent = events.get(0);
+    assertEquals(Level.FATAL, logEvent.getLevel());
+    assertEquals(
+        "javax.mail.MessagingException: messaging exception", logEvent.getMessage().toString());
+  }
 }

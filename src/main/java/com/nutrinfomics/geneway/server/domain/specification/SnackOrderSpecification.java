@@ -12,25 +12,22 @@ import javax.persistence.OrderColumn;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
-public class SnackOrderSpecification extends EntityBase{
-	@OrderColumn
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private List<AbstractFoodSpecification> foodOrderSpecification;
+public class SnackOrderSpecification extends EntityBase {
+  @OrderColumn
+  @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+  private List<AbstractFoodSpecification> foodOrderSpecification;
 
-	public SnackOrderSpecification(){
-	}
-	
-	public SnackOrderSpecification(int size){
-		foodOrderSpecification = new ArrayList<>(size);		
-	}
-	
-	public List<AbstractFoodSpecification> getFoodOrderSpecification() {
-		return foodOrderSpecification;
-	}
+  public SnackOrderSpecification() {}
 
-	public void setFoodOrderSpecification(
-			List<AbstractFoodSpecification> foodOrderSpecification) {
-		this.foodOrderSpecification = foodOrderSpecification;
-	}
-	
+  public SnackOrderSpecification(int size) {
+    foodOrderSpecification = new ArrayList<>(size);
+  }
+
+  public List<AbstractFoodSpecification> getFoodOrderSpecification() {
+    return foodOrderSpecification;
+  }
+
+  public void setFoodOrderSpecification(List<AbstractFoodSpecification> foodOrderSpecification) {
+    this.foodOrderSpecification = foodOrderSpecification;
+  }
 }
