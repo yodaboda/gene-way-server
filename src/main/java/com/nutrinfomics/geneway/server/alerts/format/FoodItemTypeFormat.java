@@ -9,16 +9,16 @@ import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 
 @Singleton
-public class FoodItemTypeFormat{
-	
-	private final ResourceBundles resourceBundles;
-	
-	@Inject
-	public FoodItemTypeFormat(ResourceBundles resourceBundles){
-		this.resourceBundles = resourceBundles;
-	}
-	
-	public String format(FoodItemType foodItemType, Locale locale){
-		return resourceBundles.getFoodItemResource(foodItemType, locale);
-	}
+public class FoodItemTypeFormat {
+
+  private final ResourceBundles resourceBundles;
+
+  @Inject
+  public FoodItemTypeFormat(ResourceBundles resourceBundles) {
+    this.resourceBundles = resourceBundles;
+  }
+
+  public String format(FoodItemType foodItemType, Locale locale) {
+    return resourceBundles.getFoodItemResource(foodItemType, locale);
+  }
 }
