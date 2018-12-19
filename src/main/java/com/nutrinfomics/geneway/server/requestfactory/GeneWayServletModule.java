@@ -1,30 +1,30 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
-import javax.inject.Named;
-
-import com.google.inject.Provides;
 import com.google.inject.persist.PersistFilter;
-import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.RequestScoped;
 import com.google.inject.servlet.ServletModule;
-import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.google.web.bindery.requestfactory.server.DefaultExceptionHandler;
+import com.google.web.bindery.requestfactory.server.ExceptionHandler;
+import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
+import com.nutrinfomics.geneway.server.alerts.Alert;
+import com.nutrinfomics.geneway.server.alerts.EmailAlert;
 
 public class GeneWayServletModule extends ServletModule {
 
-  @Override
-  protected void configureServlets() {
-    install(new JpaPersistModule("domainPersistence")); // like we saw earlier.
+	@Override
+	protected void configureServlets() {
+		install(new GeneWayJPAModule());
+		filter("/*").through(PersistFilter.class);
 
-    filter("/*").through(PersistFilter.class);
+		install(new GeneWayAlertsModule());
 
-    install(new GeneWayRequestFactoryModule());
-    serve("/gwtRequest").with(GeneWayRequestFactoryServlet.class);
-  }
+		install(new GeneWayRequestFactoryModule());
+		serve("/gwtRequest").with(GeneWayRequestFactoryServlet.class);
 
-  @Provides
-  @RequestScoped
-  @Named("emailAlertMechanismBody")
-  public String provideBody(Session session) {
-    return "unimplemented";
-  }
+		bind(Alert.class).to(EmailAlert.class).in(RequestScoped.class);
+		bind(ExceptionHandler.class).to(DefaultExceptionHandler.class);
+		bind(ServiceLayerDecorator.class).to(GuiceServiceLayerDecorator.class);
+
+	}
+
 }
