@@ -13,9 +13,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
-import com.google.web.bindery.requestfactory.server.DefaultExceptionHandler;
-import com.google.web.bindery.requestfactory.server.ExceptionHandler;
-import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
 
 /**
  * Guice Module for injecting {@code Request} related instances. This module
@@ -28,16 +25,12 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		bind(ExceptionHandler.class).to(DefaultExceptionHandler.class);
-		bind(ServiceLayerDecorator.class).to(GuiceServiceLayerDecorator.class);
-		bind(GeneWayServiceLocator.class);
+		requireBinding(SecureRandom.class);
 	}
 
 	@Provides
 	@RequestScoped
-	public @Named("code") String provideCode() {
-		SecureRandom random = new SecureRandom();
-
+	public @Named("code") String provideCode(SecureRandom random) {
 		return new BigInteger(130, random).toString(32).substring(0, 6);
 	}
 

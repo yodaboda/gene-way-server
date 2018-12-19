@@ -5,10 +5,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -40,7 +42,6 @@ import com.geneway.alerts.injection.testing.TestAlertsModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.persist.PersistService;
-import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
@@ -56,162 +57,192 @@ import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 
 public class RegisterServiceIntegrationTest {
 
-  private static final String CONFIG = "log4j-appender.xml";
+	private static final String CONFIG = "log4j-appender.xml";
 
-  private final String SUBJECT = "subject";
-  private final String BODY = "body";
+	private final String SUBJECT = "subject";
+	private final String BODY = "body";
 
-  private static final String USER_NAME = "alertsUser";
-  private static final String USER_EMAIL = USER_NAME + "@localhost";
+	private static final String USER_NAME = "alertsUser";
+	private static final String USER_EMAIL = USER_NAME + "@localhost";
 
-  private static final String UUID = "uuid";
+	private static final String UUID = "uuid";
 
-  private static final String PHONE = "44170";
+	private static final String PHONE = "44170";
 
-  // TODO: Tests in RegisterServiceTest start failing when Logger tracker is enabled.
-  //    @ClassRule
-  //    public static LoggerContextRule loggerContextRule = new LoggerContextRule(CONFIG);
-  @Rule public ExpectedException thrown = ExpectedException.none();
+	// TODO: Tests in RegisterServiceTest start failing when Logger tracker is
+	// enabled.
+	// @ClassRule
+	// public static LoggerContextRule loggerContextRule = new
+	// LoggerContextRule(CONFIG);
+	@Rule
+	public ExpectedException thrown = ExpectedException.none();
 
-  @Bind
-  @Named("code")
-  String code = "1224";
+	@Bind
+	@Named("code")
+	String code = "1224";
 
-  @Mock private HibernateUtil mockHibernateUtil;
-  @Mock private Utils mockUtils;
-  @Mock private RequestUtils mockRequestUtils;
-  @Bind private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
+	@Mock
+	private HibernateUtil mockHibernateUtil;
+	@Mock
+	private Utils mockUtils;
+	@Mock
+	private RequestUtils mockRequestUtils;
+	@Bind
+	private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
+	@Bind
+	@Mock
+	private SecureRandom mockSecureRandom;
 
-  // TODO: Eventually this should be provided from the GeneWayRequestFactoryModule.
-  @Bind @Mock private AlertSpecification mockedAlertSpecification;
+	// TODO: Eventually this should be provided from the
+	// GeneWayRequestFactoryModule.
+	@Bind
+	@Mock
+	private AlertSpecification mockedAlertSpecification;
 
-  @Mock private AlertMessage mockedAlertMessage;
-  @Mock private AlertRecipient mockedAlertRecipient;
-  @Mock private AlertLocalization mockedAlertLocalization;
-  @Mock private AlertSender mockedAlertSender;
+	@Mock
+	private AlertMessage mockedAlertMessage;
+	@Mock
+	private AlertRecipient mockedAlertRecipient;
+	@Mock
+	private AlertLocalization mockedAlertLocalization;
+	@Mock
+	private AlertSender mockedAlertSender;
 
-  @Mock private Device mockDbDevice;
-  @Mock private Customer mockDbCustomer;
-  @Mock private ContactInformation mockDbContactInformation;
+	@Mock
+	private Device mockDbDevice;
+	@Mock
+	private Customer mockDbCustomer;
+	@Mock
+	private ContactInformation mockDbContactInformation;
 
-  private Customer customer = new Customer();
+	private Customer customer = new Customer();
 
-  @Inject private RegisterService registerService;
-  @Inject private PersistService service;
-  private Injector injector;
+	@Inject
+	private RegisterService registerService;
+	@Inject
+	private PersistService service;
+	private Injector injector;
 
-  private ListAppender listAppender;
+	private ListAppender listAppender;
 
-  @Before
-  public void setUpJPA() {
-    MockitoAnnotations.initMocks(this);
+	@Before
+	public void setUpJPA() {
+		MockitoAnnotations.initMocks(this);
 
-    setupAlert();
+		doAnswer(invocation -> {
+			Object[] args = invocation.getArguments();
+			byte[] bytes = ((byte[]) args[0]);
+			for (int i = 0; i < bytes.length; ++i) {
+				bytes[i] = 1;
+			}
+			return null;
+		}).when(mockSecureRandom).nextBytes(any());
 
-    setupCustomer();
+		setupAlert();
 
-    setupHibernate();
+		setupCustomer();
 
-    injector =
-        Guice.createInjector(
-        		Modules.override(new GeneWayJPAModule()).with(new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils)),
-            Modules.override(new AlertsModule()).with(new TestAlertsModule()),
-            BoundFieldModule.of(this));
+		setupHibernate();
 
-    injector.injectMembers(this);
-    service.start();
-    injector.getInstance(EntityManager.class).getTransaction().begin();
-  }
-  // TODO: should be removed and hibernateUtil should not be mocked.
-  private void setupHibernate() {
-    when(mockHibernateUtil.selectDeviceByUUID(eq(UUID), any())).thenReturn(mockDbDevice);
-    doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
-    doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
-    doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
-  }
-  // TODO: init database with customer details to be retrieved.
-  private void setupCustomer() {
-    Device device = new Device();
-    device.setUuid("uuid");
-    Credentials credentials = new Credentials();
+		injector = Guice.createInjector(
+				Modules.override(new GeneWayJPAModule())
+						.with(new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils)),
+				Modules.override(new AlertsModule()).with(new TestAlertsModule()), BoundFieldModule.of(this));
 
-    customer.setDevice(device);
-    customer.setCredentials(credentials);
-    customer.setNickName("not blank");
-  }
+		injector.injectMembers(this);
+		service.start();
+		injector.getInstance(EntityManager.class).getTransaction().begin();
+	}
 
-  private void setupAlert() {
-    String[] bodyStrings = new String[] {BODY};
+	// TODO: should be removed and hibernateUtil should not be mocked.
+	private void setupHibernate() {
+		when(mockHibernateUtil.selectDeviceByUUID(eq(UUID), any())).thenReturn(mockDbDevice);
+		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+		doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
+		doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
+	}
 
-    when(mockedAlertSpecification.getAlertLocalization()).thenReturn(mockedAlertLocalization);
-    when(mockedAlertSpecification.getAlertMessage()).thenReturn(mockedAlertMessage);
-    when(mockedAlertSpecification.getAlertRecipient()).thenReturn(mockedAlertRecipient);
-    when(mockedAlertSpecification.getAlertSender()).thenReturn(mockedAlertSender);
+	// TODO: init database with customer details to be retrieved.
+	private void setupCustomer() {
+		Device device = new Device();
+		device.setUuid("uuid");
+		Credentials credentials = new Credentials();
 
-    when(mockedAlertRecipient.getAlertType()).thenReturn(AlertType.SMS);
-    when(mockedAlertRecipient.getRecipient()).thenReturn("to be overriden");
-    when(mockedAlertMessage.getBody()).thenReturn(bodyStrings);
-    when(mockedAlertMessage.getSubject()).thenReturn(SUBJECT);
-    when(mockedAlertLocalization.localizeSubject(SUBJECT)).thenReturn("subject");
-    when(mockedAlertLocalization.localizeBody(bodyStrings)).thenReturn("body");
-    when(mockedAlertLocalization.getLocale()).thenReturn(Locale.forLanguageTag("ar"));
-    doReturn(USER_NAME).when(mockedAlertSender).getUserName();
-    doReturn("123456").when(mockedAlertSender).getPassword();
-    doReturn(TestAlertsModule.LOCALHOST).when(mockedAlertSender).getHost();
-    doReturn(USER_EMAIL).when(mockedAlertSender).getEmail();
+		customer.setDevice(device);
+		customer.setCredentials(credentials);
+		customer.setNickName("not blank");
+	}
 
-    TestAlertsModule.MAIL_SERVER.start();
-    TestAlertsModule.MAIL_SERVER.setUser(
-        mockedAlertSender.getHost(),
-        mockedAlertSender.getUserName(),
-        mockedAlertSender.getPassword());
-  }
+	private void setupAlert() {
+		String[] bodyStrings = new String[] { BODY };
 
-  @After
-  public void tearDownTransaction() {
-    EntityManager entityManager = injector.getInstance(EntityManager.class);
-    entityManager.close();
-    service.stop();
-    TestAlertsModule.MAIL_SERVER.stop();
-  }
+		when(mockedAlertSpecification.getAlertLocalization()).thenReturn(mockedAlertLocalization);
+		when(mockedAlertSpecification.getAlertMessage()).thenReturn(mockedAlertMessage);
+		when(mockedAlertSpecification.getAlertRecipient()).thenReturn(mockedAlertRecipient);
+		when(mockedAlertSpecification.getAlertSender()).thenReturn(mockedAlertSender);
 
-  private void rollbackTransaction() {
-    injector.getInstance(EntityManager.class).getTransaction().rollback();
-  }
+		when(mockedAlertRecipient.getAlertType()).thenReturn(AlertType.SMS);
+		when(mockedAlertRecipient.getRecipient()).thenReturn("to be overriden");
+		when(mockedAlertMessage.getBody()).thenReturn(bodyStrings);
+		when(mockedAlertMessage.getSubject()).thenReturn(SUBJECT);
+		when(mockedAlertLocalization.localizeSubject(SUBJECT)).thenReturn("subject");
+		when(mockedAlertLocalization.localizeBody(bodyStrings)).thenReturn("body");
+		when(mockedAlertLocalization.getLocale()).thenReturn(Locale.forLanguageTag("ar"));
+		doReturn(USER_NAME).when(mockedAlertSender).getUserName();
+		doReturn("123456").when(mockedAlertSender).getPassword();
+		doReturn(TestAlertsModule.LOCALHOST).when(mockedAlertSender).getHost();
+		doReturn(USER_EMAIL).when(mockedAlertSender).getEmail();
 
-  @Test
-  public void register_AsExpected() {
-    // TODO: store dbDevice in database to be retrieved by the register operation.
-    Device dbDevice = new Device();
-    Customer dbCustomer = new Customer();
-    dbDevice.setCustomer(dbCustomer);
-    dbDevice.setUuid("uuid");
-    dbCustomer.setDevice(dbDevice);
+		TestAlertsModule.MAIL_SERVER.start();
+		TestAlertsModule.MAIL_SERVER.setUser(mockedAlertSender.getHost(), mockedAlertSender.getUserName(),
+				mockedAlertSender.getPassword());
+	}
 
-    registerService.register(customer);
+	@After
+	public void tearDownTransaction() {
+		EntityManager entityManager = injector.getInstance(EntityManager.class);
+		entityManager.close();
+		service.stop();
+		TestAlertsModule.MAIL_SERVER.stop();
+	}
 
-    rollbackTransaction();
-  }
+	private void rollbackTransaction() {
+		injector.getInstance(EntityManager.class).getTransaction().rollback();
+	}
 
-  @Test
-  public void sendAlert_AsExpected() throws MessagingException, IOException {
-    String phone = "4442414322";
-    registerService.sendAlert(phone);
+	@Test
+	public void register_AsExpected() {
+		// TODO: store dbDevice in database to be retrieved by the register operation.
+		Device dbDevice = new Device();
+		Customer dbCustomer = new Customer();
+		dbDevice.setCustomer(dbCustomer);
+		dbDevice.setUuid("uuid");
+		dbCustomer.setDevice(dbDevice);
 
-    MimeMessage[] messages = TestAlertsModule.MAIL_SERVER.getReceivedMessages();
-    assertNotNull(messages);
-    assertEquals(1, messages.length);
-    MimeMessage m = messages[0];
-    assertEquals(phone, m.getSubject());
-    assertTrue(String.valueOf(m.getContent()).contains(BODY));
-    assertEquals(AlertsModule.SMS_RECIPIENT_EMAIL_ADDRESS, m.getAllRecipients()[0].toString());
-  }
+		registerService.register(customer);
 
-  @Test
-  public void registerCustomer_AsExpected() {
-    // TODO: check why rolling back is not working?
-    registerService.registerCustomer(customer);
+		rollbackTransaction();
+	}
 
-    rollbackTransaction();
-  }
+	@Test
+	public void sendAlert_AsExpected() throws MessagingException, IOException {
+		String phone = "4442414322";
+		registerService.sendAlert(phone);
+
+		MimeMessage[] messages = TestAlertsModule.MAIL_SERVER.getReceivedMessages();
+		assertNotNull(messages);
+		assertEquals(1, messages.length);
+		MimeMessage m = messages[0];
+		assertEquals(phone, m.getSubject());
+		assertTrue(String.valueOf(m.getContent()).contains(BODY));
+		assertEquals(AlertsModule.SMS_RECIPIENT_EMAIL_ADDRESS, m.getAllRecipients()[0].toString());
+	}
+
+	@Test
+	public void registerCustomer_AsExpected() {
+		// TODO: check why rolling back is not working?
+		registerService.registerCustomer(customer);
+
+		rollbackTransaction();
+	}
 }
