@@ -11,8 +11,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.inject.Inject;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
+@RequestScoped
 public class ScheduledAlert extends EntityBase implements Alert {
 
   /** Logger for unexpected events. */
@@ -36,64 +38,16 @@ public class ScheduledAlert extends EntityBase implements Alert {
     scheduled = schedulerService.schedule(runnable, (long) (inHours * 60), TimeUnit.MINUTES);
   }
 
-  //	public ScheduledAlert(Customer customer, double inHours, Snack snack, List<AlertType>
-  // alertTypes, String email ) {
-  //		this.snack = snack;
-  //		for(AlertType alertType : alertTypes){
-  //			alerts.add(create(customer, alertType, email));
-  //		}
-  //
-  //		Runnable runnable = new Runnable() {
-  //
-  //			@Override
-  //			public void run() {
-  //				remind();
-  //			}
-  //		};
-  //		scheduled = scheduler.schedule(runnable, (long) (inHours * 60), TimeUnit.MINUTES);
-  //	}
-  //
-  //	public UserAlert create(Customer customer, AlertType alertType, String email) {
-  //		switch(alertType){
-  //			case EMAIL: return new GeneWayEmailAlert(email);
-  //			case SMS: return new
-  // GeneWaySMSAlert(customer.getContactInformation().getRegisteredPhoneNumber());
-  //			default: return null;
-  //		}
-  //	}
-
   public void cancel() {
     if (scheduled != null) {
       scheduled.cancel(false);
     } else {
       LOGGER.log(Level.INFO, "Attempting to cancel a null scheduled field");
     }
-    //		Alerts.getInstance().removeSnackAlert(snack);
   }
 
-  //	@Transactional
   @Override
   public void remind() {
-    //		for(Alert alert : alerts){
     alert.remind();
-    //		}
-    //		Alerts.getInstance().removeSnackAlert(snack);
-
-    //		SnackHistory snackHistory = new SnackHistory();
-    //		snackHistory.setEatenSnack(snack);
-    //		snackHistory.setPlannedSnack(snack);
-    //		snackHistory.setStatus(SnackStatus.CONSUMED);
-    //		Date timestamp = new Date();
-    //		snackHistory.setTimestamp(timestamp);
-    //		//TODO: need to modify date string and timezone offset computation for international clients
-    //		String dateString = SnackHistory.getDateString(timestamp, timestamp.getTimezoneOffset());
-    //		snackHistory.setDayString(dateString);
-    //		snackHistory.setTimeZoneDiff(timestamp.getTimezoneOffset());
-    //		snackHistory.setCustomer(getCustomer());
-    //
-    //		em.get().persist(snackHistory);
-    //
-    //		new PlanService().getNextSnack(getCustomer().getSession(), dateString);
-
   }
 }
