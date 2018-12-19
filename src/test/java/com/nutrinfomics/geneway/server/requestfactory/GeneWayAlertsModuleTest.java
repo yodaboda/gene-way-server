@@ -1,6 +1,7 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -9,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import javax.inject.Inject;
 import javax.inject.Named;
 
 import org.junit.Before;
@@ -20,7 +20,6 @@ import org.mockito.MockitoAnnotations;
 import com.geneway.alerts.AlertLocalization;
 import com.geneway.alerts.AlertMessage;
 import com.geneway.alerts.AlertRecipient;
-import com.geneway.alerts.AlertSender;
 import com.geneway.alerts.AlertSpecification;
 import com.geneway.alerts.AlertType;
 import com.geneway.alerts.impl.DefaultEmailAlertSender;
@@ -29,7 +28,6 @@ import com.geneway.alerts.injection.testing.TestAlertsModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.Scopes;
-import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.RequestScoped;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
@@ -37,12 +35,10 @@ import com.google.inject.util.Modules;
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.contact.Email;
-import com.nutrinfomics.geneway.server.domain.contact.PhoneNumber;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
-import com.nutrinfomics.geneway.server.requestfactory.GeneWayRequestFactoryModuleTest.TestGeneWayRequestFactoryModule;
 
 public class GeneWayAlertsModuleTest {
 
@@ -61,17 +57,6 @@ public class GeneWayAlertsModuleTest {
 			//TODO: Figure out a way to deal with 
 			// No scope is bound to com.google.inject.servlet.RequestScoped
 			bindScope(RequestScoped.class, Scopes.SINGLETON);
-//			requireBinding(Locale.class);
-//			requireBinding(Session.class); // @Named("dbSession") 
-			
-//			bind(Alert.class).to(EmailAlert.class).in(RequestScoped.class);
-//			bind(Alerts.class);
-//			bind(ScheduledAlert.class).in(RequestScoped.class);
-
-//			bind(AlertSender.class).to(DefaultEmailAlertSender.class);
-//			bind(ResourceBundles.class);
-
-		
 		}
 	}
 	
