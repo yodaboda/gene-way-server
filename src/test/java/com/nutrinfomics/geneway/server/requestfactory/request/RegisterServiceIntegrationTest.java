@@ -44,11 +44,15 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
+import com.nutrinfomics.geneway.server.RequestUtils;
+import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
+import com.nutrinfomics.geneway.server.requestfactory.GeneWayJPAModule;
+import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 
 public class RegisterServiceIntegrationTest {
 
@@ -73,7 +77,9 @@ public class RegisterServiceIntegrationTest {
   @Named("code")
   String code = "1224";
 
-  @Bind @Mock private HibernateUtil hibernateUtil;
+  @Mock private HibernateUtil mockHibernateUtil;
+  @Mock private Utils mockUtils;
+  @Mock private RequestUtils mockRequestUtils;
   @Bind private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
 
   // TODO: Eventually this should be provided from the GeneWayRequestFactoryModule.
@@ -108,7 +114,7 @@ public class RegisterServiceIntegrationTest {
 
     injector =
         Guice.createInjector(
-            new JpaPersistModule("testUnit"),
+        		Modules.override(new GeneWayJPAModule()).with(new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils)),
             Modules.override(new AlertsModule()).with(new TestAlertsModule()),
             BoundFieldModule.of(this));
 
@@ -118,7 +124,7 @@ public class RegisterServiceIntegrationTest {
   }
   // TODO: should be removed and hibernateUtil should not be mocked.
   private void setupHibernate() {
-    when(hibernateUtil.selectDeviceByUUID(eq(UUID), any())).thenReturn(mockDbDevice);
+    when(mockHibernateUtil.selectDeviceByUUID(eq(UUID), any())).thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
     doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
