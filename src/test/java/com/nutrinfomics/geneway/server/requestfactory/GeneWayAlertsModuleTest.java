@@ -51,15 +51,6 @@ public class GeneWayAlertsModuleTest {
 	
 	private Injector injector;
 	
-	public class TestGeneWayAlertsModule extends GeneWayAlertsModule{
-		@Override
-		protected void configure() {
-			//TODO: Figure out a way to deal with 
-			// No scope is bound to com.google.inject.servlet.RequestScoped
-			bindScope(RequestScoped.class, Scopes.SINGLETON);
-		}
-	}
-	
 	@Before
 	public void setUp() {
 	    MockitoAnnotations.initMocks(this);
