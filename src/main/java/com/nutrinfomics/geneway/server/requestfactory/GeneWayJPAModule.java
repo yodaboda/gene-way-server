@@ -19,11 +19,11 @@ public class GeneWayJPAModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		install(new JpaPersistModule("domainPersistence"));
+		requireBinding(HibernateUtil.class);
+		requireBinding(Utils.class);
+		requireBinding(RequestUtils.class);
 
-		bind(HibernateUtil.class).in(RequestScoped.class);
-		bind(Utils.class);
-		bind(RequestUtils.class);
+		install(new JpaPersistModule("domainPersistence"));
 	}
 
 	@Provides
