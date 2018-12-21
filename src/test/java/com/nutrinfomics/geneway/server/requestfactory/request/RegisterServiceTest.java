@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -33,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import com.geneway.alerts.impl.EmailAlertMechanism;
+import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.customer.Credentials;
@@ -49,6 +51,7 @@ public class RegisterServiceTest {
   private static final String UUID = "UUID";
   private static final String PHONE = "44.42.41.43";
   private static final String CODE = "1224";
+  private static final String HASHED_PASSWORD = "424";
 
   private ListAppender listAppender;
 
@@ -66,11 +69,12 @@ public class RegisterServiceTest {
   @Mock private EntityManager mockEntityManager;
   @Mock private MimeMessage mockMimeMessage;
   private Clock clock;
+  @Mock private PasswordUtils mockPasswordUtils;
 
   private RegisterService registerService;
 
   @Before
-  public void mock() {
+  public void setUp() {
     MockitoAnnotations.initMocks(this);
     clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
     registerService =
@@ -79,12 +83,14 @@ public class RegisterServiceTest {
             mockAlertMechanism,
             RegisterServiceTest.CODE,
             hibernateUtil,
-            clock);
+            clock,
+            mockPasswordUtils);
     doReturn(mockDevice).when(mockCustomer).getDevice();
     doReturn(mockCredintials).when(mockCustomer).getCredentials();
     doReturn("hash").when(mockCredintials).getHashedPassword();
     doReturn(mockEntityManager).when(mockEntityManagerProvider).get();
     when(mockEntityManager.merge(mockCustomer)).thenReturn(mockMergedCustomer);
+    doReturn(HASHED_PASSWORD).when(mockPasswordUtils).hashPassword(any());
   }
 
   @Before
@@ -173,7 +179,7 @@ public class RegisterServiceTest {
 
     verify(mockDevice, times(1)).setCode(CODE);
     verify(mockDevice, times(1)).setCodeCreation(LocalDateTime.now(clock));
-    verify(mockCredintials, times(1)).setHashedPassword(mockCredintials.hashPassword());
+    verify(mockCredintials, times(1)).setHashedPassword(HASHED_PASSWORD);
   }
 
   @Test

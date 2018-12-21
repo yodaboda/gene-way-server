@@ -7,13 +7,17 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.security.SecureRandom;
 import java.time.Clock;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
@@ -46,6 +50,7 @@ import com.google.inject.persist.PersistService;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
+import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
@@ -58,6 +63,8 @@ import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 
 public class RegisterServiceIntegrationTest {
 
+	private static final String CUSTOMER_NICK_NAME = "not blank";
+
 	private static final String CONFIG = "log4j-appender.xml";
 
 	private final String SUBJECT = "subject";
@@ -69,6 +76,9 @@ public class RegisterServiceIntegrationTest {
 	private static final String UUID = "uuid";
 
 	private static final String PHONE = "44170";
+
+	private static final String HASHED_PASSWORD = "424";
+	private static final String PASSWORD = "8 + 14 = 22";
 
 	// TODO: Tests in RegisterServiceTest start failing when Logger tracker is
 	// enabled.
@@ -93,6 +103,9 @@ public class RegisterServiceIntegrationTest {
 	@Bind
 	@Mock
 	private SecureRandom mockSecureRandom;
+	@Bind
+	@Mock
+	private PasswordUtils mockPasswordUtils;
 
 	// TODO: Eventually this should be provided from the
 	// GeneWayRequestFactoryModule.
@@ -117,6 +130,9 @@ public class RegisterServiceIntegrationTest {
 	private ContactInformation mockDbContactInformation;
 
 	private Customer customer = new Customer();
+	private Device device = new Device();
+	private Credentials credentials = new Credentials();
+	
 
 	@Inject
 	private RegisterService registerService;
@@ -168,15 +184,14 @@ public class RegisterServiceIntegrationTest {
 		doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
 	}
 
-	// TODO: init database with customer details to be retrieved.
 	private void setupCustomer() {
-		Device device = new Device();
-		device.setUuid("uuid");
-		Credentials credentials = new Credentials();
-
 		customer.setDevice(device);
+		device.setUuid(UUID);
 		customer.setCredentials(credentials);
-		customer.setNickName("not blank");
+		customer.setNickName(CUSTOMER_NICK_NAME);
+		credentials.setPassword(PASSWORD);
+		
+		doReturn(HASHED_PASSWORD).when(mockPasswordUtils).hashPassword(PASSWORD);
 	}
 
 	private void setupAlert() {
@@ -245,9 +260,45 @@ public class RegisterServiceIntegrationTest {
 
 	@Test
 	public void registerCustomer_AsExpected() {
-		// TODO: check why rolling back is not working?
 		registerService.registerCustomer(customer);
 
+		verify(mockPasswordUtils, times(1)).hashPassword(PASSWORD);
+		
+		List<Customer> customers = entityManager.createQuery("Select c from Customer c", Customer.class).getResultList();
+		
+		
+		assertEquals(1, customers.size());
+		Customer emCustomer = customers.get(0);
+		Device emDevice = emCustomer.getDevice();
+		Credentials emCredentials = emCustomer.getCredentials();
+		assertEquals(code, emDevice.getCode());
+		assertEquals(HASHED_PASSWORD, emCredentials.getHashedPassword());
+		
 		rollbackTransaction();
+	}
+
+	@Test
+	public void registerCustomer_NullDevice_Exception() {
+		customer.setDevice(null);
+		
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_DEVICE);
+		registerService.registerCustomer(customer);
+	}
+
+	@Test
+	public void registerCustomer_NullCredentials_Exception() {
+		customer.setCredentials(null);
+		
+		thrown.expect(IllegalArgumentException.class);
+		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_CREDENTIALS);
+		registerService.registerCustomer(customer);
+	}
+
+	
+	@Test
+	public void getCustomerPhoneNumber_AsExpected() {
+		assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer));
+		//Read only operation - no need to roll-back.
 	}
 }

@@ -30,6 +30,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.UUIDGenerator;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
@@ -70,6 +71,7 @@ public class AuthenticationServiceTest {
   private Clock clock;
   @Mock private Utils mockUtils;
   @Mock private UUIDGenerator mockUuidGenerator;
+  @Mock private PasswordUtils mockPasswordUtils;
 
   private final UUID RANDOM_UUID = UUID.fromString("3dd4fa6e-2899-4429-b820-d34fe8df5d22");
 
@@ -79,7 +81,8 @@ public class AuthenticationServiceTest {
     clock = Clock.fixed(Instant.EPOCH, ZoneId.of("Europe/Stockholm"));
     authenticationService =
         new AuthenticationService(
-            mockEntityManagerProvider, mockHibernateUtil, clock, mockUtils, mockUuidGenerator);
+            mockEntityManagerProvider, mockHibernateUtil, clock, 
+            mockUtils, mockUuidGenerator, mockPasswordUtils);
     setupMockEntityProvider();
     setupMockHibernateUtil();
     doReturn(RANDOM_UUID).when(mockUuidGenerator).randomUUID();
@@ -253,7 +256,8 @@ public class AuthenticationServiceTest {
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
     doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
-    when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+    doReturn(password).when(mockDbCredentials).getPassword();
+    when(mockPasswordUtils.checkPassword(password, password)).thenReturn(true);
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
@@ -283,7 +287,8 @@ public class AuthenticationServiceTest {
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
     doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
-    when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+    doReturn(password).when(mockDbCredentials).getPassword();
+    when(mockPasswordUtils.checkPassword(password, password)).thenReturn(true);
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
@@ -315,7 +320,8 @@ public class AuthenticationServiceTest {
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(null).when(mockDbCustomer).getSession();
     doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
-    when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+    doReturn(password).when(mockDbCredentials).getPassword();
+    when(mockPasswordUtils.checkPassword(password, password)).thenReturn(true);
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
@@ -345,7 +351,8 @@ public class AuthenticationServiceTest {
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
     doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
-    when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+    doReturn(password).when(mockDbCredentials).getPassword();
+    when(mockPasswordUtils.checkPassword(password, password)).thenReturn(true);
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
@@ -365,6 +372,7 @@ public class AuthenticationServiceTest {
     Device mockDevice = mock(Device.class);
     Credentials mockCredentials = mock(Credentials.class);
     String password = "random";
+    String dBPassword = "";
     doReturn(mockDevice).when(mockCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDevice).getUuid();
     doReturn(mockCredentials).when(mockCustomer).getCredentials();
@@ -378,7 +386,8 @@ public class AuthenticationServiceTest {
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(null).when(mockDbCustomer).getSession();
     doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
-    when(mockDbCredentials.checkPassword(password)).thenReturn(false);
+    doReturn(dBPassword).when(mockDbCredentials).getPassword();
+    when(mockPasswordUtils.checkPassword(password, dBPassword)).thenReturn(false);
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
@@ -410,7 +419,8 @@ public class AuthenticationServiceTest {
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
     doReturn(mockDbCredentials).when(mockDbCustomer).getCredentials();
-    when(mockDbCredentials.checkPassword(password)).thenReturn(true);
+    doReturn(password).when(mockDbCredentials).getPassword();
+    when(mockPasswordUtils.checkPassword(password, password)).thenReturn(true);
     doReturn(null).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();

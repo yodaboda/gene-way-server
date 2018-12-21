@@ -14,9 +14,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.inject.persist.Transactional;
+import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.UUIDGenerator;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
+import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
@@ -34,6 +36,7 @@ public class AuthenticationService {
   private Clock clock;
   private Utils utils;
   private UUIDGenerator uuidGenerator;
+  private PasswordUtils passwordUtils;
 
   @Inject
   public AuthenticationService(
@@ -41,12 +44,14 @@ public class AuthenticationService {
       HibernateUtil hibernateUtil,
       Clock clock,
       Utils utils,
-      UUIDGenerator uuidGenerator) {
+      UUIDGenerator uuidGenerator,
+      PasswordUtils passwordUitls) {
     this.entityManager = entityManager;
     this.hibernateUtil = hibernateUtil;
     this.clock = clock;
     this.utils = utils;
     this.uuidGenerator = uuidGenerator;
+    this.passwordUtils = passwordUitls;
   }
 
   @Transactional
@@ -125,8 +130,17 @@ public class AuthenticationService {
     }
     session.setSid(uuidGenerator.randomUUID().toString());
 
-    boolean valid =
-        customerDb.getCredentials().checkPassword(customer.getCredentials().getPassword());
+    Credentials credentialsDb = customerDb.getCredentials();
+    String clientPassword = customer.getCredentials().getPassword();
+    boolean valid;
+    if(credentialsDb.getPassword() != null) {
+    	valid = passwordUtils.checkPassword(clientPassword, credentialsDb.getPassword());
+    }
+    else {
+    	valid = passwordUtils.checkHashedPassword(clientPassword, credentialsDb.getHashedPassword());
+    }
+   
+        
 
     entityManager.get().persist(session);
 
@@ -145,9 +159,7 @@ public class AuthenticationService {
       if (!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())
           || device.getCode() != null
           || device.getCodeCreation() != null) {
-        AuthenticationException loginException =
-            new AuthenticationException(AuthenticationExceptionType.UNAUTHORIZED_DEVICE);
-        throw loginException;
+        throw new AuthenticationException(AuthenticationExceptionType.UNAUTHORIZED_DEVICE);
       }
 
       return customerDb.getSession();

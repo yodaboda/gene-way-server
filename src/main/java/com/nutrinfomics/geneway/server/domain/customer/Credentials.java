@@ -25,9 +25,7 @@ public class Credentials extends EntityBase {
     this.password = password;
   }
 
-  public String hashPassword() {
-    return BCrypt.hashpw(password, BCrypt.gensalt());
-  }
+
 
   public String getHashedPassword() {
     return hashedPassword;
@@ -37,15 +35,5 @@ public class Credentials extends EntityBase {
     this.hashedPassword = hashedPassword;
   }
 
-  public boolean checkPassword(String plainTextPassword) {
-    if (password != null) {
-      return password.equals(plainTextPassword);
-    } else {
-      if (hashedPassword != null) {
-        return BCrypt.checkpw(plainTextPassword, hashedPassword);
-      } else {
-        return false;
-      }
-    }
-  }
+ 
 }

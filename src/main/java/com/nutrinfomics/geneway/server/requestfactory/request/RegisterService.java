@@ -16,12 +16,18 @@ import org.apache.logging.log4j.Logger;
 import com.geneway.alerts.AlertMechanism;
 import com.geneway.alerts.impl.EmailAlertMechanism;
 import com.google.inject.persist.Transactional;
+import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
+import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 
 public class RegisterService {
-  /** Logger for unexpected events. */
+  static final String EXCEPTION_MESSAGE_NULL_CREDENTIALS = "The credentials cannot be null";
+
+static final String EXCEPTION_MESSAGE_NULL_DEVICE = "The device cannot be null";
+
+/** Logger for unexpected events. */
   private static final Logger LOGGER = LogManager.getLogger();
 
   private Provider<EntityManager> entityManagerProvider;
@@ -29,19 +35,22 @@ public class RegisterService {
   private String code;
   private HibernateUtil hibernateUtil;
   private Clock clock;
-
+  private PasswordUtils passwordUtils;
+  
   @Inject
   public RegisterService(
       Provider<EntityManager> entityManagerProvider,
       AlertMechanism alertMechanism,
       @Named("code") String code,
       HibernateUtil hibernateUtil,
-      Clock clock) {
+      Clock clock,
+      PasswordUtils passwordUtils) {
     this.entityManagerProvider = entityManagerProvider;
     this.alertMechanism = alertMechanism;
     this.code = code;
     this.hibernateUtil = hibernateUtil;
     this.clock = clock;
+    this.passwordUtils = passwordUtils;
   }
 
   public void register(Customer customer) {
@@ -84,10 +93,11 @@ public class RegisterService {
   @Transactional
   void registerCustomer(Customer customer) {
     if (customer.getDevice() == null) {
-      throw new IllegalArgumentException("The device cannot be null");
+      throw new IllegalArgumentException(EXCEPTION_MESSAGE_NULL_DEVICE);
     }
-    if (customer.getCredentials() == null) {
-      throw new IllegalArgumentException("The credentials cannot be null");
+    Credentials credentials = customer.getCredentials();
+	if (credentials == null) {
+      throw new IllegalArgumentException(EXCEPTION_MESSAGE_NULL_CREDENTIALS);
     }
 
     customer.getDevice().setCode(code);
@@ -112,9 +122,11 @@ public class RegisterService {
     // then delete entry. Otherwise, return an exception of used phone-number
     // this is bad - could be a privacy breach. Need to think of workaround.
 
-    String hashedPassword = customer.getCredentials().hashPassword();
+   
+    String password = credentials.getPassword();
+	String hashedPassword = passwordUtils.hashPassword(password);
 
-    customer.getCredentials().setHashedPassword(hashedPassword);
+    credentials.setHashedPassword(hashedPassword);
 
     entityManagerProvider.get().merge(customer);
     // do not return anything from Db at this stage. Only after logging in we do so.
