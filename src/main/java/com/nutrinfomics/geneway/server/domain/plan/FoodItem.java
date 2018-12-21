@@ -1,6 +1,7 @@
 package com.nutrinfomics.geneway.server.domain.plan;
 
 import java.io.Serializable;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumMap;
@@ -11,6 +12,7 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
+
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.shared.FoodCategory;
@@ -28,8 +30,6 @@ public class FoodItem extends EntityBase implements Serializable {
   private FoodItemType foodType;
 
   @Embedded private ArbitraryCycle cycle = new ArbitraryCycle();
-
-  @Transient private static EnumMap<FoodCategory, Vector<FoodItemType>> foodItemTypeByCategory;
 
   public FoodItem() {}
 
@@ -105,55 +105,6 @@ public class FoodItem extends EntityBase implements Serializable {
     return new String[] {
       foodType + "", measurementUnit + "", amount + "", cycle.getCycleLength() + ""
     };
-  }
-
-  public static Vector<FoodItemType> getFoodTypeInCategory(FoodCategory foodCategory) {
-    if (foodItemTypeByCategory == null) {
-      synchronized (FoodItemType.class) {
-        if (foodItemTypeByCategory == null) {
-          foodItemTypeByCategory =
-              new EnumMap<FoodCategory, Vector<FoodItemType>>(FoodCategory.class);
-          orderFoodItemTypeByCategory(Arrays.asList(FoodItemType.values()), foodItemTypeByCategory);
-        }
-      }
-    }
-    return foodItemTypeByCategory.get(foodCategory);
-  }
-
-  public static void orderFoodItemTypeByCategory(
-      Collection<FoodItemType> foodItemTypes,
-      EnumMap<FoodCategory, Vector<FoodItemType>> foodItemTypeByCategory) {
-    for (FoodItemType foodItemType : foodItemTypes) {
-      if (!foodItemTypeByCategory.containsKey(foodItemType.getFoodCategory())) {
-        foodItemTypeByCategory.put(foodItemType.getFoodCategory(), new Vector<FoodItemType>());
-      }
-      foodItemTypeByCategory.get(foodItemType.getFoodCategory()).add(foodItemType);
-      ;
-    }
-  }
-
-  public static void orderFoodItemByCategory(
-      Collection<FoodItem> foodItems, EnumMap<FoodCategory, Vector<FoodItem>> foodItemByCategory) {
-    for (FoodItem foodItem : foodItems) {
-      if (!foodItemByCategory.containsKey(foodItem.getFoodType().getFoodCategory())) {
-        foodItemByCategory.put(foodItem.getFoodType().getFoodCategory(), new Vector<FoodItem>());
-      }
-      foodItemByCategory.get(foodItem.getFoodType().getFoodCategory()).add(foodItem);
-      ;
-    }
-  }
-
-  public FoodItem convertToGrams() {
-    MeasurementUnit measurementUnit = getMeasurementUnit();
-    double amount = getAmount();
-    double amountInGrams = amount;
-    if (measurementUnit != MeasurementUnit.GRAM) {
-      double conversionRatio =
-          FoodUnitWeightParser.getInstance()
-              .convertFoodMeasurementUnitToGrams(getFoodType(), measurementUnit);
-      amountInGrams = amount * conversionRatio;
-    }
-    return new FoodItem(amountInGrams, MeasurementUnit.GRAM, getFoodType());
   }
 
   public ArbitraryCycle getCycle() {
