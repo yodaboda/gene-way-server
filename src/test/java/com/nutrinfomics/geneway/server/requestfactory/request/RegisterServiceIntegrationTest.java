@@ -21,6 +21,7 @@ import javax.inject.Named;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 
 import org.apache.logging.log4j.test.appender.ListAppender;
 import org.junit.After;
@@ -124,6 +125,9 @@ public class RegisterServiceIntegrationTest {
 	private Injector injector;
 
 	private ListAppender listAppender;
+	
+	private EntityManager entityManager;
+	private EntityTransaction entityTransaction;
 
 	@Before
 	public void setUpJPA() {
@@ -151,7 +155,9 @@ public class RegisterServiceIntegrationTest {
 
 		injector.injectMembers(this);
 		service.start();
-		injector.getInstance(EntityManager.class).getTransaction().begin();
+		entityManager = injector.getInstance(EntityManager.class);
+		entityTransaction = entityManager.getTransaction();
+		entityTransaction.begin();
 	}
 
 	// TODO: should be removed and hibernateUtil should not be mocked.
@@ -200,14 +206,13 @@ public class RegisterServiceIntegrationTest {
 
 	@After
 	public void tearDownTransaction() {
-		EntityManager entityManager = injector.getInstance(EntityManager.class);
 		entityManager.close();
 		service.stop();
 		TestAlertsModule.MAIL_SERVER.stop();
 	}
 
 	private void rollbackTransaction() {
-		injector.getInstance(EntityManager.class).getTransaction().rollback();
+		entityTransaction.rollback();
 	}
 
 	@Test
