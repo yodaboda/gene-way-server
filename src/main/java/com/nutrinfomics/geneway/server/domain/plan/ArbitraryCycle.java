@@ -1,10 +1,12 @@
 package com.nutrinfomics.geneway.server.domain.plan;
 
 import javax.persistence.Embeddable;
+import javax.persistence.MappedSuperclass;
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Embeddable
+@MappedSuperclass
 public class ArbitraryCycle extends EntityBase implements Repetition {
 
   private int cycleLength;
