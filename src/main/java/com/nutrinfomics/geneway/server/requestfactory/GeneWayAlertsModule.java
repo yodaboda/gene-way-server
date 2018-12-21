@@ -25,6 +25,9 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class GeneWayAlertsModule extends AbstractModule {
 
+	static final String ALERT_MESSAGE_BODY = "itsTimeToTakeYourMeal";
+	static final String ALERT_MESSAGE_SUBJECT = "itsTimeToTakeYourMealTitle";
+
 	@Override
 	protected void configure() {
 
@@ -69,12 +72,12 @@ public class GeneWayAlertsModule extends AbstractModule {
 		return new AlertMessage() {
 			@Override
 			public String getSubject() {
-				return "itsTimeToTakeYourMealTitle";
+				return ALERT_MESSAGE_SUBJECT;
 			}
 
 			@Override
 			public String[] getBody() {
-				return new String[] { "itsTimeToTakeYourMeal" };
+				return new String[] { ALERT_MESSAGE_BODY };
 			}
 		};
 	}

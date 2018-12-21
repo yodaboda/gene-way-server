@@ -77,26 +77,25 @@ public class GeneWayAlertsModuleTest {
 		emails.add(mockEmail);
 		doReturn(emails).when(mockContactInformation).getEmails();
 
-		String subject = "hello";
-		String localizedSubject = subject + locale;
-		String[] body = new String[] { "healthy" };
+		String localizedSubject = GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT + locale;
+		String[] body = new String[] { GeneWayAlertsModule.ALERT_MESSAGE_BODY };
 		String localizedBody = body[0] + locale;
-		when(mockResourceBundles.getGeneWayResource(subject, locale)).thenReturn(localizedSubject);
+		when(mockResourceBundles.getGeneWayResource(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, locale)).thenReturn(localizedSubject);
 		when(mockResourceBundles.getGeneWayResource(body[0], locale)).thenReturn(localizedBody);
 
 		AlertSpecification alertLocalization = injector.getInstance(AlertSpecification.class);
 
 		assertEquals(DefaultEmailAlertSender.USER_NAME, alertLocalization.getAlertSender().getUserName());
 		assertEquals(email, alertLocalization.getAlertRecipient().getRecipient());
-		assertEquals("itsTimeToTakeYourMealTitle", alertLocalization.getAlertMessage().getSubject());
-		assertEquals(localizedSubject, alertLocalization.getAlertLocalization().localizeSubject(subject));
+		assertEquals(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, alertLocalization.getAlertMessage().getSubject());
+		assertEquals(localizedSubject, alertLocalization.getAlertLocalization().localizeSubject(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT));
 	}
 
 	@Test
 	public void provideAlertMessage_AsExpceted() {
 		AlertMessage alertMessage = injector.getInstance(AlertMessage.class);
-		assertEquals("itsTimeToTakeYourMealTitle", alertMessage.getSubject());
-		assertArrayEquals(new String[] { "itsTimeToTakeYourMeal" }, alertMessage.getBody());
+		assertEquals(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, alertMessage.getSubject());
+		assertArrayEquals(new String[] { GeneWayAlertsModule.ALERT_MESSAGE_BODY }, alertMessage.getBody());
 	}
 
 	@Test
