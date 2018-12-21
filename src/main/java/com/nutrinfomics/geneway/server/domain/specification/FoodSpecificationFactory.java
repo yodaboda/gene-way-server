@@ -2,24 +2,15 @@ package com.nutrinfomics.geneway.server.domain.specification;
 
 import java.util.Vector;
 
+import javax.inject.Singleton;
+
 import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 
+@Singleton
 public class FoodSpecificationFactory {
-  private static FoodSpecificationFactory instance;
 
-  private FoodSpecificationFactory() {}
-
-  public static FoodSpecificationFactory getInstance() {
-    if (instance == null) {
-      synchronized (FoodSpecificationFactory.class) {
-        if (instance == null) {
-          instance = new FoodSpecificationFactory();
-        }
-      }
-    }
-    return instance;
-  }
+  public FoodSpecificationFactory() {}
 
   public FoodSpecification buildFoodSpecification(String item) {
     FoodItemType foodItemType = parseFoodItemType(item);
