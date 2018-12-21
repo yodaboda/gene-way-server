@@ -4,6 +4,10 @@ import java.lang.reflect.Method;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.web.bindery.requestfactory.server.RequestFactoryServlet;
@@ -18,74 +22,77 @@ import com.nutrinfomics.geneway.shared.AccessConstants;
 
 public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 
-  @Inject Injector injector;
+	private static final Logger LOGGER = LogManager.getLogger();
 
-  @Override
-  public Object invoke(Method domainMethod, Object... args) {
-    if (!isAllowed(domainMethod)) {
-      return doReport(domainMethod);
-    }
-    return super.invoke(domainMethod, args);
-  }
+	@Inject
+	Injector injector;
 
-  private boolean isAllowed(Method domainMethod) {
-    try {
-      if (userIsLoggedIn(RequestFactoryServlet.getThreadLocalRequest())) return true;
-      else
-        return domainMethod.equals(
-                AuthenticationService.class.getMethod("authenticateCustomer", Customer.class))
-            || domainMethod.equals(
-                AuthenticationService.class.getMethod("register", Customer.class))
-            || domainMethod.equals(
-                AuthenticationService.class.getMethod("authenticateCode", Customer.class))
-            || domainMethod.equals(
-                AuthenticationService.class.getMethod("unlock", Identifier.class))
-            || domainMethod.equals(
-                AuthenticationService.class.getMethod(
-                    "confirmValuationTermsOfService", String.class));
-    } catch (NoSuchMethodException | SecurityException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
-    }
-    return false;
-  }
+	@Override
+	public Object invoke(Method domainMethod, Object... args) {
+		if (!isAllowed(domainMethod)) {
+			return doReport(domainMethod);
+		}
+		return super.invoke(domainMethod, args);
+	}
 
-  protected boolean userIsLoggedIn(HttpServletRequest req) {
-    String sid = (String) req.getHeader(AccessConstants.SID.toString());
-    String uuid = (String) req.getHeader(AccessConstants.UUID.toString());
+	private boolean isAllowed(Method domainMethod) {
+		try {
+			if (userIsLoggedIn(RequestFactoryServlet.getThreadLocalRequest()))
+				return true;
+			else
+				return domainMethod
+						.equals(AuthenticationService.class.getMethod("authenticateCustomer", Customer.class))
+						|| domainMethod.equals(AuthenticationService.class.getMethod("register", Customer.class))
+						|| domainMethod
+								.equals(AuthenticationService.class.getMethod("authenticateCode", Customer.class))
+						|| domainMethod.equals(AuthenticationService.class.getMethod("unlock", Identifier.class))
+						|| domainMethod.equals(
+								AuthenticationService.class.getMethod("confirmValuationTermsOfService", String.class));
+		} catch (NoSuchMethodException | SecurityException e) {
+			LOGGER.log(Level.FATAL, e.toString(), e);
+		}
+		return false;
+	}
 
-    if (sid == null) return false;
+	protected boolean userIsLoggedIn(HttpServletRequest req) {
+		String sid = (String) req.getHeader(AccessConstants.SID.toString());
+		String uuid = (String) req.getHeader(AccessConstants.UUID.toString());
 
-    Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
+		if (sid == null)
+			return false;
 
-    Customer customerDb = sessionDb.getCustomer();
-    Device deviceDb = customerDb.getDevice();
+		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
 
-    return (deviceDb.getUuid().equalsIgnoreCase(uuid) && sessionDb.getSid().equalsIgnoreCase(sid));
-  }
+		Customer customerDb = sessionDb.getCustomer();
+		Device deviceDb = customerDb.getDevice();
 
-  protected Object doReport(Method domainMethod) {
-    // log.log(Level.INFO, "Operation {0}#{1} not allowed for user {2}",
-    // new String[] {
-    // domainMethod.getDeclaringClass().getCanonicalName(),
-    // domainMethod.getName(),
-    // requestProvider.get().getRemoteUser()
-    // });
+		return (deviceDb.getUuid().equalsIgnoreCase(uuid) && sessionDb.getSid().equalsIgnoreCase(sid));
+	}
 
-    return report("Operation not allowed: %s", domainMethod.getName());
-  }
+	protected Object doReport(Method domainMethod) {
+		// log.log(Level.INFO, "Operation {0}#{1} not allowed for user {2}",
+		// new String[] {
+		// domainMethod.getDeclaringClass().getCanonicalName(),
+		// domainMethod.getName(),
+		// requestProvider.get().getRemoteUser()
+		// });
 
-  // needed to support validation error message localization
-  //	@Override
-  //	public <U extends Object> Set<ConstraintViolation<U>> validate(U domainObject) {
-  //		ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-  //		MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
-  //		Locale locale = Utils.getLocale();
-  ////				new Locale(RequestFactoryServlet
-  ////				.getThreadLocalRequest().getHeader("X-GWT-Locale"));
-  //		GeneWayLocaleMessageInterpolator interpolator = new
-  // GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);
-  //		Validator validator = factory.usingContext().messageInterpolator(interpolator).getValidator();
-  //		return validator.validate(domainObject);
-  //	}
+		return report("Operation not allowed: %s", domainMethod.getName());
+	}
+
+	// needed to support validation error message localization
+	// @Override
+	// public <U extends Object> Set<ConstraintViolation<U>> validate(U
+	// domainObject) {
+	// ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+	// MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
+	// Locale locale = Utils.getLocale();
+	//// new Locale(RequestFactoryServlet
+	//// .getThreadLocalRequest().getHeader("X-GWT-Locale"));
+	// GeneWayLocaleMessageInterpolator interpolator = new
+	// GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);
+	// Validator validator =
+	// factory.usingContext().messageInterpolator(interpolator).getValidator();
+	// return validator.validate(domainObject);
+	// }
 }
