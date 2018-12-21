@@ -8,6 +8,7 @@ import javax.inject.Singleton;
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 
+//TODO: Use decorator design pattern for classes in this package
 @Singleton
 public class FoodItemTypeFormat {
 
