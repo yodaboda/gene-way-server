@@ -7,13 +7,22 @@ import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Vector;
 
+import javax.inject.Singleton;
+
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import au.com.bytecode.opencsv.CSVReader;
 
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
+@Singleton
 public class FoodUnitWeightParser {
-  public static FoodUnitWeightParser instance;
+	
+	private static final Logger LOGGER = LogManager.getLogger();
+	
 
   public static final String FILE_PATH =
       System.getProperty("user.home")
@@ -22,10 +31,8 @@ public class FoodUnitWeightParser {
   private EnumMap<FoodItemType, EnumMap<MeasurementUnit, Double>> map =
       new EnumMap<FoodItemType, EnumMap<MeasurementUnit, Double>>(FoodItemType.class);
 
-  private FoodUnitWeightParser() {
-    CSVReader reader;
-    try {
-      reader = new CSVReader(new FileReader(new File(FILE_PATH)));
+  public FoodUnitWeightParser() {
+    try(CSVReader reader = new CSVReader(new FileReader(new File(FILE_PATH)))) {
       String[] units = reader.readNext(); // units
       String[] header = reader.readNext();
       MeasurementUnit[] measurementUnits = MeasurementUnit.parse(header, 1);
@@ -45,11 +52,9 @@ public class FoodUnitWeightParser {
         }
       }
     } catch (FileNotFoundException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    	LOGGER.log(Level.FATAL, e.toString(), e);
     } catch (IOException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+    	LOGGER.log(Level.FATAL, e.toString(), e);
     }
   }
 
@@ -76,16 +81,5 @@ public class FoodUnitWeightParser {
     }
     result.add(MeasurementUnit.GRAM);
     return result;
-  }
-
-  public static FoodUnitWeightParser getInstance() {
-    if (instance == null) {
-      synchronized (FoodUnitWeightParser.class) {
-        if (instance == null) {
-          instance = new FoodUnitWeightParser();
-        }
-      }
-    }
-    return instance;
   }
 }
