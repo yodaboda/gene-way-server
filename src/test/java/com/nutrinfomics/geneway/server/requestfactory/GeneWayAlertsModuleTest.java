@@ -37,6 +37,7 @@ import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
+import com.nutrinfomics.geneway.server.requestfactory.request.TestGeneWayAlertsModule;
 
 public class GeneWayAlertsModuleTest {
 
@@ -59,7 +60,7 @@ public class GeneWayAlertsModuleTest {
 	}
 
 	@Test
-	public void provideAlertLocalization_AsExpected() {
+	public void provideAlertSpecification_AsExpected() {
 
 		Customer mockCustomer = mock(Customer.class);
 		doReturn(mockCustomer).when(mockDbSession).getCustomer();
@@ -85,7 +86,7 @@ public class GeneWayAlertsModuleTest {
 
 		AlertSpecification alertLocalization = injector.getInstance(AlertSpecification.class);
 
-		assertEquals(DefaultEmailAlertSender.USER_NAME, alertLocalization.getAlertSender().getUserName());
+		assertEquals(TestGeneWayAlertsModule.USER_NAME, alertLocalization.getAlertSender().getUserName());
 		assertEquals(email, alertLocalization.getAlertRecipient().getRecipient());
 		assertEquals(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, alertLocalization.getAlertMessage().getSubject());
 		assertEquals(localizedSubject, alertLocalization.getAlertLocalization().localizeSubject(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT));

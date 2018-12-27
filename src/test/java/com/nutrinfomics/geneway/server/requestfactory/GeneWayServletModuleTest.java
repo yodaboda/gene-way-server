@@ -33,6 +33,7 @@ import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.requestfactory.request.TestGeneWayAlertsModule;
 
 public class GeneWayServletModuleTest {
 
