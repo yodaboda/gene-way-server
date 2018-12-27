@@ -16,17 +16,13 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.ResourceBundles;
-import com.nutrinfomics.geneway.server.alerts.Alert;
-import com.nutrinfomics.geneway.server.alerts.Alerts;
-import com.nutrinfomics.geneway.server.alerts.EmailAlert;
-import com.nutrinfomics.geneway.server.alerts.ScheduledAlert;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class GeneWayAlertsModule extends AbstractModule {
 
-	static final String ALERT_MESSAGE_BODY = "itsTimeToTakeYourMeal";
-	static final String ALERT_MESSAGE_SUBJECT = "itsTimeToTakeYourMealTitle";
+	public static final String ALERT_MESSAGE_BODY = "itsTimeToTakeYourMeal";
+	public static final String ALERT_MESSAGE_SUBJECT = "itsTimeToTakeYourMealTitle";
 
 	@Override
 	protected void configure() {
@@ -34,14 +30,14 @@ public class GeneWayAlertsModule extends AbstractModule {
 		requireBinding(Locale.class);
 		requireBinding(Session.class); // @Named("dbSession")
 		requireBinding(ResourceBundles.class);
-		
+
 		bind(AlertSender.class).to(DefaultEmailAlertSender.class).in(RequestScoped.class);
 
 	}
 
 	@Provides
 	@RequestScoped
-	public AlertSpecification provideAlertLocalization(final AlertRecipient alertRecipient,
+	public AlertSpecification provideAlertSpecification(final AlertRecipient alertRecipient,
 			final AlertSender alertSender, final AlertMessage alertMessage, final AlertLocalization alertLocalization) {
 		return new AlertSpecification() {
 
