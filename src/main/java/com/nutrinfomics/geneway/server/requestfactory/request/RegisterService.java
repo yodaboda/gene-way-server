@@ -15,12 +15,14 @@ import org.apache.logging.log4j.Logger;
 import com.geneway.alerts.AlertMechanism;
 import com.geneway.alerts.impl.EmailAlertMechanism;
 import com.google.inject.persist.Transactional;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 
+@RequestScoped
 public class RegisterService {
 	static final String EXCEPTION_MESSAGE_NULL_CREDENTIALS = "The credentials cannot be null";
 
@@ -61,7 +63,7 @@ public class RegisterService {
 	String getCustomerPhoneNumber(Customer customer) {
 		// the phone number might not be attached to the session - it could be already
 		// in the DB
-		Device deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
+		Device deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid());
 
 		return deviceDb.getCustomer().getContactInformation().getRegisteredPhoneNumber();
 	}

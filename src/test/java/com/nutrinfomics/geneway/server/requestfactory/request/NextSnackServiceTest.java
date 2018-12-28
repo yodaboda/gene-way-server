@@ -49,7 +49,7 @@ public class NextSnackServiceTest {
   @Rule public ExpectedException thrown = ExpectedException.none();
 
   private NextSnackService nextSnackService;
-  @Mock private Provider<EntityManager> mockEntityManagerProvider;
+
   @Mock private EntityManager mockEntityManager;
   @Mock private ScheduledAlert mockScheduledAlert;
   @Mock private HibernateUtil mockHibernateUtil;
@@ -96,19 +96,18 @@ public class NextSnackServiceTest {
     clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
     nextSnackService =
         new NextSnackService(
-            mockEntityManagerProvider, mockScheduledAlert, mockHibernateUtil, clock);
+            mockEntityManager, mockScheduledAlert, mockHibernateUtil, clock);
     setupMockDbSession();
     setupMockEntityProvider();
     setupMockHibernateUtil();
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManager)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 
   private void setupMockEntityProvider() {
-    doReturn(mockEntityManager).when(mockEntityManagerProvider).get();
     when(mockEntityManager.merge(any())).thenReturn(null);
   }
 

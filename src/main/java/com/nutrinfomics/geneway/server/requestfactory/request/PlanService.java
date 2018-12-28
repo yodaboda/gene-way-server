@@ -13,6 +13,7 @@ import sk.nociar.jpacloner.JpaCloner;
 import sk.nociar.jpacloner.PropertyFilter;
 
 import com.google.inject.persist.Transactional;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Session;
@@ -26,19 +27,20 @@ import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecific
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 
+@RequestScoped
 public class PlanService {
-  private Provider<EntityManager> entityManager;
+  private EntityManager entityManager;
   private HibernateUtil hibernateUtil;
 
   @Inject
-  public PlanService(Provider<EntityManager> entityManager, HibernateUtil hibernateUtil) {
+  public PlanService(EntityManager entityManager, HibernateUtil hibernateUtil) {
     this.entityManager = entityManager;
     this.hibernateUtil = hibernateUtil;
   }
 
   @Transactional
   public void setDemo(Session session) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
     //		sessionDb.getCustomer().getDevice().setCode("demo");
 
     //		PersonalDetails personalDetails = new PersonalDetails();
@@ -47,7 +49,7 @@ public class PlanService {
     //		personalDetails.setCustomer(sessionDb.getCustomer());
     //		sessionDb.getCustomer().setPersonalDetails(personalDetails);
 
-    Customer demoCustomer = entityManager.get().find(Customer.class, new Long(4));
+    Customer demoCustomer = entityManager.find(Customer.class, new Long(4));
 
     Plan plan = demoCustomer.getPlan();
 
@@ -74,7 +76,7 @@ public class PlanService {
   }
 
   public PlanPreferences getPlanPreferences(Session session) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
     return sessionDb.getCustomer().getPlan().getPlanPreferences();
   }
 
@@ -82,9 +84,9 @@ public class PlanService {
   public void updateSpecifications(
       SnackOrderSpecification snackOrderSpecification,
       AbstractFoodSpecification oldFoodSpecification) {
-    entityManager.get().merge(snackOrderSpecification);
-    entityManager.get().flush(); // needed after merge to preserve order of items
-    entityManager.get().remove(oldFoodSpecification);
+    entityManager.merge(snackOrderSpecification);
+    entityManager.flush(); // needed after merge to preserve order of items
+    entityManager.remove(oldFoodSpecification);
   }
 
   //	private boolean isSnackMarked(Customer customer, Snack snack, String dayString) {
@@ -116,12 +118,12 @@ public class PlanService {
   //	}
 
   public SnackOrderSpecification getSnackOrderSpecification(Session session) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
     return sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
   }
 
   public Set<FoodItemType> getIngredients(Session session, String dateString) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
     SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
     Set<FoodItemType> foodItemTypes = new HashSet<>();
@@ -144,7 +146,7 @@ public class PlanService {
   }
 
   public List<String> getMenuSummary(Session session, String dateString) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
     SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
     List<String> snackSummary = new ArrayList<>();

@@ -30,7 +30,6 @@ public class EntityBaseServiceTest {
 
   private EntityBaseService entityBaseService;
 
-  @Mock private Provider<EntityManager> mockEntityManagerProvider;
   @Mock private EntityManager mockEntityManager;
   @Mock private HibernateUtil mockHibernateUtil;
   @Mock private EntityBase mockEntityBase;
@@ -41,18 +40,17 @@ public class EntityBaseServiceTest {
   @Before
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
-    entityBaseService = new EntityBaseService(mockEntityManagerProvider, mockHibernateUtil);
+    entityBaseService = new EntityBaseService(mockEntityManager, mockHibernateUtil);
     setupMockEntityProvider();
     setupMockHibernateUtil();
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManager)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 
   private void setupMockEntityProvider() {
-    doReturn(mockEntityManager).when(mockEntityManagerProvider).get();
     when(mockEntityManager.merge(any())).thenReturn(null);
   }
 

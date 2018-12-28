@@ -14,6 +14,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.inject.persist.Transactional;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.UUIDGenerator;
 import com.nutrinfomics.geneway.server.Utils;
@@ -26,12 +27,13 @@ import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
 import com.nutrinfomics.geneway.shared.AuthenticationException;
 import com.nutrinfomics.geneway.shared.AuthenticationException.AuthenticationExceptionType;
 
+@RequestScoped
 public class AuthenticationService {
 
   /** Logger for unexpected events. */
   private static final Logger LOGGER = LogManager.getLogger();
 
-  private Provider<EntityManager> entityManager;
+  private EntityManager entityManager;
   private HibernateUtil hibernateUtil;
   private Clock clock;
   private Utils utils;
@@ -40,7 +42,7 @@ public class AuthenticationService {
 
   @Inject
   public AuthenticationService(
-      Provider<EntityManager> entityManager,
+      EntityManager entityManager,
       HibernateUtil hibernateUtil,
       Clock clock,
       Utils utils,
@@ -58,7 +60,7 @@ public class AuthenticationService {
   public boolean unlock(Identifier identifier) {
     try {
       Identifier dbIdentifier =
-          hibernateUtil.selectIdentifier(identifier.getIdentifierCode(), entityManager);
+          hibernateUtil.selectIdentifier(identifier.getIdentifierCode());
       if (dbIdentifier.getUuid() == null || dbIdentifier.getUuid().isEmpty()) {
         dbIdentifier.setUuid(identifier.getUuid());
         return true;
@@ -72,7 +74,7 @@ public class AuthenticationService {
 
   @Transactional
   public String confirmValuationTermsOfService(String uuid) {
-    Identifier dbIdentifier = hibernateUtil.selectIdentifierFromUUID(uuid, entityManager);
+    Identifier dbIdentifier = hibernateUtil.selectIdentifierFromUUID(uuid);
     if (dbIdentifier == null) {
       String errorMessage = "UUID " + uuid + " is not on record";
       LOGGER.log(Level.WARN, errorMessage);
@@ -87,7 +89,7 @@ public class AuthenticationService {
   @Transactional
   public boolean authenticateCode(Customer customer) throws AuthenticationException {
     Device deviceDb =
-        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager.get());
+        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid());
     LocalDateTime creationTime = deviceDb.getCodeCreation();
     LocalDateTime expiry = creationTime.plusMinutes(20);
     if (expiry.isBefore(LocalDateTime.now(clock))) {
@@ -115,7 +117,7 @@ public class AuthenticationService {
     Device deviceDb;
 
     try {
-      deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager.get());
+      deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid());
       customerDb = deviceDb.getCustomer();
     } catch (Exception e) {
       throw new AuthenticationException(AuthenticationExceptionType.INVALID_DEVICE_UUID);
@@ -142,7 +144,7 @@ public class AuthenticationService {
    
         
 
-    entityManager.get().persist(session);
+    entityManager.persist(session);
 
     if (valid) {
       Device device = customerDb.getDevice();
@@ -153,7 +155,7 @@ public class AuthenticationService {
         customerDb.setDevice(device);
         device.setCustomer(customerDb);
 
-        entityManager.get().persist(device);
+        entityManager.persist(device);
       }
 
       if (!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())
@@ -171,7 +173,7 @@ public class AuthenticationService {
   @Transactional
   public Session authenticateSession(Session session) throws AuthenticationException {
 
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
 
     Customer customerDb = sessionDb.getCustomer();
     Device deviceDb = customerDb.getDevice();

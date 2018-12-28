@@ -42,7 +42,6 @@ public class PlanServiceTest {
 
   private PlanService planService;
 
-  @Mock private Provider<EntityManager> mockEntityManagerProvider;
   @Mock private EntityManager mockEntityManager;
   @Mock private HibernateUtil mockHibernateUtil;
 
@@ -66,7 +65,7 @@ public class PlanServiceTest {
   @Before
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
-    planService = new PlanService(mockEntityManagerProvider, mockHibernateUtil);
+    planService = new PlanService(mockEntityManager, mockHibernateUtil);
     setupMockDbSession();
     setupMockEntityProvider();
     setupMockHibernateUtil();
@@ -123,12 +122,11 @@ public class PlanServiceTest {
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManager)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 
   private void setupMockEntityProvider() {
-    doReturn(mockEntityManager).when(mockEntityManagerProvider).get();
     when(mockEntityManager.merge(any())).thenReturn(null);
   }
 

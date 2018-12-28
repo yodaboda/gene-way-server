@@ -5,40 +5,42 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import com.google.inject.persist.Transactional;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 import com.nutrinfomics.geneway.server.domain.customer.PersonalDetails;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 
+@RequestScoped
 public class EntityBaseService {
 
-  private Provider<EntityManager> entityManager;
+  private EntityManager entityManager;
   private HibernateUtil hibernateUtil;
 
   @Inject
-  public EntityBaseService(Provider<EntityManager> entityManager, HibernateUtil hibernateUtil) {
+  public EntityBaseService(EntityManager entityManager, HibernateUtil hibernateUtil) {
     this.entityManager = entityManager;
     this.hibernateUtil = hibernateUtil;
   }
 
   @Transactional
   public void persist(EntityBase entityBase) {
-    entityManager.get().persist(entityBase);
+    entityManager.persist(entityBase);
   }
 
   @Transactional
   public void merge(EntityBase entityBase) {
-    entityManager.get().merge(entityBase);
+    entityManager.merge(entityBase);
   }
 
   @Transactional
   public void remove(EntityBase entityBase) {
-    entityManager.get().remove(entityBase);
+    entityManager.remove(entityBase);
   }
 
   @Transactional
   public void mergePersonalDetails(Session session, PersonalDetails personalDetails) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
     sessionDb.getCustomer().setPersonalDetails(personalDetails);
     personalDetails.setCustomer(sessionDb.getCustomer());
   }

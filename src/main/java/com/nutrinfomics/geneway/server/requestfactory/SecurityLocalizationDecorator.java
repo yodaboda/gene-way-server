@@ -62,8 +62,7 @@ public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 		if (sid == null)
 			return false;
 
-		EntityManager entityManager = injector.getInstance(EntityManager.class);
-		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid, entityManager);
+		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
 
 		Customer customerDb = sessionDb.getCustomer();
 		Device deviceDb = customerDb.getDevice();

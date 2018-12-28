@@ -69,7 +69,7 @@ public class GeneWayJPAModuleTest {
 	@Test
 	public void provideDbSession_AsExpected() {
 		doReturn(SID).when(mockClientSession).getSid();
-		when(mockHibernateUtil.selectSession(eq(SID), any())).thenReturn(mockDbSession);
+		when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
 		
 		Session dbSession = injector.getInstance(Key.get(Session.class, Names.named("dbSession")));
 		assertEquals(mockDbSession, dbSession);

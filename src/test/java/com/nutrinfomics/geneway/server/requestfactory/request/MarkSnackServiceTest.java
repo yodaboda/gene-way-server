@@ -34,7 +34,6 @@ public class MarkSnackServiceTest {
   private final String SID = "SID";
   private final long SNACK_ID = 1;
 
-  @Mock private Provider<EntityManager> mockEntityManagerProvider;
   @Mock private EntityManager mockEntityManager;
   @Mock private HibernateUtil mockHibernateUtil;
   @Mock private Alerts mockAlerts;
@@ -59,7 +58,7 @@ public class MarkSnackServiceTest {
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
     markSnackService =
-        new MarkSnackService(mockEntityManagerProvider, mockHibernateUtil, mockAlerts);
+        new MarkSnackService(mockEntityManager, mockHibernateUtil, mockAlerts);
     setupMockDbSession();
     setupMockEntityProvider();
     setupMockHibernateUtil();
@@ -82,12 +81,11 @@ public class MarkSnackServiceTest {
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManager)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 
   private void setupMockEntityProvider() {
-    doReturn(mockEntityManager).when(mockEntityManagerProvider).get();
     when(mockEntityManager.merge(any())).thenReturn(null);
   }
 

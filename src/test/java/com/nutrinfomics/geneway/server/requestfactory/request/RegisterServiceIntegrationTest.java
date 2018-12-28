@@ -176,13 +176,13 @@ public class RegisterServiceIntegrationTest {
 
 	// TODO: should be removed and hibernateUtil should not be mocked.
 	private void setupHibernate() {
-		when(mockHibernateUtil.selectDeviceByUUID(eq(UUID), any())).thenReturn(mockDbDevice);
+		when(mockHibernateUtil.selectDeviceByUUID(UUID)).thenReturn(mockDbDevice);
 		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
 		doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
 		doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
 
 		doReturn(SID).when(mockClientSession).getSid();
-		when(mockHibernateUtil.selectSession(eq(SID), any())).thenReturn(mockDbSession);
+		when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
 		Locale locale = Locale.getDefault();
 		doReturn(locale).when(mockUtils).getLocale();
 

@@ -8,20 +8,28 @@ import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
 
 import com.google.inject.persist.Transactional;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
 
+@RequestScoped
 public class HibernateUtil {
-
+	private EntityManager entityManager;
+	
+	@Inject
+	public HibernateUtil(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
+	
   // TODO: check if this method is needed.
   public void shutdown() {
     //		if(entityManagerFactory != null) entityManagerFactory.close();
   }
 
-  public Customer getCustomer(String username, EntityManager entityManager) {
-    return selectCustomer(username, entityManager);
+  public Customer getCustomer(String username) {
+    return selectCustomer(username);
   }
 
 //  @Transactional
@@ -35,7 +43,7 @@ public class HibernateUtil {
 //  }
 
   @Transactional
-  public Device selectDeviceByUUID(String uuid, EntityManager entityManager) {
+  public Device selectDeviceByUUID(String uuid) {
     TypedQuery<Device> query =
         entityManager.createQuery("SELECT d FROM Device d WHERE d.uuid = :uuid", Device.class)
             .setParameter("uuid", uuid);
@@ -43,7 +51,7 @@ public class HibernateUtil {
   }
 
   @Transactional
-  public Customer selectCustomer(String username, EntityManager entityManager) {
+  public Customer selectCustomer(String username) {
     TypedQuery<Customer> query =
         entityManager
             .createQuery(
@@ -54,10 +62,9 @@ public class HibernateUtil {
 
   @Transactional
   public Customer selectCustomerBasedOnPhoneNumber(
-      String registeredPhoneNumber, Provider<EntityManager> entityManager) {
+      String registeredPhoneNumber) {
     TypedQuery<Customer> query =
         entityManager
-            .get()
             .createQuery(
                 "SELECT c FROM Customer c WHERE c.contactInformation.phonenumber = :phonenumber",
                 Customer.class)
@@ -65,12 +72,8 @@ public class HibernateUtil {
     return query.getSingleResult();
   }
 
-  public Session getSession(String sid, EntityManager entityManager) {
-    return selectSession(sid, entityManager);
-  }
-
   @Transactional
-  public Session selectSession(String sid, EntityManager entityManager) {
+  public Session selectSession(String sid) {
     TypedQuery<Session> query =
         entityManager
             .createQuery("SELECT s FROM Session s WHERE s.sid = :sid", Session.class)
@@ -78,12 +81,10 @@ public class HibernateUtil {
     return query.getSingleResult();
   }
 
-
   @Transactional
-  public Identifier selectIdentifier(String identifierCode, Provider<EntityManager> entityManager) {
+  public Identifier selectIdentifier(String identifierCode) {
     TypedQuery<Identifier> query =
         entityManager
-            .get()
             .createQuery(
                 "SELECT iden FROM Identifier iden WHERE iden.identifierCode = :identifierCode",
                 Identifier.class)
@@ -92,10 +93,9 @@ public class HibernateUtil {
   }
 
   @Transactional
-  public Identifier selectIdentifierFromUUID(String uuid, Provider<EntityManager> entityManager) {
+  public Identifier selectIdentifierFromUUID(String uuid) {
     TypedQuery<Identifier> query =
         entityManager
-            .get()
             .createQuery(
                 "SELECT iden FROM Identifier iden WHERE iden.uuid = :uuid", Identifier.class)
             .setParameter("uuid", uuid);
@@ -103,9 +103,9 @@ public class HibernateUtil {
   }
 
   @Transactional
-  public List<Customer> getCustomers(Provider<EntityManager> entityManager) {
+  public List<Customer> getCustomers() {
     TypedQuery<Customer> query =
-        entityManager.get().createQuery("SELECT c FROM Customer", Customer.class);
+        entityManager.createQuery("SELECT c FROM Customer", Customer.class);
     return query.getResultList();
   }
 }

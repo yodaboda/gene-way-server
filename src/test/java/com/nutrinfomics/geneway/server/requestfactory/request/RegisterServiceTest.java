@@ -107,7 +107,7 @@ public class RegisterServiceTest {
 	@Test
 	public void register_AsExpected() throws MessagingException {
 		doReturn(UUID).when(mockDevice).getUuid();
-		when(hibernateUtil.selectDeviceByUUID(UUID, mockEntityManager)).thenReturn(mockDbDevice);
+		when(hibernateUtil.selectDeviceByUUID(UUID)).thenReturn(mockDbDevice);
 		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
 		doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
 		doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
@@ -156,7 +156,7 @@ public class RegisterServiceTest {
 	@Test
 	public void getCustomerPhoneNumber_AsExpected() {
 		doReturn(UUID).when(mockDevice).getUuid();
-		when(hibernateUtil.selectDeviceByUUID(UUID, mockEntityManager)).thenReturn(mockDbDevice);
+		when(hibernateUtil.selectDeviceByUUID(UUID)).thenReturn(mockDbDevice);
 		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
 		doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
 		doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
@@ -168,7 +168,7 @@ public class RegisterServiceTest {
 	public void getCustomerPhoneNumber_NULL_UUID_ThrowsNoResultException() {
 		doReturn(null).when(mockDevice).getUuid();
 		String EXCEPTION_MESSAGE = "null uuid";
-		when(hibernateUtil.selectDeviceByUUID(eq(null), any())).thenThrow(new NoResultException(EXCEPTION_MESSAGE));
+		when(hibernateUtil.selectDeviceByUUID(null)).thenThrow(new NoResultException(EXCEPTION_MESSAGE));
 
 		thrown.expect(NoResultException.class);
 		thrown.expectMessage(EXCEPTION_MESSAGE);

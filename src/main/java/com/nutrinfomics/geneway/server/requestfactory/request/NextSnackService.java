@@ -14,6 +14,7 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import com.google.inject.persist.Transactional;
+import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.alerts.ScheduledAlert;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
@@ -26,18 +27,19 @@ import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 
+@RequestScoped
 public class NextSnackService {
 
   public static final LocalTime FIRST_MEAL_TIME = LocalTime.of(8, 0, 0);
 
-  private Provider<EntityManager> entityManager;
+  private EntityManager entityManager;
   private ScheduledAlert scheduledAlert;
   private HibernateUtil hibernateUtil;
   private Clock clock;
 
   @Inject
   public NextSnackService(
-      Provider<EntityManager> entityManager,
+      EntityManager entityManager,
       ScheduledAlert scheduledAlert,
       HibernateUtil hibernateUtil,
       Clock clock) {
@@ -48,7 +50,7 @@ public class NextSnackService {
   }
 
   public Snack getNextSnack(Session session, String dateString) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
+    Session sessionDb = hibernateUtil.selectSession(session.getSid());
 
     if (sessionDb.getCustomer().getPlan().getTodaysSnackMenu() == null) {
       setTodaysSnackMenu(sessionDb, dateString);
@@ -110,9 +112,9 @@ public class NextSnackService {
   void setTodaysSnackMenu(Session sessionDb, String dateString) {
     MarkedSnackMenu markedSnackMenu = calcTodaysSnackMenu(sessionDb, dateString);
     Plan plan = sessionDb.getCustomer().getPlan();
-    entityManager.get().merge(markedSnackMenu);
+    entityManager.merge(markedSnackMenu);
     plan.setTodaysSnackMenu(markedSnackMenu);
-    entityManager.get().merge(plan);
+    entityManager.merge(plan);
   }
 
   @Transactional
@@ -133,7 +135,7 @@ public class NextSnackService {
           gvSnack.reset();
           todaySnack = gvSnack.pickTodaysSnack();
         }
-        entityManager.get().merge(gvSnack);
+        entityManager.merge(gvSnack);
         snack = todaySnack;
       }
       snacks.add(snack);
@@ -163,7 +165,7 @@ public class NextSnackService {
       varyingSnack.setEaten(indices.get(0), true);
       return varyingSnack.getWeeklySnacks().get(indices.get(0));
     } finally {
-      entityManager.get().merge(varyingSnack);
+      entityManager.merge(varyingSnack);
     }
   }
 }

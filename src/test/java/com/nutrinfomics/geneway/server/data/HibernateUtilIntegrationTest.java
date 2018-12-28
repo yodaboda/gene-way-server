@@ -1,10 +1,8 @@
 package com.nutrinfomics.geneway.server.data;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 
@@ -13,16 +11,18 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.google.inject.Scopes;
 import com.google.inject.persist.PersistService;
 import com.google.inject.persist.jpa.JpaPersistModule;
+import com.google.inject.servlet.RequestScoped;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 
-public class HibernateUtilTest {
+public class HibernateUtilIntegrationTest {
 
-	@Inject
 	private PersistService service;
 
 	private Injector injector;
@@ -33,14 +33,27 @@ public class HibernateUtilTest {
 	private EntityManager entityManager;
 	private EntityTransaction entityTransaction;
 
+	public class BindingModule extends AbstractModule {
+
+		@Override
+		protected void configure() {
+			bindScope(RequestScoped.class, Scopes.SINGLETON);
+
+		}
+
+	}
+
 	@Before
 	public void setUp() {
 		MockitoAnnotations.initMocks(this);
-		injector = Guice.createInjector(new JpaPersistModule("testUnit"), BoundFieldModule.of(this));
-		injector.injectMembers(this);
-		
+		injector = Guice.createInjector(new JpaPersistModule("testUnit"), new BindingModule(),
+				BoundFieldModule.of(this));
+
+		service = injector.getInstance(PersistService.class);
 		service.start();
-		
+
+		injector.injectMembers(this);
+
 		entityManager = injector.getInstance(EntityManager.class);
 		entityTransaction = entityManager.getTransaction();
 		entityTransaction.begin();
@@ -66,7 +79,7 @@ public class HibernateUtilTest {
 		device.setCode(code);
 		entityManager.persist(device);
 
-		Device deviceDb = hibernateUtil.selectDeviceByUUID(uuid, entityManager);
+		Device deviceDb = hibernateUtil.selectDeviceByUUID(uuid);
 		assertEquals(uuid, deviceDb.getUuid());
 		assertEquals(code, deviceDb.getCode());
 
