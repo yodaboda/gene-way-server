@@ -135,6 +135,7 @@ public class RegisterServiceIntegrationTest {
 	private ListAppender listAppender;
 
 	private PersistService service;
+	@Inject
 	private EntityManager entityManager;
 	private EntityTransaction entityTransaction;
 
@@ -161,16 +162,16 @@ public class RegisterServiceIntegrationTest {
 
 		service = injector.getInstance(PersistService.class);
 		service.start();
-		
+
 		injector.injectMembers(this);
+
+		entityTransaction = entityManager.getTransaction();
+		entityTransaction.begin();
 
 		setupCustomer();
 
 		setupAlert();
 
-		entityManager = injector.getInstance(EntityManager.class);
-		entityTransaction = entityManager.getTransaction();
-		entityTransaction.begin();
 	}
 
 	// TODO: should be removed and hibernateUtil should not be mocked.
@@ -243,7 +244,7 @@ public class RegisterServiceIntegrationTest {
 		dbDevice.setUuid("uuid");
 		dbCustomer.setDevice(dbDevice);
 
-		registerService.register(customer, entityManager);
+		registerService.register(customer);
 
 		rollbackTransaction();
 	}
@@ -264,7 +265,7 @@ public class RegisterServiceIntegrationTest {
 
 	@Test
 	public void registerCustomer_AsExpected() {
-		registerService.registerCustomer(customer, entityManager);
+		registerService.registerCustomer(customer);
 
 		List<Customer> customers = entityManager.createQuery("Select c from Customer c", Customer.class)
 				.getResultList();
@@ -285,7 +286,7 @@ public class RegisterServiceIntegrationTest {
 
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_DEVICE);
-		registerService.registerCustomer(customer, entityManager);
+		registerService.registerCustomer(customer);
 	}
 
 	@Test
@@ -294,12 +295,12 @@ public class RegisterServiceIntegrationTest {
 
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_CREDENTIALS);
-		registerService.registerCustomer(customer, entityManager);
+		registerService.registerCustomer(customer);
 	}
 
 	@Test
 	public void getCustomerPhoneNumber_AsExpected() {
-		assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer, entityManager));
+		assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer));
 		// Read only operation - no need to roll-back.
 	}
 }
