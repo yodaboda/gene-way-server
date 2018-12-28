@@ -20,6 +20,8 @@ import com.google.inject.persist.jpa.JpaPersistModule;
 import com.google.inject.servlet.RequestScoped;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.nutrinfomics.geneway.server.domain.device.Device;
+import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
 
 public class HibernateUtilIntegrationTest {
 
@@ -65,10 +67,6 @@ public class HibernateUtilIntegrationTest {
 		entityManager.close();
 		service.stop();
 	}
-//	@Test
-//	public void testGetCustomer() {
-//		fail("Not yet implemented");
-//	}
 
 	@Test
 	public void selectDeviceByUUID_AsExpected() {
@@ -82,47 +80,49 @@ public class HibernateUtilIntegrationTest {
 		Device deviceDb = hibernateUtil.selectDeviceByUUID(uuid);
 		assertEquals(uuid, deviceDb.getUuid());
 		assertEquals(code, deviceDb.getCode());
+		assertEquals(device.getId(), deviceDb.getId());
 
 	}
 
-//	@Test
-//	public void testSelectCustomer() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testSelectCustomerBasedOnPhoneNumber() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetSession() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testSelectSessionStringProviderOfEntityManager() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testSelectSessionString() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testSelectIdentifier() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testSelectIdentifierFromUUID() {
-//		fail("Not yet implemented");
-//	}
-//
-//	@Test
-//	public void testGetCustomers() {
-//		fail("Not yet implemented");
-//	}
+	@Test
+	public void selectSession_AsExpected() {
+		Session session = new Session();
+		String sid = "Provider";
+		session.setSid(sid);
+
+		entityManager.persist(session);
+
+		Session sessionDb = hibernateUtil.selectSession(sid);
+		assertEquals(session.getId(), sessionDb.getId());
+		assertEquals(sid, sessionDb.getSid());
+	}
+
+	@Test
+	public void selectIdentifier_AsExpected() {
+		Identifier identifier = new Identifier();
+		String identifierCode = "FNS2";
+		identifier.setIdentifierCode(identifierCode);
+
+		entityManager.persist(identifier);
+
+		Identifier identifierDb = hibernateUtil.selectIdentifier(identifierCode);
+		assertEquals(identifier.getId(), identifierDb.getId());
+		assertEquals(identifierCode, identifierDb.getIdentifierCode());
+	}
+
+	@Test
+	public void selectIdentifierFromUUID_AsExpected() {
+		String UUID = "1234567d-e89b-12d3-a170-426655445000";
+		String identifierCode = "LFAI";
+		Identifier identifier = new Identifier();
+		identifier.setUuid(UUID);
+		identifier.setIdentifierCode(identifierCode);
+		entityManager.persist(identifier);
+
+		Identifier identifierDb = hibernateUtil.selectIdentifierFromUUID(UUID);
+		assertEquals(identifier.getId(), identifierDb.getId());
+		assertEquals(UUID, identifierDb.getUuid());
+		assertEquals(identifierCode, identifierDb.getIdentifierCode());
+	}
 
 }
