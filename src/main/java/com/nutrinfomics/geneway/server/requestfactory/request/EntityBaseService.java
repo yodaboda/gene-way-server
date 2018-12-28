@@ -38,7 +38,7 @@ public class EntityBaseService {
 
   @Transactional
   public void mergePersonalDetails(Session session, PersonalDetails personalDetails) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     sessionDb.getCustomer().setPersonalDetails(personalDetails);
     personalDetails.setCustomer(sessionDb.getCustomer());
   }

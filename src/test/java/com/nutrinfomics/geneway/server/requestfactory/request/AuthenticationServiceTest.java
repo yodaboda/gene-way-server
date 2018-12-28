@@ -1,13 +1,16 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
+
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.any;
+
 
 import java.time.Clock;
 import java.time.Instant;
@@ -89,7 +92,7 @@ public class AuthenticationServiceTest {
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManagerProvider)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(eq(SID), any())).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 
@@ -178,7 +181,7 @@ public class AuthenticationServiceTest {
     String code = "170.144.22.17";
 
     Device mockDbDevice = mock(Device.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     LocalDateTime localDateTime = LocalDateTime.now(clock);
     doReturn(localDateTime).when(mockDbDevice).getCodeCreation();
@@ -199,7 +202,7 @@ public class AuthenticationServiceTest {
     String code = "44.1.3.49.47";
 
     Device mockDbDevice = mock(Device.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     LocalDateTime localDateTime = LocalDateTime.now(clock);
     localDateTime = localDateTime.minusMinutes(45);
@@ -222,7 +225,7 @@ public class AuthenticationServiceTest {
     String code = "8.14.48";
 
     Device mockDbDevice = mock(Device.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     LocalDateTime localDateTime = LocalDateTime.now(clock);
     doReturn(localDateTime).when(mockDbDevice).getCodeCreation();
@@ -251,7 +254,7 @@ public class AuthenticationServiceTest {
     Device mockDbDevice = mock(Device.class);
     Customer mockDbCustomer = mock(Customer.class);
     Credentials mockDbCredentials = mock(Credentials.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
@@ -282,7 +285,7 @@ public class AuthenticationServiceTest {
     Device mockDbDevice = mock(Device.class);
     Customer mockDbCustomer = mock(Customer.class);
     Credentials mockDbCredentials = mock(Credentials.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenThrow(new NoResultException());
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
@@ -315,7 +318,7 @@ public class AuthenticationServiceTest {
     Device mockDbDevice = mock(Device.class);
     Customer mockDbCustomer = mock(Customer.class);
     Credentials mockDbCredentials = mock(Credentials.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(null).when(mockDbCustomer).getSession();
@@ -346,7 +349,7 @@ public class AuthenticationServiceTest {
     Device mockDbDevice = mock(Device.class);
     Customer mockDbCustomer = mock(Customer.class);
     Credentials mockDbCredentials = mock(Credentials.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();
@@ -381,7 +384,7 @@ public class AuthenticationServiceTest {
     Device mockDbDevice = mock(Device.class);
     Customer mockDbCustomer = mock(Customer.class);
     Credentials mockDbCredentials = mock(Credentials.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(null).when(mockDbCustomer).getSession();
@@ -414,7 +417,7 @@ public class AuthenticationServiceTest {
     Device mockDbDevice = mock(Device.class);
     Customer mockDbCustomer = mock(Customer.class);
     Credentials mockDbCredentials = mock(Credentials.class);
-    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManagerProvider))
+    when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbSession).when(mockDbCustomer).getSession();

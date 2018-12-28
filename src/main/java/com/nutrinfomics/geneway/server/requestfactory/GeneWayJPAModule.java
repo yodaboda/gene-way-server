@@ -28,7 +28,7 @@ public class GeneWayJPAModule extends AbstractModule {
 
 	@Provides
 	@RequestScoped
-	public @Named("dbSession") Session provideDbSession(Session clientSession, Provider<EntityManager> entityManager,
+	public @Named("dbSession") Session provideDbSession(Session clientSession, EntityManager entityManager,
 			HibernateUtil hibernateUtil) {
 		return hibernateUtil.selectSession(clientSession.getSid(), entityManager);
 	}

@@ -2,6 +2,7 @@ package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.lang.reflect.Method;
 
+import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Level;
@@ -61,7 +62,8 @@ public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 		if (sid == null)
 			return false;
 
-		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
+		EntityManager entityManager = injector.getInstance(EntityManager.class);
+		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid, entityManager);
 
 		Customer customerDb = sessionDb.getCustomer();
 		Device deviceDb = customerDb.getDevice();

@@ -126,8 +126,6 @@ public class RegisterServiceIntegrationTest {
 	@Inject
 	private RegisterService registerService;
 	@Inject
-	private PersistService service;
-	@Inject
 	private PasswordUtils passwordUtis;
 	@Inject
 	private Locale locale;
@@ -136,6 +134,7 @@ public class RegisterServiceIntegrationTest {
 
 	private ListAppender listAppender;
 
+	private PersistService service;
 	private EntityManager entityManager;
 	private EntityTransaction entityTransaction;
 
@@ -160,13 +159,15 @@ public class RegisterServiceIntegrationTest {
 						new TestGeneWayAlertsModule()),
 				Modules.override(new AlertsModule()).with(new TestAlertsModule()), BoundFieldModule.of(this));
 
+		service = injector.getInstance(PersistService.class);
+		service.start();
+		
 		injector.injectMembers(this);
 
 		setupCustomer();
 
 		setupAlert();
 
-		service.start();
 		entityManager = injector.getInstance(EntityManager.class);
 		entityTransaction = entityManager.getTransaction();
 		entityTransaction.begin();
@@ -242,7 +243,7 @@ public class RegisterServiceIntegrationTest {
 		dbDevice.setUuid("uuid");
 		dbCustomer.setDevice(dbDevice);
 
-		registerService.register(customer);
+		registerService.register(customer, entityManager);
 
 		rollbackTransaction();
 	}
@@ -263,7 +264,7 @@ public class RegisterServiceIntegrationTest {
 
 	@Test
 	public void registerCustomer_AsExpected() {
-		registerService.registerCustomer(customer);
+		registerService.registerCustomer(customer, entityManager);
 
 		List<Customer> customers = entityManager.createQuery("Select c from Customer c", Customer.class)
 				.getResultList();
@@ -284,7 +285,7 @@ public class RegisterServiceIntegrationTest {
 
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_DEVICE);
-		registerService.registerCustomer(customer);
+		registerService.registerCustomer(customer, entityManager);
 	}
 
 	@Test
@@ -293,12 +294,12 @@ public class RegisterServiceIntegrationTest {
 
 		thrown.expect(IllegalArgumentException.class);
 		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_CREDENTIALS);
-		registerService.registerCustomer(customer);
+		registerService.registerCustomer(customer, entityManager);
 	}
 
 	@Test
 	public void getCustomerPhoneNumber_AsExpected() {
-		assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer));
+		assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer, entityManager));
 		// Read only operation - no need to roll-back.
 	}
 }

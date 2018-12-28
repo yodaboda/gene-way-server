@@ -30,7 +30,6 @@ static final String EXCEPTION_MESSAGE_NULL_DEVICE = "The device cannot be null";
 /** Logger for unexpected events. */
   private static final Logger LOGGER = LogManager.getLogger();
 
-  private Provider<EntityManager> entityManagerProvider;
   private AlertMechanism alertMechanism;
   private String code;
   private HibernateUtil hibernateUtil;
@@ -39,13 +38,11 @@ static final String EXCEPTION_MESSAGE_NULL_DEVICE = "The device cannot be null";
   
   @Inject
   public RegisterService(
-      Provider<EntityManager> entityManagerProvider,
       AlertMechanism alertMechanism,
       @Named("code") String code,
       HibernateUtil hibernateUtil,
       Clock clock,
       PasswordUtils passwordUtils) {
-    this.entityManagerProvider = entityManagerProvider;
     this.alertMechanism = alertMechanism;
     this.code = code;
     this.hibernateUtil = hibernateUtil;
@@ -53,21 +50,21 @@ static final String EXCEPTION_MESSAGE_NULL_DEVICE = "The device cannot be null";
     this.passwordUtils = passwordUtils;
   }
 
-  public void register(Customer customer) {
+  public void register(Customer customer, EntityManager entityManager) {
     if (customer == null) {
       throw new IllegalArgumentException("The customer cannot be null");
     }
 
-    registerCustomer(customer);
-    String phoneNumber = getCustomerPhoneNumber(customer);
+    registerCustomer(customer, entityManager);
+    String phoneNumber = getCustomerPhoneNumber(customer, entityManager);
     sendAlert(phoneNumber);
   }
 
   @Transactional
-  String getCustomerPhoneNumber(Customer customer) {
+  String getCustomerPhoneNumber(Customer customer, EntityManager entityManager) {
     // the phone number might not be attached to the session - it could be already in the DB
     Device deviceDb =
-        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManagerProvider);
+        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
 
     return deviceDb.getCustomer().getContactInformation().getRegisteredPhoneNumber();
   }
@@ -91,7 +88,7 @@ static final String EXCEPTION_MESSAGE_NULL_DEVICE = "The device cannot be null";
   }
 
   @Transactional
-  void registerCustomer(Customer customer) {
+  void registerCustomer(Customer customer, EntityManager entityManager) {
     if (customer.getDevice() == null) {
       throw new IllegalArgumentException(EXCEPTION_MESSAGE_NULL_DEVICE);
     }
@@ -128,7 +125,7 @@ static final String EXCEPTION_MESSAGE_NULL_DEVICE = "The device cannot be null";
 
     credentials.setHashedPassword(hashedPassword);
 
-    entityManagerProvider.get().merge(customer);
+    entityManager.merge(customer);
     // do not return anything from Db at this stage. Only after logging in we do so.
     // customer.getDevice().setCode(null);// do not send code by mistake to client
   }

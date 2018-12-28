@@ -82,7 +82,7 @@ public class MarkSnackServiceTest {
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManagerProvider)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(SID, mockEntityManager)).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 

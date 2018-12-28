@@ -87,7 +87,7 @@ public class AuthenticationService {
   @Transactional
   public boolean authenticateCode(Customer customer) throws AuthenticationException {
     Device deviceDb =
-        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
+        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager.get());
     LocalDateTime creationTime = deviceDb.getCodeCreation();
     LocalDateTime expiry = creationTime.plusMinutes(20);
     if (expiry.isBefore(LocalDateTime.now(clock))) {
@@ -115,7 +115,7 @@ public class AuthenticationService {
     Device deviceDb;
 
     try {
-      deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager);
+      deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid(), entityManager.get());
       customerDb = deviceDb.getCustomer();
     } catch (Exception e) {
       throw new AuthenticationException(AuthenticationExceptionType.INVALID_DEVICE_UUID);
@@ -171,7 +171,7 @@ public class AuthenticationService {
   @Transactional
   public Session authenticateSession(Session session) throws AuthenticationException {
 
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
 
     Customer customerDb = sessionDb.getCustomer();
     Device deviceDb = customerDb.getDevice();

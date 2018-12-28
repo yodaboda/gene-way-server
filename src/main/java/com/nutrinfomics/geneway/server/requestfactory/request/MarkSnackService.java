@@ -29,7 +29,7 @@ public class MarkSnackService {
 
   @Transactional
   public void markCurrentSnack(Session session, Snack snack, SnackHistory snackHistory) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     MarkedSnackMenu todaysSnackMenu = sessionDb.getCustomer().getPlan().getTodaysSnackMenu();
 
     SnackOrderSpecification snackOrderSpecification =

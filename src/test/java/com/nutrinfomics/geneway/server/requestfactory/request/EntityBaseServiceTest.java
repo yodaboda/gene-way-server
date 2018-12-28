@@ -1,13 +1,14 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import static org.junit.Assert.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.any;
 
 import javax.inject.Provider;
 import javax.persistence.EntityManager;
@@ -46,7 +47,7 @@ public class EntityBaseServiceTest {
   }
 
   private void setupMockHibernateUtil() {
-    when(mockHibernateUtil.selectSession(SID, mockEntityManagerProvider)).thenReturn(mockDbSession);
+    when(mockHibernateUtil.selectSession(SID, mockEntityManager)).thenReturn(mockDbSession);
     doReturn(SID).when(mockSession).getSid();
   }
 

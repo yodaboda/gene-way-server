@@ -38,7 +38,7 @@ public class PlanService {
 
   @Transactional
   public void setDemo(Session session) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     //		sessionDb.getCustomer().getDevice().setCode("demo");
 
     //		PersonalDetails personalDetails = new PersonalDetails();
@@ -74,7 +74,7 @@ public class PlanService {
   }
 
   public PlanPreferences getPlanPreferences(Session session) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     return sessionDb.getCustomer().getPlan().getPlanPreferences();
   }
 
@@ -116,12 +116,12 @@ public class PlanService {
   //	}
 
   public SnackOrderSpecification getSnackOrderSpecification(Session session) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     return sessionDb.getCustomer().getPlan().getSnackOrderSpecification();
   }
 
   public Set<FoodItemType> getIngredients(Session session, String dateString) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
     Set<FoodItemType> foodItemTypes = new HashSet<>();
@@ -144,7 +144,7 @@ public class PlanService {
   }
 
   public List<String> getMenuSummary(Session session, String dateString) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
     SnackMenu snackMenu = sessionDb.getCustomer().getPlan().getSnackMenu();
 
     List<String> snackSummary = new ArrayList<>();

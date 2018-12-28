@@ -48,7 +48,7 @@ public class NextSnackService {
   }
 
   public Snack getNextSnack(Session session, String dateString) {
-    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager);
+    Session sessionDb = hibernateUtil.selectSession(session.getSid(), entityManager.get());
 
     if (sessionDb.getCustomer().getPlan().getTodaysSnackMenu() == null) {
       setTodaysSnackMenu(sessionDb, dateString);

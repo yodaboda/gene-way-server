@@ -8,6 +8,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -55,7 +56,6 @@ public class RegisterServiceTest {
 
   private ListAppender listAppender;
 
-  @Mock private Provider<EntityManager> mockEntityManagerProvider;
   @Mock private EmailAlertMechanism mockAlertMechanism;
   @Mock private HibernateUtil hibernateUtil;
 
@@ -79,7 +79,6 @@ public class RegisterServiceTest {
     clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
     registerService =
         new RegisterService(
-            mockEntityManagerProvider,
             mockAlertMechanism,
             RegisterServiceTest.CODE,
             hibernateUtil,
@@ -88,7 +87,6 @@ public class RegisterServiceTest {
     doReturn(mockDevice).when(mockCustomer).getDevice();
     doReturn(mockCredintials).when(mockCustomer).getCredentials();
     doReturn("hash").when(mockCredintials).getHashedPassword();
-    doReturn(mockEntityManager).when(mockEntityManagerProvider).get();
     when(mockEntityManager.merge(mockCustomer)).thenReturn(mockMergedCustomer);
     doReturn(HASHED_PASSWORD).when(mockPasswordUtils).hashPassword(any());
   }
@@ -101,7 +99,7 @@ public class RegisterServiceTest {
   @Test
   public void register_AsExpected() throws MessagingException {
     doReturn(UUID).when(mockDevice).getUuid();
-    when(hibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider))
+    when(hibernateUtil.selectDeviceByUUID(UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
@@ -109,7 +107,7 @@ public class RegisterServiceTest {
     doReturn(mockMimeMessage).when(mockAlertMechanism).getMimeMessage();
     doNothing().when(mockAlertMechanism).send();
 
-    registerService.register(mockCustomer);
+    registerService.register(mockCustomer, mockEntityManager);
 
     verify(mockAlertMechanism, times(1)).getMimeMessage();
     verify(mockMimeMessage, times(1)).setSubject(PHONE);
@@ -120,7 +118,7 @@ public class RegisterServiceTest {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("The customer cannot be null");
 
-    registerService.register(null);
+    registerService.register(null, mockEntityManager);
   }
 
   @Test
@@ -152,30 +150,30 @@ public class RegisterServiceTest {
   @Test
   public void getCustomerPhoneNumber_AsExpected() {
     doReturn(UUID).when(mockDevice).getUuid();
-    when(hibernateUtil.selectDeviceByUUID(UUID, mockEntityManagerProvider))
+    when(hibernateUtil.selectDeviceByUUID(UUID, mockEntityManager))
         .thenReturn(mockDbDevice);
     doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
     doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
     doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
 
-    assertEquals(PHONE, registerService.getCustomerPhoneNumber(mockCustomer));
+    assertEquals(PHONE, registerService.getCustomerPhoneNumber(mockCustomer, mockEntityManager));
   }
 
   @Test
   public void getCustomerPhoneNumber_NULL_UUID_ThrowsNoResultException() {
     doReturn(null).when(mockDevice).getUuid();
     String EXCEPTION_MESSAGE = "null uuid";
-    when(hibernateUtil.selectDeviceByUUID(null, mockEntityManagerProvider))
+    when(hibernateUtil.selectDeviceByUUID(eq(null), any()))
         .thenThrow(new NoResultException(EXCEPTION_MESSAGE));
 
     thrown.expect(NoResultException.class);
     thrown.expectMessage(EXCEPTION_MESSAGE);
-    registerService.getCustomerPhoneNumber(mockCustomer);
+    registerService.getCustomerPhoneNumber(mockCustomer, mockEntityManager);
   }
 
   @Test
   public void registerCustomer_AsExpected() {
-    registerService.registerCustomer(mockCustomer);
+    registerService.registerCustomer(mockCustomer, mockEntityManager);
 
     verify(mockDevice, times(1)).setCode(CODE);
     verify(mockDevice, times(1)).setCodeCreation(LocalDateTime.now(clock));
@@ -189,7 +187,7 @@ public class RegisterServiceTest {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("The device cannot be null");
 
-    registerService.registerCustomer(mockCustomer);
+    registerService.registerCustomer(mockCustomer, mockEntityManager);
   }
 
   @Test
@@ -199,6 +197,6 @@ public class RegisterServiceTest {
     thrown.expect(IllegalArgumentException.class);
     thrown.expectMessage("The credentials cannot be null");
 
-    registerService.registerCustomer(mockCustomer);
+    registerService.registerCustomer(mockCustomer, mockEntityManager);
   }
 }
