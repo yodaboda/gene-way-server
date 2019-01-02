@@ -14,7 +14,12 @@ import javax.persistence.Version;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class EntityBase implements Serializable {
 
-  @Id
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1283887551948589322L;
+
+@Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   //    @GeneratedValue(strategy = GenerationType.TABLE, generator = "pkGen")
   //    @TableGenerator(allocationSize = 1, initialValue = 0, name = "pkGen", table =

@@ -1,5 +1,7 @@
 package com.nutrinfomics.geneway.server.domain;
 
+import java.lang.reflect.InvocationTargetException;
+
 import javax.persistence.EntityManager;
 
 import org.apache.logging.log4j.Level;
@@ -19,12 +21,12 @@ public class EntityBaseLocator extends Locator<EntityBase, Long> {
   @Override
   public EntityBase create(Class<? extends EntityBase> clazz) {
     try {
-      return clazz.newInstance();
-    } catch (InstantiationException e) {
-      LOGGER.log(Level.FATAL, e.toString(), e);
-    } catch (IllegalAccessException e) {
+      return clazz.getDeclaredConstructor().newInstance();
+    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException 
+    			| NoSuchMethodException | SecurityException e) {
       LOGGER.log(Level.FATAL, e.toString(), e);
     }
+    
     return null;
   }
 
