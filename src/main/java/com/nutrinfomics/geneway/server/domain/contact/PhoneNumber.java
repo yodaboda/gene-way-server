@@ -6,26 +6,25 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
 public class PhoneNumber extends EntityBase {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1507458874115679899L;
-	private String number;
-	private String description;
+  /** */
+  private static final long serialVersionUID = 1507458874115679899L;
 
-	public void setNumber(String number) {
-		this.number = number;
-	}
+  private String number;
+  private String description;
 
-	public String getNumber() {
-		return number;
-	}
+  public void setNumber(String number) {
+    this.number = number;
+  }
 
-	public String getDescription() {
-		return description;
-	}
+  public String getNumber() {
+    return number;
+  }
 
-	public void setDescription(String description) {
-		this.description = description;
-	}
+  public String getDescription() {
+    return description;
+  }
+
+  public void setDescription(String description) {
+    this.description = description;
+  }
 }

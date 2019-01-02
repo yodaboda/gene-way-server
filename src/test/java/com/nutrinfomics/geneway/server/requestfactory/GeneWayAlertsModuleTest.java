@@ -22,7 +22,6 @@ import com.geneway.alerts.AlertMessage;
 import com.geneway.alerts.AlertRecipient;
 import com.geneway.alerts.AlertSpecification;
 import com.geneway.alerts.AlertType;
-import com.geneway.alerts.impl.DefaultEmailAlertSender;
 import com.geneway.alerts.injection.AlertsModule;
 import com.geneway.alerts.injection.testing.TestAlertsModule;
 import com.google.inject.Guice;
@@ -41,187 +40,196 @@ import com.nutrinfomics.geneway.server.requestfactory.request.TestGeneWayAlertsM
 
 public class GeneWayAlertsModuleTest {
 
-	@Bind
-	@Mock
-	private @Named("dbSession") Session mockDbSession;
-	@Bind
-	private Locale locale = Locale.getDefault();
-	@Bind
-	@Mock
-	private ResourceBundles mockResourceBundles;
+  @Bind
+  @Mock
+  private @Named("dbSession") Session mockDbSession;
 
-	private Injector injector;
+  @Bind private Locale locale = Locale.getDefault();
+  @Bind @Mock private ResourceBundles mockResourceBundles;
 
-	@Before
-	public void setUp() {
-		MockitoAnnotations.initMocks(this);
-		injector = Guice.createInjector(Modules.override(new GeneWayAlertsModule(), new AlertsModule())
-				.with(new TestGeneWayAlertsModule(), new TestAlertsModule()), BoundFieldModule.of(this));
-	}
+  private Injector injector;
 
-	@Test
-	public void provideAlertSpecification_AsExpected() {
+  @Before
+  public void setUp() {
+    MockitoAnnotations.initMocks(this);
+    injector =
+        Guice.createInjector(
+            Modules.override(new GeneWayAlertsModule(), new AlertsModule())
+                .with(new TestGeneWayAlertsModule(), new TestAlertsModule()),
+            BoundFieldModule.of(this));
+  }
 
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(true).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = mock(ContactInformation.class);
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
-		List<Email> emails = new ArrayList<>();
-		Email mockEmail = mock(Email.class);
-		String email = "transportation@cs.research.bio-medicine.math.food.net";
-		doReturn(email).when(mockEmail).getEmail();
-		emails.add(mockEmail);
-		doReturn(emails).when(mockContactInformation).getEmails();
+  @Test
+  public void provideAlertSpecification_AsExpected() {
 
-		String localizedSubject = GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT + locale;
-		String[] body = new String[] { GeneWayAlertsModule.ALERT_MESSAGE_BODY };
-		String localizedBody = body[0] + locale;
-		when(mockResourceBundles.getGeneWayResource(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, locale)).thenReturn(localizedSubject);
-		when(mockResourceBundles.getGeneWayResource(body[0], locale)).thenReturn(localizedBody);
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(true).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = mock(ContactInformation.class);
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    List<Email> emails = new ArrayList<>();
+    Email mockEmail = mock(Email.class);
+    String email = "transportation@cs.research.bio-medicine.math.food.net";
+    doReturn(email).when(mockEmail).getEmail();
+    emails.add(mockEmail);
+    doReturn(emails).when(mockContactInformation).getEmails();
 
-		AlertSpecification alertLocalization = injector.getInstance(AlertSpecification.class);
+    String localizedSubject = GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT + locale;
+    String[] body = new String[] {GeneWayAlertsModule.ALERT_MESSAGE_BODY};
+    String localizedBody = body[0] + locale;
+    when(mockResourceBundles.getGeneWayResource(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, locale))
+        .thenReturn(localizedSubject);
+    when(mockResourceBundles.getGeneWayResource(body[0], locale)).thenReturn(localizedBody);
 
-		assertEquals(TestGeneWayAlertsModule.USER_NAME, alertLocalization.getAlertSender().getUserName());
-		assertEquals(email, alertLocalization.getAlertRecipient().getRecipient());
-		assertEquals(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, alertLocalization.getAlertMessage().getSubject());
-		assertEquals(localizedSubject, alertLocalization.getAlertLocalization().localizeSubject(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT));
-	}
+    AlertSpecification alertLocalization = injector.getInstance(AlertSpecification.class);
 
-	@Test
-	public void provideAlertMessage_AsExpceted() {
-		AlertMessage alertMessage = injector.getInstance(AlertMessage.class);
-		assertEquals(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, alertMessage.getSubject());
-		assertArrayEquals(new String[] { GeneWayAlertsModule.ALERT_MESSAGE_BODY }, alertMessage.getBody());
-	}
+    assertEquals(
+        TestGeneWayAlertsModule.USER_NAME, alertLocalization.getAlertSender().getUserName());
+    assertEquals(email, alertLocalization.getAlertRecipient().getRecipient());
+    assertEquals(
+        GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT,
+        alertLocalization.getAlertMessage().getSubject());
+    assertEquals(
+        localizedSubject,
+        alertLocalization
+            .getAlertLocalization()
+            .localizeSubject(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT));
+  }
 
-	@Test
-	public void provideAlertRecipient_Phone_AsExpected() {
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(false).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = mock(ContactInformation.class);
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
-		List<Email> emails = new ArrayList<>();
-		Email mockEmail = mock(Email.class);
-		String email = "transportation@cs.research.bio-medicine.math.food.net";
-		doReturn(email).when(mockEmail).getEmail();
-		emails.add(mockEmail);
-		doReturn(emails).when(mockContactInformation).getEmails();
+  @Test
+  public void provideAlertMessage_AsExpceted() {
+    AlertMessage alertMessage = injector.getInstance(AlertMessage.class);
+    assertEquals(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, alertMessage.getSubject());
+    assertArrayEquals(
+        new String[] {GeneWayAlertsModule.ALERT_MESSAGE_BODY}, alertMessage.getBody());
+  }
 
-		String phoneNumber = "170.4.12.69.25";
-		doReturn(phoneNumber).when(mockContactInformation).getRegisteredPhoneNumber();
+  @Test
+  public void provideAlertRecipient_Phone_AsExpected() {
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(false).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = mock(ContactInformation.class);
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    List<Email> emails = new ArrayList<>();
+    Email mockEmail = mock(Email.class);
+    String email = "transportation@cs.research.bio-medicine.math.food.net";
+    doReturn(email).when(mockEmail).getEmail();
+    emails.add(mockEmail);
+    doReturn(emails).when(mockContactInformation).getEmails();
 
-		AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
-		assertEquals(phoneNumber, alertRecipient.getRecipient());
-		assertEquals(AlertType.SMS, alertRecipient.getAlertType());
-	}
+    String phoneNumber = "170.4.12.69.25";
+    doReturn(phoneNumber).when(mockContactInformation).getRegisteredPhoneNumber();
 
-	@Test
-	public void provideAlertRecipient_Email_AsExpected() {
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(true).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = mock(ContactInformation.class);
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
-		List<Email> emails = new ArrayList<>();
-		Email mockEmail = mock(Email.class);
-		String email = "transportation@cs.research.bio-medicine.math.food.net";
-		doReturn(email).when(mockEmail).getEmail();
-		emails.add(mockEmail);
-		doReturn(emails).when(mockContactInformation).getEmails();
+    AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
+    assertEquals(phoneNumber, alertRecipient.getRecipient());
+    assertEquals(AlertType.SMS, alertRecipient.getAlertType());
+  }
 
-		String phoneNumber = "170.4.12.69.25";
-		doReturn(phoneNumber).when(mockContactInformation).getRegisteredPhoneNumber();
+  @Test
+  public void provideAlertRecipient_Email_AsExpected() {
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(true).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = mock(ContactInformation.class);
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    List<Email> emails = new ArrayList<>();
+    Email mockEmail = mock(Email.class);
+    String email = "transportation@cs.research.bio-medicine.math.food.net";
+    doReturn(email).when(mockEmail).getEmail();
+    emails.add(mockEmail);
+    doReturn(emails).when(mockContactInformation).getEmails();
 
-		AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
-		assertEquals(email, alertRecipient.getRecipient());
-		assertEquals(AlertType.E_MAIL, alertRecipient.getAlertType());
-	}
+    String phoneNumber = "170.4.12.69.25";
+    doReturn(phoneNumber).when(mockContactInformation).getRegisteredPhoneNumber();
 
-	@Test
-	public void provideAlertRecipient_nullContactInformation_AsExpected() {
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(true).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = null;
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
+    assertEquals(email, alertRecipient.getRecipient());
+    assertEquals(AlertType.E_MAIL, alertRecipient.getAlertType());
+  }
 
-		AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
-		assertEquals(null, alertRecipient.getRecipient());
-		assertEquals(AlertType.E_MAIL, alertRecipient.getAlertType());
-	}
+  @Test
+  public void provideAlertRecipient_nullContactInformation_AsExpected() {
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(true).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = null;
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
 
-	@Test
-	public void provideAlertRecipient_emptyEmails_AsExpected() {
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(false).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = mock(ContactInformation.class);
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
-		List<Email> emails = new ArrayList<>();
-		doReturn(emails).when(mockContactInformation).getEmails();
+    AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
+    assertEquals(null, alertRecipient.getRecipient());
+    assertEquals(AlertType.E_MAIL, alertRecipient.getAlertType());
+  }
 
-		String phoneNumber = "170.4.12.69.25";
-		doReturn(phoneNumber).when(mockContactInformation).getRegisteredPhoneNumber();
+  @Test
+  public void provideAlertRecipient_emptyEmails_AsExpected() {
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(false).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = mock(ContactInformation.class);
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    List<Email> emails = new ArrayList<>();
+    doReturn(emails).when(mockContactInformation).getEmails();
 
-		AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
-		assertEquals(phoneNumber, alertRecipient.getRecipient());
-		assertEquals(AlertType.SMS, alertRecipient.getAlertType());
-	}
+    String phoneNumber = "170.4.12.69.25";
+    doReturn(phoneNumber).when(mockContactInformation).getRegisteredPhoneNumber();
 
-	@Test
-	public void provideAlertRecipient_nullEmails_AsExpected() {
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(true).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = mock(ContactInformation.class);
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
-		List<Email> emails = null;
-		doReturn(emails).when(mockContactInformation).getEmails();
+    AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
+    assertEquals(phoneNumber, alertRecipient.getRecipient());
+    assertEquals(AlertType.SMS, alertRecipient.getAlertType());
+  }
 
-		AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
-		assertEquals(null, alertRecipient.getRecipient());
-		assertEquals(AlertType.E_MAIL, alertRecipient.getAlertType());
-	}
+  @Test
+  public void provideAlertRecipient_nullEmails_AsExpected() {
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(true).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = mock(ContactInformation.class);
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    List<Email> emails = null;
+    doReturn(emails).when(mockContactInformation).getEmails();
 
-	@Test
-	public void provideAlertLocalization_AsExpceted() {
-		String subject = "hello";
-		String localizedSubject = subject + locale;
-		String[] body = new String[] { "healthy" };
-		String localizedBody = body[0] + locale;
-		when(mockResourceBundles.getGeneWayResource(subject, locale)).thenReturn(localizedSubject);
-		when(mockResourceBundles.getGeneWayResource(body[0], locale)).thenReturn(localizedBody);
+    AlertRecipient alertRecipient = injector.getInstance(AlertRecipient.class);
+    assertEquals(null, alertRecipient.getRecipient());
+    assertEquals(AlertType.E_MAIL, alertRecipient.getAlertType());
+  }
 
-		AlertLocalization alertLocalization = injector.getInstance(AlertLocalization.class);
-		assertEquals(locale, alertLocalization.getLocale());
-		assertEquals(localizedSubject, alertLocalization.localizeSubject(subject));
-		assertEquals(localizedBody + "\n\r https://gene-way.com", alertLocalization.localizeBody(body));
-	}
+  @Test
+  public void provideAlertLocalization_AsExpceted() {
+    String subject = "hello";
+    String localizedSubject = subject + locale;
+    String[] body = new String[] {"healthy"};
+    String localizedBody = body[0] + locale;
+    when(mockResourceBundles.getGeneWayResource(subject, locale)).thenReturn(localizedSubject);
+    when(mockResourceBundles.getGeneWayResource(body[0], locale)).thenReturn(localizedBody);
 
+    AlertLocalization alertLocalization = injector.getInstance(AlertLocalization.class);
+    assertEquals(locale, alertLocalization.getLocale());
+    assertEquals(localizedSubject, alertLocalization.localizeSubject(subject));
+    assertEquals(localizedBody + "\n\r https://gene-way.com", alertLocalization.localizeBody(body));
+  }
 }

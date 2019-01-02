@@ -14,26 +14,26 @@ import com.nutrinfomics.geneway.shared.SnackProperty;
 
 public class SnackPropertyFormatTest {
 
-	private ResourceBundles mockResourceBundles;
-	
-	private SnackPropertyFormat snackPropertyFormat;
-	
-	@Before
-	public void setUp() {
-		mockResourceBundles = mock(ResourceBundles.class);
-		snackPropertyFormat = new SnackPropertyFormat(mockResourceBundles);
-	}
-	
-	@Test
-	public void format_AsExpected() {
-		Locale locale = Locale.JAPANESE;
-		SnackProperty snackProperty  = SnackProperty.ENERGY;
-		String snackPropertyString = snackProperty.toString();
-		String formatSnackProperty = "Rest in Korean";
-		when(mockResourceBundles.getMiscResource(snackPropertyString, locale)).thenReturn(formatSnackProperty);
-		String formattedSnackProperty = snackPropertyFormat.format(snackProperty, locale);
-		
-		assertEquals(formatSnackProperty, formattedSnackProperty);
-	}
+  private ResourceBundles mockResourceBundles;
 
+  private SnackPropertyFormat snackPropertyFormat;
+
+  @Before
+  public void setUp() {
+    mockResourceBundles = mock(ResourceBundles.class);
+    snackPropertyFormat = new SnackPropertyFormat(mockResourceBundles);
+  }
+
+  @Test
+  public void format_AsExpected() {
+    Locale locale = Locale.JAPANESE;
+    SnackProperty snackProperty = SnackProperty.ENERGY;
+    String snackPropertyString = snackProperty.toString();
+    String formatSnackProperty = "Rest in Korean";
+    when(mockResourceBundles.getMiscResource(snackPropertyString, locale))
+        .thenReturn(formatSnackProperty);
+    String formattedSnackProperty = snackPropertyFormat.format(snackProperty, locale);
+
+    assertEquals(formatSnackProperty, formattedSnackProperty);
+  }
 }

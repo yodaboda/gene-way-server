@@ -22,11 +22,15 @@ public class EntityBaseLocator extends Locator<EntityBase, Long> {
   public EntityBase create(Class<? extends EntityBase> clazz) {
     try {
       return clazz.getDeclaredConstructor().newInstance();
-    } catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException 
-    			| NoSuchMethodException | SecurityException e) {
+    } catch (InstantiationException
+        | IllegalAccessException
+        | IllegalArgumentException
+        | InvocationTargetException
+        | NoSuchMethodException
+        | SecurityException e) {
       LOGGER.log(Level.FATAL, e.toString(), e);
     }
-    
+
     return null;
   }
 

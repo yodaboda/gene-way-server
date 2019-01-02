@@ -14,25 +14,25 @@ import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 public class MeasurementUnitFormatTest {
 
-	private ResourceBundles mockResourceBundles;
-	private MeasurementUnitFormat measurementUnitFormat;
+  private ResourceBundles mockResourceBundles;
+  private MeasurementUnitFormat measurementUnitFormat;
 
-	@Before
-	public void setUp() {
-		mockResourceBundles = mock(ResourceBundles.class);
-		measurementUnitFormat = new MeasurementUnitFormat(mockResourceBundles);
-	}
+  @Before
+  public void setUp() {
+    mockResourceBundles = mock(ResourceBundles.class);
+    measurementUnitFormat = new MeasurementUnitFormat(mockResourceBundles);
+  }
 
-	@Test
-	public void format_AsExpected() {
-		Locale locale = Locale.FRENCH;
-		MeasurementUnit measurementUnit = MeasurementUnit.LEAF;
+  @Test
+  public void format_AsExpected() {
+    Locale locale = Locale.FRENCH;
+    MeasurementUnit measurementUnit = MeasurementUnit.LEAF;
 
-		String resourceString = "German Leaf";
-		when(mockResourceBundles.getMeasurementResource(measurementUnit, locale)).thenReturn(resourceString);
+    String resourceString = "German Leaf";
+    when(mockResourceBundles.getMeasurementResource(measurementUnit, locale))
+        .thenReturn(resourceString);
 
-		String formattedString = measurementUnitFormat.format(measurementUnit, locale);
-		assertEquals(resourceString, formattedString);
-	}
-
+    String formattedString = measurementUnitFormat.format(measurementUnit, locale);
+    assertEquals(resourceString, formattedString);
+  }
 }

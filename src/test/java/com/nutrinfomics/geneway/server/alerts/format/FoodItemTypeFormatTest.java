@@ -16,40 +16,41 @@ import com.nutrinfomics.geneway.shared.FoodItemType;
 
 public class FoodItemTypeFormatTest {
 
-	@Rule public ExpectedException thrown = ExpectedException.none();
+  @Rule public ExpectedException thrown = ExpectedException.none();
 
-	private ResourceBundles mockResourceBundles;
-	private FoodItemTypeFormat foodItemTypeFormat;
-	
-	@Before
-	public void setup() {
-		mockResourceBundles = mock(ResourceBundles.class);
-	}
-	
-	@Test
-	public void format_AsExpected() {
-		FoodItemType foodItemType = FoodItemType.BEEF_TENDERLOIN;
-		Locale arLanguage = Locale.forLanguageTag("ar");
-		String resourceResult = "فيليه";
-		
-		foodItemTypeFormat = new FoodItemTypeFormat(mockResourceBundles);
-		
-		when(mockResourceBundles.getFoodItemResource(foodItemType, arLanguage)).thenReturn(resourceResult);
+  private ResourceBundles mockResourceBundles;
+  private FoodItemTypeFormat foodItemTypeFormat;
 
-		assertEquals(resourceResult, foodItemTypeFormat.format(foodItemType, arLanguage));
-	}
+  @Before
+  public void setup() {
+    mockResourceBundles = mock(ResourceBundles.class);
+  }
 
-	@Test
-	public void format_nullFoodItem() {
-		FoodItemType foodItemType = null;
-		Locale arLanguage = Locale.GERMAN;
-		
-		foodItemTypeFormat = new FoodItemTypeFormat(mockResourceBundles);
-		
-		when(mockResourceBundles.getFoodItemResource(foodItemType, arLanguage)).thenThrow(NullPointerException.class);
+  @Test
+  public void format_AsExpected() {
+    FoodItemType foodItemType = FoodItemType.BEEF_TENDERLOIN;
+    Locale arLanguage = Locale.forLanguageTag("ar");
+    String resourceResult = "فيليه";
 
-		thrown.expect(NullPointerException.class);
-		foodItemTypeFormat.format(foodItemType, arLanguage);
-	}
+    foodItemTypeFormat = new FoodItemTypeFormat(mockResourceBundles);
 
+    when(mockResourceBundles.getFoodItemResource(foodItemType, arLanguage))
+        .thenReturn(resourceResult);
+
+    assertEquals(resourceResult, foodItemTypeFormat.format(foodItemType, arLanguage));
+  }
+
+  @Test
+  public void format_nullFoodItem() {
+    FoodItemType foodItemType = null;
+    Locale arLanguage = Locale.GERMAN;
+
+    foodItemTypeFormat = new FoodItemTypeFormat(mockResourceBundles);
+
+    when(mockResourceBundles.getFoodItemResource(foodItemType, arLanguage))
+        .thenThrow(NullPointerException.class);
+
+    thrown.expect(NullPointerException.class);
+    foodItemTypeFormat.format(foodItemType, arLanguage);
+  }
 }

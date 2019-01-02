@@ -1,8 +1,6 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -32,56 +30,47 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 
 public class GeneWayJPAModuleTest {
 
-	private final String SID = "no taxes without representation";
+  private final String SID = "no taxes without representation";
 
-	@Mock
-	private HibernateUtil mockHibernateUtil;
-	@Mock
-	private Utils mockUtils;
-	@Mock
-	private RequestUtils mockRequestUtils;
+  @Mock private HibernateUtil mockHibernateUtil;
+  @Mock private Utils mockUtils;
+  @Mock private RequestUtils mockRequestUtils;
 
-	@Mock
-	private Session mockDbSession;
-	@Bind
-	@Mock
-	private Session mockClientSession;
+  @Mock private Session mockDbSession;
+  @Bind @Mock private Session mockClientSession;
 
-	@Inject
-	private PersistService service;
-	@Inject
-	Provider<EntityManager> entityManagerProvider;
+  @Inject private PersistService service;
+  @Inject Provider<EntityManager> entityManagerProvider;
 
-	private Injector injector;
+  private Injector injector;
 
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+    injector =
+        Guice.createInjector(
+            Modules.override(new GeneWayJPAModule())
+                .with(new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils)),
+            BoundFieldModule.of(this));
+    injector.injectMembers(this);
+    service.start();
+  }
 
+  @Test
+  public void provideDbSession_AsExpected() {
+    doReturn(SID).when(mockClientSession).getSid();
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		injector = Guice.createInjector(Modules.override(new GeneWayJPAModule())
-							.with(new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils)),
-				BoundFieldModule.of(this));
-		injector.injectMembers(this);
-		service.start();
-	}
+    Session dbSession = injector.getInstance(Key.get(Session.class, Names.named("dbSession")));
+    assertEquals(mockDbSession, dbSession);
+  }
 
-	@Test
-	public void provideDbSession_AsExpected() {
-		doReturn(SID).when(mockClientSession).getSid();
-		when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
-		
-		Session dbSession = injector.getInstance(Key.get(Session.class, Names.named("dbSession")));
-		assertEquals(mockDbSession, dbSession);
-	}
+  @Test
+  public void provideLocale_AsExpected() {
+    Locale defaultLocale = Locale.getDefault();
+    doReturn(defaultLocale).when(mockUtils).getLocale();
 
-	@Test
-	public void provideLocale_AsExpected() {
-		Locale defaultLocale = Locale.getDefault();
-		doReturn(defaultLocale).when(mockUtils).getLocale();
-
-		Locale locale = injector.getInstance(Locale.class);
-		assertEquals(defaultLocale, locale);
-	}
-
+    Locale locale = injector.getInstance(Locale.class);
+    assertEquals(defaultLocale, locale);
+  }
 }

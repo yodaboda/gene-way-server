@@ -12,27 +12,27 @@ import org.junit.Test;
 
 public class LocalDatePersistenceConverterTest {
 
-	private LocalDatePersistenceConverter localDatePersistenceConverter = new LocalDatePersistenceConverter();
-	private final Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("Asia/Shanghai"));
+  private LocalDatePersistenceConverter localDatePersistenceConverter =
+      new LocalDatePersistenceConverter();
+  private final Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.of("Asia/Shanghai"));
 
-	@Test
-	public void convertToDatabaseColumn_AsExpected() {
-		LocalDate localDate = LocalDate.now(clock);
+  @Test
+  public void convertToDatabaseColumn_AsExpected() {
+    LocalDate localDate = LocalDate.now(clock);
 
-		java.sql.Date expectedDate = new java.sql.Date(java.util.Date.from(clock.instant()).getTime());
-		java.sql.Date date = localDatePersistenceConverter.convertToDatabaseColumn(localDate);
+    java.sql.Date expectedDate = new java.sql.Date(java.util.Date.from(clock.instant()).getTime());
+    java.sql.Date date = localDatePersistenceConverter.convertToDatabaseColumn(localDate);
 
-		int millisInDay = 86400000;
-		assertTrue(Math.abs(expectedDate.getTime() - date.getTime()) < millisInDay);
-	}
+    int millisInDay = 86400000;
+    assertTrue(Math.abs(expectedDate.getTime() - date.getTime()) < millisInDay);
+  }
 
-	@Test
-	public void convertToEntityAttribute_AsExpected() {
-		LocalDate expectedLocalDate = LocalDate.now(clock);
-		java.sql.Date date = new java.sql.Date(java.util.Date.from(clock.instant()).getTime());
-		LocalDate localDate = localDatePersistenceConverter.convertToEntityAttribute(date);
+  @Test
+  public void convertToEntityAttribute_AsExpected() {
+    LocalDate expectedLocalDate = LocalDate.now(clock);
+    java.sql.Date date = new java.sql.Date(java.util.Date.from(clock.instant()).getTime());
+    LocalDate localDate = localDatePersistenceConverter.convertToEntityAttribute(date);
 
-		assertEquals(expectedLocalDate, localDate);
-	}
-
+    assertEquals(expectedLocalDate, localDate);
+  }
 }

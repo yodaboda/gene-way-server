@@ -15,32 +15,32 @@ import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 public class FoodItemFormatTest {
 
-	private FoodItemTypeFormat mockFoodItemTypeFormat;
-	private MeasurementUnitFormat mockMeasurementUnitFormat;
-	private FoodItemFormat foodItemFormat;
+  private FoodItemTypeFormat mockFoodItemTypeFormat;
+  private MeasurementUnitFormat mockMeasurementUnitFormat;
+  private FoodItemFormat foodItemFormat;
 
-	@Before
-	public void setup() {
-		mockFoodItemTypeFormat = mock(FoodItemTypeFormat.class);
-		mockMeasurementUnitFormat = mock(MeasurementUnitFormat.class);
-		foodItemFormat = new FoodItemFormat(mockFoodItemTypeFormat, mockMeasurementUnitFormat);
-	}
+  @Before
+  public void setup() {
+    mockFoodItemTypeFormat = mock(FoodItemTypeFormat.class);
+    mockMeasurementUnitFormat = mock(MeasurementUnitFormat.class);
+    foodItemFormat = new FoodItemFormat(mockFoodItemTypeFormat, mockMeasurementUnitFormat);
+  }
 
-	@Test
-	public void format_AsExpected() {
+  @Test
+  public void format_AsExpected() {
 
-		FoodItemType foodItemType = FoodItemType.BEAN_GREEN;
-		MeasurementUnit measurementUnit = MeasurementUnit.MICROGRAM;
-		FoodItem foodItem = new FoodItem(79, measurementUnit, foodItemType);
-		Locale locale = Locale.ENGLISH;
+    FoodItemType foodItemType = FoodItemType.BEAN_GREEN;
+    MeasurementUnit measurementUnit = MeasurementUnit.MICROGRAM;
+    FoodItem foodItem = new FoodItem(79, measurementUnit, foodItemType);
+    Locale locale = Locale.ENGLISH;
 
-		String foodItemTypeFormatString = "Grean Bean";
-		when(mockFoodItemTypeFormat.format(foodItemType, locale)).thenReturn(foodItemTypeFormatString);
-		String measurementUnitFormatString = "MicroGram";
-		when(mockMeasurementUnitFormat.format(measurementUnit, locale)).thenReturn(measurementUnitFormatString);
+    String foodItemTypeFormatString = "Grean Bean";
+    when(mockFoodItemTypeFormat.format(foodItemType, locale)).thenReturn(foodItemTypeFormatString);
+    String measurementUnitFormatString = "MicroGram";
+    when(mockMeasurementUnitFormat.format(measurementUnit, locale))
+        .thenReturn(measurementUnitFormatString);
 
-		String formattedOutput = foodItemFormat.format(foodItem, locale);
-		assertEquals(foodItemTypeFormatString + " 79 " + measurementUnitFormatString, formattedOutput);
-	}
-
+    String formattedOutput = foodItemFormat.format(foodItem, locale);
+    assertEquals(foodItemTypeFormatString + " 79 " + measurementUnitFormatString, formattedOutput);
+  }
 }

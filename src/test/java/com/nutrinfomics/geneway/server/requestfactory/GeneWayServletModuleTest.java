@@ -1,8 +1,6 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.when;
 
@@ -37,66 +35,63 @@ import com.nutrinfomics.geneway.server.requestfactory.request.TestGeneWayAlertsM
 
 public class GeneWayServletModuleTest {
 
-	private final String SID = "Smith Pt PF AB";
+  private final String SID = "Smith Pt PF AB";
 
-	@Mock
-	private HibernateUtil mockHibernateUtil;
-	@Mock
-	private Utils mockUtils;
-	@Mock
-	private RequestUtils mockRequestUtils;
+  @Mock private HibernateUtil mockHibernateUtil;
+  @Mock private Utils mockUtils;
+  @Mock private RequestUtils mockRequestUtils;
 
-	@Mock
-	private Session mockDbSession;
-	@Bind
-	@Mock
-	private Session mockClientSession;
+  @Mock private Session mockDbSession;
+  @Bind @Mock private Session mockClientSession;
 
-	@Inject
-	private PersistService service;
-	@Inject
-	Provider<EntityManager> entityManagerProvider;
+  @Inject private PersistService service;
+  @Inject Provider<EntityManager> entityManagerProvider;
 
-	private Injector injector;
+  private Injector injector;
 
-	public class TestGeneWayServletModule extends GeneWayServletModule {
-		@Override
-		protected void configureServlets() {
-			// TODO: Figure out a way to deal with
-			// No scope is bound to com.google.inject.servlet.RequestScoped
-			bindScope(RequestScoped.class, Scopes.SINGLETON);
-		}
-	}
+  public class TestGeneWayServletModule extends GeneWayServletModule {
+    @Override
+    protected void configureServlets() {
+      // TODO: Figure out a way to deal with
+      // No scope is bound to com.google.inject.servlet.RequestScoped
+      bindScope(RequestScoped.class, Scopes.SINGLETON);
+    }
+  }
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
-		injector = Guice.createInjector(Modules
-				.override(new GeneWayJPAModule(), new GeneWayAlertsModule(), new AlertsModule(),
-						new GeneWayRequestFactoryModule())
-				.with(new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils),
-						new TestGeneWayAlertsModule(), new TestAlertsModule()),
-				BoundFieldModule.of(this));
-		injector.injectMembers(this);
-		service.start();
-	}
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
+    injector =
+        Guice.createInjector(
+            Modules.override(
+                    new GeneWayJPAModule(),
+                    new GeneWayAlertsModule(),
+                    new AlertsModule(),
+                    new GeneWayRequestFactoryModule())
+                .with(
+                    new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils),
+                    new TestGeneWayAlertsModule(),
+                    new TestAlertsModule()),
+            BoundFieldModule.of(this));
+    injector.injectMembers(this);
+    service.start();
+  }
 
-	@Test
-	public void provideDbSession_AsExpected() {
-		doReturn(SID).when(mockClientSession).getSid();
-		when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
+  @Test
+  public void provideDbSession_AsExpected() {
+    doReturn(SID).when(mockClientSession).getSid();
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
 
-		Session dbSession = injector.getInstance(Key.get(Session.class, Names.named("dbSession")));
-		assertEquals(mockDbSession, dbSession);
-	}
+    Session dbSession = injector.getInstance(Key.get(Session.class, Names.named("dbSession")));
+    assertEquals(mockDbSession, dbSession);
+  }
 
-	@Test
-	public void provideLocale_AsExpected() {
-		Locale defaultLocale = Locale.getDefault();
-		doReturn(defaultLocale).when(mockUtils).getLocale();
+  @Test
+  public void provideLocale_AsExpected() {
+    Locale defaultLocale = Locale.getDefault();
+    doReturn(defaultLocale).when(mockUtils).getLocale();
 
-		Locale locale = injector.getInstance(Locale.class);
-		assertEquals(defaultLocale, locale);
-	}
-
+    Locale locale = injector.getInstance(Locale.class);
+    assertEquals(defaultLocale, locale);
+  }
 }
