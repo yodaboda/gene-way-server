@@ -4,7 +4,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
@@ -63,244 +62,231 @@ import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 
 public class RegisterServiceIntegrationTest {
 
-	private static final String CUSTOMER_NICK_NAME = "not blank";
+  private static final String CUSTOMER_NICK_NAME = "not blank";
 
-	private static final String CONFIG = "log4j-appender.xml";
+  private static final String CONFIG = "log4j-appender.xml";
 
-	private final String[] BODY = new String[] { GeneWayAlertsModule.ALERT_MESSAGE_BODY };
-	private final String LOCALIZED_BODY = BODY[0] + "locale";
-	private final String EMAIL = "transportation@cs.research.bio-medicine.math.food.net";
+  private final String[] BODY = new String[] {GeneWayAlertsModule.ALERT_MESSAGE_BODY};
+  private final String LOCALIZED_BODY = BODY[0] + "locale";
+  private final String EMAIL = "transportation@cs.research.bio-medicine.math.food.net";
 
-	private static final String UUID = "uuid";
+  private static final String UUID = "uuid";
 
-	private static final String PHONE = "44170";
+  private static final String PHONE = "44170";
 
-	private static final String PASSWORD = "8 + 14 = 22";
+  private static final String PASSWORD = "8 + 14 = 22";
 
-	private final String SID = "coffee";
+  private final String SID = "coffee";
 
-	// TODO: Tests in RegisterServiceTest start failing when Logger tracker is
-	// enabled.
-	// @ClassRule
-	// public static LoggerContextRule loggerContextRule = new
-	// LoggerContextRule(CONFIG);
-	@Rule
-	public ExpectedException thrown = ExpectedException.none();
+  // TODO: Tests in RegisterServiceTest start failing when Logger tracker is
+  // enabled.
+  // @ClassRule
+  // public static LoggerContextRule loggerContextRule = new
+  // LoggerContextRule(CONFIG);
+  @Rule public ExpectedException thrown = ExpectedException.none();
 
-	@Bind
-	@Named("code")
-	private String code = "1224";
+  @Bind
+  @Named("code")
+  private String code = "1224";
 
-	@Bind
-	@Mock
-	private ResourceBundles mockResourceBundles;
+  @Bind @Mock private ResourceBundles mockResourceBundles;
 
-	@Mock
-	private Session mockDbSession;
-	@Mock
-	private HibernateUtil mockHibernateUtil;
-	@Mock
-	private Utils mockUtils;
-	@Mock
-	private RequestUtils mockRequestUtils;
-	@Bind
-	private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
-	@Bind
-	@Mock
-	private SecureRandom mockSecureRandom;
-	@Bind
-	@Mock
-	private Session mockClientSession;
+  @Mock private Session mockDbSession;
+  @Mock private HibernateUtil mockHibernateUtil;
+  @Mock private Utils mockUtils;
+  @Mock private RequestUtils mockRequestUtils;
+  @Bind private Clock clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
+  @Bind @Mock private SecureRandom mockSecureRandom;
+  @Bind @Mock private Session mockClientSession;
 
-	@Mock
-	private Device mockDbDevice;
-	@Mock
-	private Customer mockDbCustomer;
-	@Mock
-	private ContactInformation mockDbContactInformation;
+  @Mock private Device mockDbDevice;
+  @Mock private Customer mockDbCustomer;
+  @Mock private ContactInformation mockDbContactInformation;
 
-	private Customer customer = new Customer();
-	private Device device = new Device();
-	private Credentials credentials = new Credentials();
+  private Customer customer = new Customer();
+  private Device device = new Device();
+  private Credentials credentials = new Credentials();
 
-	@Inject
-	private RegisterService registerService;
-	@Inject
-	private PasswordUtils passwordUtis;
-	@Inject
-	private Locale locale;
+  @Inject private RegisterService registerService;
+  @Inject private PasswordUtils passwordUtis;
+  @Inject private Locale locale;
 
-	private Injector injector;
+  private Injector injector;
 
-	private ListAppender listAppender;
+  private ListAppender listAppender;
 
-	private PersistService service;
-	@Inject
-	private EntityManager entityManager;
-	private EntityTransaction entityTransaction;
+  private PersistService service;
+  @Inject private EntityManager entityManager;
+  private EntityTransaction entityTransaction;
 
-	@Before
-	public void setUpJPA() {
-		MockitoAnnotations.initMocks(this);
+  @Before
+  public void setUpJPA() {
+    MockitoAnnotations.initMocks(this);
 
-		doAnswer(invocation -> {
-			Object[] args = invocation.getArguments();
-			byte[] bytes = ((byte[]) args[0]);
-			for (int i = 0; i < bytes.length; ++i) {
-				bytes[i] = 1;
-			}
-			return null;
-		}).when(mockSecureRandom).nextBytes(any());
+    doAnswer(
+            invocation -> {
+              Object[] args = invocation.getArguments();
+              byte[] bytes = ((byte[]) args[0]);
+              for (int i = 0; i < bytes.length; ++i) {
+                bytes[i] = 1;
+              }
+              return null;
+            })
+        .when(mockSecureRandom)
+        .nextBytes(any());
 
-		setupHibernate();
+    setupHibernate();
 
-		injector = Guice.createInjector(
-				Modules.override(new GeneWayJPAModule(), new GeneWayAlertsModule()).with(
-						new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils),
-						new TestGeneWayAlertsModule()),
-				Modules.override(new AlertsModule()).with(new TestAlertsModule()), BoundFieldModule.of(this));
+    injector =
+        Guice.createInjector(
+            Modules.override(new GeneWayJPAModule(), new GeneWayAlertsModule())
+                .with(
+                    new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils),
+                    new TestGeneWayAlertsModule()),
+            Modules.override(new AlertsModule()).with(new TestAlertsModule()),
+            BoundFieldModule.of(this));
 
-		service = injector.getInstance(PersistService.class);
-		service.start();
+    service = injector.getInstance(PersistService.class);
+    service.start();
 
-		injector.injectMembers(this);
+    injector.injectMembers(this);
 
-		entityTransaction = entityManager.getTransaction();
-		entityTransaction.begin();
+    entityTransaction = entityManager.getTransaction();
+    entityTransaction.begin();
 
-		setupCustomer();
+    setupCustomer();
 
-		setupAlert();
+    setupAlert();
+  }
 
-	}
+  // TODO: should be removed and hibernateUtil should not be mocked.
+  private void setupHibernate() {
+    when(mockHibernateUtil.selectDeviceByUUID(UUID)).thenReturn(mockDbDevice);
+    doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
+    doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
+    doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
 
-	// TODO: should be removed and hibernateUtil should not be mocked.
-	private void setupHibernate() {
-		when(mockHibernateUtil.selectDeviceByUUID(UUID)).thenReturn(mockDbDevice);
-		doReturn(mockDbCustomer).when(mockDbDevice).getCustomer();
-		doReturn(mockDbContactInformation).when(mockDbCustomer).getContactInformation();
-		doReturn(PHONE).when(mockDbContactInformation).getRegisteredPhoneNumber();
+    doReturn(SID).when(mockClientSession).getSid();
+    when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
+    Locale locale = Locale.getDefault();
+    doReturn(locale).when(mockUtils).getLocale();
 
-		doReturn(SID).when(mockClientSession).getSid();
-		when(mockHibernateUtil.selectSession(SID)).thenReturn(mockDbSession);
-		Locale locale = Locale.getDefault();
-		doReturn(locale).when(mockUtils).getLocale();
+    Customer mockCustomer = mock(Customer.class);
+    doReturn(mockCustomer).when(mockDbSession).getCustomer();
+    Plan mockPlan = mock(Plan.class);
+    doReturn(mockPlan).when(mockCustomer).getPlan();
+    PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
+    doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
+    doReturn(true).when(mockPlanPreferences).isEmailAlerts();
+    ContactInformation mockContactInformation = mock(ContactInformation.class);
+    doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
+    List<Email> emails = new ArrayList<>();
+    Email mockEmail = mock(Email.class);
 
-		Customer mockCustomer = mock(Customer.class);
-		doReturn(mockCustomer).when(mockDbSession).getCustomer();
-		Plan mockPlan = mock(Plan.class);
-		doReturn(mockPlan).when(mockCustomer).getPlan();
-		PlanPreferences mockPlanPreferences = mock(PlanPreferences.class);
-		doReturn(mockPlanPreferences).when(mockPlan).getPlanPreferences();
-		doReturn(true).when(mockPlanPreferences).isEmailAlerts();
-		ContactInformation mockContactInformation = mock(ContactInformation.class);
-		doReturn(mockContactInformation).when(mockCustomer).getContactInformation();
-		List<Email> emails = new ArrayList<>();
-		Email mockEmail = mock(Email.class);
+    doReturn(EMAIL).when(mockEmail).getEmail();
+    emails.add(mockEmail);
+    doReturn(emails).when(mockContactInformation).getEmails();
 
-		doReturn(EMAIL).when(mockEmail).getEmail();
-		emails.add(mockEmail);
-		doReturn(emails).when(mockContactInformation).getEmails();
+    String localizedSubject = GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT + locale;
+    when(mockResourceBundles.getGeneWayResource(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, locale))
+        .thenReturn(localizedSubject);
+    when(mockResourceBundles.getGeneWayResource(BODY[0], locale)).thenReturn(LOCALIZED_BODY);
+  }
 
-		String localizedSubject = GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT + locale;
-		when(mockResourceBundles.getGeneWayResource(GeneWayAlertsModule.ALERT_MESSAGE_SUBJECT, locale))
-				.thenReturn(localizedSubject);
-		when(mockResourceBundles.getGeneWayResource(BODY[0], locale)).thenReturn(LOCALIZED_BODY);
-	}
+  private void setupCustomer() {
+    customer.setDevice(device);
+    device.setUuid(UUID);
+    customer.setCredentials(credentials);
+    customer.setNickName(CUSTOMER_NICK_NAME);
+    credentials.setPassword(PASSWORD);
+  }
 
-	private void setupCustomer() {
-		customer.setDevice(device);
-		device.setUuid(UUID);
-		customer.setCredentials(credentials);
-		customer.setNickName(CUSTOMER_NICK_NAME);
-		credentials.setPassword(PASSWORD);
-	}
+  private void setupAlert() {
 
-	private void setupAlert() {
+    TestAlertsModule.MAIL_SERVER.start();
+    TestAlertsModule.MAIL_SERVER.setUser(
+        TestGeneWayAlertsModule.mockAlertSender.getHost(),
+        TestGeneWayAlertsModule.mockAlertSender.getUserName(),
+        Arrays.toString(TestGeneWayAlertsModule.mockAlertSender.getPassword()));
+  }
 
-		TestAlertsModule.MAIL_SERVER.start();
-		TestAlertsModule.MAIL_SERVER.setUser(TestGeneWayAlertsModule.mockAlertSender.getHost(),
-				TestGeneWayAlertsModule.mockAlertSender.getUserName(),
-				Arrays.toString(TestGeneWayAlertsModule.mockAlertSender.getPassword()));
-	}
+  @After
+  public void tearDownTransaction() {
+    entityManager.close();
+    service.stop();
+    TestAlertsModule.MAIL_SERVER.stop();
+  }
 
-	@After
-	public void tearDownTransaction() {
-		entityManager.close();
-		service.stop();
-		TestAlertsModule.MAIL_SERVER.stop();
-	}
+  private void rollbackTransaction() {
+    entityTransaction.rollback();
+  }
 
-	private void rollbackTransaction() {
-		entityTransaction.rollback();
-	}
+  @Test
+  public void register_AsExpected() {
+    // TODO: store dbDevice in database to be retrieved by the register operation.
+    Device dbDevice = new Device();
+    Customer dbCustomer = new Customer();
+    dbDevice.setCustomer(dbCustomer);
+    dbDevice.setUuid("uuid");
+    dbCustomer.setDevice(dbDevice);
 
-	@Test
-	public void register_AsExpected() {
-		// TODO: store dbDevice in database to be retrieved by the register operation.
-		Device dbDevice = new Device();
-		Customer dbCustomer = new Customer();
-		dbDevice.setCustomer(dbCustomer);
-		dbDevice.setUuid("uuid");
-		dbCustomer.setDevice(dbDevice);
+    registerService.register(customer);
 
-		registerService.register(customer);
+    rollbackTransaction();
+  }
 
-		rollbackTransaction();
-	}
+  @Test
+  public void sendAlert_AsExpected() throws MessagingException, IOException {
+    String phone = "4442414322";
+    registerService.sendAlert(phone);
 
-	@Test
-	public void sendAlert_AsExpected() throws MessagingException, IOException {
-		String phone = "4442414322";
-		registerService.sendAlert(phone);
+    MimeMessage[] messages = TestAlertsModule.MAIL_SERVER.getReceivedMessages();
+    assertNotNull(messages);
+    assertEquals(1, messages.length);
+    MimeMessage m = messages[0];
+    assertEquals(phone, m.getSubject());
+    assertTrue(String.valueOf(m.getContent()).contains(LOCALIZED_BODY));
+    assertEquals(EMAIL, m.getAllRecipients()[0].toString());
+  }
 
-		MimeMessage[] messages = TestAlertsModule.MAIL_SERVER.getReceivedMessages();
-		assertNotNull(messages);
-		assertEquals(1, messages.length);
-		MimeMessage m = messages[0];
-		assertEquals(phone, m.getSubject());
-		assertTrue(String.valueOf(m.getContent()).contains(LOCALIZED_BODY));
-		assertEquals(EMAIL, m.getAllRecipients()[0].toString());
-	}
+  @Test
+  public void registerCustomer_AsExpected() {
+    registerService.registerCustomer(customer);
 
-	@Test
-	public void registerCustomer_AsExpected() {
-		registerService.registerCustomer(customer);
+    List<Customer> customers =
+        entityManager.createQuery("Select c from Customer c", Customer.class).getResultList();
 
-		List<Customer> customers = entityManager.createQuery("Select c from Customer c", Customer.class)
-				.getResultList();
+    assertEquals(1, customers.size());
+    Customer emCustomer = customers.get(0);
+    Device emDevice = emCustomer.getDevice();
+    Credentials emCredentials = emCustomer.getCredentials();
+    assertEquals(code, emDevice.getCode());
+    assertTrue(passwordUtis.checkHashedPassword(PASSWORD, emCredentials.getHashedPassword()));
 
-		assertEquals(1, customers.size());
-		Customer emCustomer = customers.get(0);
-		Device emDevice = emCustomer.getDevice();
-		Credentials emCredentials = emCustomer.getCredentials();
-		assertEquals(code, emDevice.getCode());
-		assertTrue(passwordUtis.checkHashedPassword(PASSWORD, emCredentials.getHashedPassword()));
+    rollbackTransaction();
+  }
 
-		rollbackTransaction();
-	}
+  @Test
+  public void registerCustomer_NullDevice_Exception() {
+    customer.setDevice(null);
 
-	@Test
-	public void registerCustomer_NullDevice_Exception() {
-		customer.setDevice(null);
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_DEVICE);
+    registerService.registerCustomer(customer);
+  }
 
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_DEVICE);
-		registerService.registerCustomer(customer);
-	}
+  @Test
+  public void registerCustomer_NullCredentials_Exception() {
+    customer.setCredentials(null);
 
-	@Test
-	public void registerCustomer_NullCredentials_Exception() {
-		customer.setCredentials(null);
+    thrown.expect(IllegalArgumentException.class);
+    thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_CREDENTIALS);
+    registerService.registerCustomer(customer);
+  }
 
-		thrown.expect(IllegalArgumentException.class);
-		thrown.expectMessage(RegisterService.EXCEPTION_MESSAGE_NULL_CREDENTIALS);
-		registerService.registerCustomer(customer);
-	}
-
-	@Test
-	public void getCustomerPhoneNumber_AsExpected() {
-		assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer));
-		// Read only operation - no need to roll-back.
-	}
+  @Test
+  public void getCustomerPhoneNumber_AsExpected() {
+    assertEquals(PHONE, registerService.getCustomerPhoneNumber(customer));
+    // Read only operation - no need to roll-back.
+  }
 }

@@ -2,20 +2,12 @@ package com.nutrinfomics.geneway.server.domain.plan;
 
 import java.io.Serializable;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.EnumMap;
-import java.util.Vector;
-
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
-
 
 import com.nutrinfomics.geneway.server.domain.EntityBase;
-import com.nutrinfomics.geneway.shared.FoodCategory;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 

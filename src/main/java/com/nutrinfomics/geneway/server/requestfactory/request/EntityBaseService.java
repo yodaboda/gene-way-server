@@ -1,7 +1,6 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import com.google.inject.persist.Transactional;

@@ -8,7 +8,6 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import org.junit.Before;
@@ -57,8 +56,7 @@ public class MarkSnackServiceTest {
   @Before
   public void initMocks() {
     MockitoAnnotations.initMocks(this);
-    markSnackService =
-        new MarkSnackService(mockEntityManager, mockHibernateUtil, mockAlerts);
+    markSnackService = new MarkSnackService(mockEntityManager, mockHibernateUtil, mockAlerts);
     setupMockDbSession();
     setupMockEntityProvider();
     setupMockHibernateUtil();

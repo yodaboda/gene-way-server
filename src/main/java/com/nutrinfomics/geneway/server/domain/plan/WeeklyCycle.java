@@ -3,10 +3,10 @@ package com.nutrinfomics.geneway.server.domain.plan;
 import java.util.List;
 import java.util.Vector;
 
-import javax.persistence.Entity;
+import javax.persistence.Embeddable;
 import javax.persistence.Transient;
 
-@Entity
+@Embeddable
 public class WeeklyCycle extends ArbitraryCycle {
   private static final int CYCLE_LENGTH = 7;
 

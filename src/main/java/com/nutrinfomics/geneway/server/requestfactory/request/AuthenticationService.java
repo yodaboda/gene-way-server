@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 
@@ -59,8 +58,7 @@ public class AuthenticationService {
   @Transactional
   public boolean unlock(Identifier identifier) {
     try {
-      Identifier dbIdentifier =
-          hibernateUtil.selectIdentifier(identifier.getIdentifierCode());
+      Identifier dbIdentifier = hibernateUtil.selectIdentifier(identifier.getIdentifierCode());
       if (dbIdentifier.getUuid() == null || dbIdentifier.getUuid().isEmpty()) {
         dbIdentifier.setUuid(identifier.getUuid());
         return true;
@@ -88,8 +86,7 @@ public class AuthenticationService {
 
   @Transactional
   public boolean authenticateCode(Customer customer) throws AuthenticationException {
-    Device deviceDb =
-        hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid());
+    Device deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid());
     LocalDateTime creationTime = deviceDb.getCodeCreation();
     LocalDateTime expiry = creationTime.plusMinutes(20);
     if (expiry.isBefore(LocalDateTime.now(clock))) {
@@ -135,14 +132,11 @@ public class AuthenticationService {
     Credentials credentialsDb = customerDb.getCredentials();
     String clientPassword = customer.getCredentials().getPassword();
     boolean valid;
-    if(credentialsDb.getPassword() != null) {
-    	valid = passwordUtils.checkPassword(clientPassword, credentialsDb.getPassword());
+    if (credentialsDb.getPassword() != null) {
+      valid = passwordUtils.checkPassword(clientPassword, credentialsDb.getPassword());
+    } else {
+      valid = passwordUtils.checkHashedPassword(clientPassword, credentialsDb.getHashedPassword());
     }
-    else {
-    	valid = passwordUtils.checkHashedPassword(clientPassword, credentialsDb.getHashedPassword());
-    }
-   
-        
 
     entityManager.persist(session);
 

@@ -28,60 +28,62 @@ import com.google.inject.util.Modules;
 
 public class GeneWayRequestFactoryModuleTest {
 
-	@Bind
-	@Mock
-	private SecureRandom mockSecureRandom;
+  @Bind @Mock private SecureRandom mockSecureRandom;
 
-	@Inject
-	private Injector injector;
+  @Inject private Injector injector;
 
-	class TestGeneWayRequestFactoryModule extends GeneWayRequestFactoryModule {
-		@Override
-		protected void configure() {
-			// TODO: Figure out a way to deal with
-			// No scope is bound to com.google.inject.servlet.RequestScoped
-			bindScope(RequestScoped.class, Scopes.SINGLETON);
-		}
-	}
+  class TestGeneWayRequestFactoryModule extends GeneWayRequestFactoryModule {
+    @Override
+    protected void configure() {
+      // TODO: Figure out a way to deal with
+      // No scope is bound to com.google.inject.servlet.RequestScoped
+      bindScope(RequestScoped.class, Scopes.SINGLETON);
+    }
+  }
 
-	@Before
-	public void setup() {
-		MockitoAnnotations.initMocks(this);
+  @Before
+  public void setup() {
+    MockitoAnnotations.initMocks(this);
 
-		doAnswer(invocation -> {
-			Object[] args = invocation.getArguments();
-			byte[] bytes = ((byte[]) args[0]);
-			for (int i = 0; i < bytes.length; ++i) {
-				bytes[i] = 1;
-			}
-			return null;
-		}).when(mockSecureRandom).nextBytes(any());
+    doAnswer(
+            invocation -> {
+              Object[] args = invocation.getArguments();
+              byte[] bytes = ((byte[]) args[0]);
+              for (int i = 0; i < bytes.length; ++i) {
+                bytes[i] = 1;
+              }
+              return null;
+            })
+        .when(mockSecureRandom)
+        .nextBytes(any());
 
-		injector = Guice.createInjector(
-				Modules.override(new GeneWayRequestFactoryModule()).with(new TestGeneWayRequestFactoryModule()),
-				BoundFieldModule.of(this));
+    injector =
+        Guice.createInjector(
+            Modules.override(new GeneWayRequestFactoryModule())
+                .with(new TestGeneWayRequestFactoryModule()),
+            BoundFieldModule.of(this));
 
-		injector.injectMembers(this);
-	}
+    injector.injectMembers(this);
+  }
 
-	@Test
-	public void provideCode_AsExpected() {
-		String code = injector.getInstance(Key.get(String.class, Names.named("code")));
-		assertEquals(6, code.length());
-		assertEquals("81040g", code);
-	}
+  @Test
+  public void provideCode_AsExpected() {
+    String code = injector.getInstance(Key.get(String.class, Names.named("code")));
+    assertEquals(6, code.length());
+    assertEquals("81040g", code);
+  }
 
-	// TODO: add more tests
-	@Test
-	public void getValidatorFactory_AsExpected() {
-		ValidatorFactory validatorFactory = injector.getInstance(ValidatorFactory.class);
-		assertNotNull(validatorFactory);
-	}
+  // TODO: add more tests
+  @Test
+  public void getValidatorFactory_AsExpected() {
+    ValidatorFactory validatorFactory = injector.getInstance(ValidatorFactory.class);
+    assertNotNull(validatorFactory);
+  }
 
-	// TODO: add more tests
-	@Test
-	public void getValidator_AsExpected() {
-		Validator validator = injector.getInstance(Validator.class);
-		assertNotNull(validator);
-	}
+  // TODO: add more tests
+  @Test
+  public void getValidator_AsExpected() {
+    Validator validator = injector.getInstance(Validator.class);
+    assertNotNull(validator);
+  }
 }

@@ -1,7 +1,6 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import com.google.inject.persist.Transactional;
@@ -22,8 +21,7 @@ public class MarkSnackService {
   private Alerts alerts;
 
   @Inject
-  public MarkSnackService(
-      EntityManager entityManager, HibernateUtil hibernateUtil, Alerts alerts) {
+  public MarkSnackService(EntityManager entityManager, HibernateUtil hibernateUtil, Alerts alerts) {
     this.entityManager = entityManager;
     this.hibernateUtil = hibernateUtil;
     this.alerts = alerts;

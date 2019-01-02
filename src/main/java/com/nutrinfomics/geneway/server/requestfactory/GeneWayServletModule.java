@@ -11,20 +11,18 @@ import com.nutrinfomics.geneway.server.alerts.EmailAlert;
 
 public class GeneWayServletModule extends ServletModule {
 
-	@Override
-	protected void configureServlets() {
-		install(new GeneWayJPAModule());
-		filter("/*").through(PersistFilter.class);
+  @Override
+  protected void configureServlets() {
+    install(new GeneWayJPAModule());
+    filter("/*").through(PersistFilter.class);
 
-		install(new GeneWayAlertsModule());
+    install(new GeneWayAlertsModule());
 
-		install(new GeneWayRequestFactoryModule());
-		serve("/gwtRequest").with(GeneWayRequestFactoryServlet.class);
+    install(new GeneWayRequestFactoryModule());
+    serve("/gwtRequest").with(GeneWayRequestFactoryServlet.class);
 
-		bind(Alert.class).to(EmailAlert.class).in(RequestScoped.class);
-		bind(ExceptionHandler.class).to(DefaultExceptionHandler.class);
-		bind(ServiceLayerDecorator.class).to(GuiceServiceLayerDecorator.class);
-
-	}
-
+    bind(Alert.class).to(EmailAlert.class).in(RequestScoped.class);
+    bind(ExceptionHandler.class).to(DefaultExceptionHandler.class);
+    bind(ServiceLayerDecorator.class).to(GuiceServiceLayerDecorator.class);
+  }
 }

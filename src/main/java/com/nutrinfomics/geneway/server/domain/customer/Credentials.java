@@ -4,8 +4,6 @@ import javax.persistence.Entity;
 import javax.persistence.Transient;
 import javax.validation.constraints.Size;
 
-import org.mindrot.jbcrypt.BCrypt;
-
 import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 @Entity
@@ -25,8 +23,6 @@ public class Credentials extends EntityBase {
     this.password = password;
   }
 
-
-
   public String getHashedPassword() {
     return hashedPassword;
   }
@@ -34,6 +30,4 @@ public class Credentials extends EntityBase {
   public void setHashedPassword(String hashedPassword) {
     this.hashedPassword = hashedPassword;
   }
-
- 
 }

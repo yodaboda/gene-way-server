@@ -10,7 +10,6 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.inject.Inject;
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import com.google.inject.persist.Transactional;

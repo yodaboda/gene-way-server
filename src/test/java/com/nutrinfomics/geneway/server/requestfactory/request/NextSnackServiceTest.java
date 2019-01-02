@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import org.junit.Before;
@@ -95,8 +94,7 @@ public class NextSnackServiceTest {
     MockitoAnnotations.initMocks(this);
     clock = Clock.fixed(Instant.EPOCH, ZoneId.systemDefault());
     nextSnackService =
-        new NextSnackService(
-            mockEntityManager, mockScheduledAlert, mockHibernateUtil, clock);
+        new NextSnackService(mockEntityManager, mockScheduledAlert, mockHibernateUtil, clock);
     setupMockDbSession();
     setupMockEntityProvider();
     setupMockHibernateUtil();

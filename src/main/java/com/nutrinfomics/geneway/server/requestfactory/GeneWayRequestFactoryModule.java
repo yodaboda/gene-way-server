@@ -15,49 +15,50 @@ import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 
 /**
- * Guice Module for injecting {@code Request} related instances. This module
- * depends on being provided with a {@code Session} and a
- * {@code Provider<EntityManager> }.
+ * Guice Module for injecting {@code Request} related instances. This module depends on being
+ * provided with a {@code Session} and a {@code Provider<EntityManager> }.
  *
  * @author Firas Swidan
  */
 public class GeneWayRequestFactoryModule extends AbstractModule {
 
-	@Override
-	protected void configure() {
-		requireBinding(SecureRandom.class);
-	}
+  @Override
+  protected void configure() {
+    requireBinding(SecureRandom.class);
+  }
 
-	@Provides
-	@RequestScoped
-	public @Named("code") String provideCode(SecureRandom random) {
-		return new BigInteger(130, random).toString(32).substring(0, 6);
-	}
+  @Provides
+  @RequestScoped
+  public @Named("code") String provideCode(SecureRandom random) {
+    return new BigInteger(130, random).toString(32).substring(0, 6);
+  }
 
-	/**
-	 * Creates and reuses injecting JSR 303 Validator factory.
-	 *
-	 * @param injector the injector that will be used for the injection.
-	 * @return The ValidatorFactory.
-	 */
-	@Provides
-	@Singleton
-	public ValidatorFactory getValidatorFactory(Injector injector) {
-		// this is no good, because validator is singleton and fixed
-		return Validation.byDefaultProvider().configure()
-				.constraintValidatorFactory(new InjectingConstraintValidationFactory(injector)).buildValidatorFactory();
-	}
+  /**
+   * Creates and reuses injecting JSR 303 Validator factory.
+   *
+   * @param injector the injector that will be used for the injection.
+   * @return The ValidatorFactory.
+   */
+  @Provides
+  @Singleton
+  public ValidatorFactory getValidatorFactory(Injector injector) {
+    // this is no good, because validator is singleton and fixed
+    return Validation.byDefaultProvider()
+        .configure()
+        .constraintValidatorFactory(new InjectingConstraintValidationFactory(injector))
+        .buildValidatorFactory();
+  }
 
-	/**
-	 * Creates and reuses injecting JSR 303 Validator.
-	 *
-	 * @param validatorFactory the ValidatorFactory to get the Validator from.
-	 * @return the Validator.
-	 */
-	@Provides
-	@Singleton
-	public Validator getValidator(ValidatorFactory validatorFactory) {
-		// this is no good, because validator is singleton and fixed
-		return validatorFactory.getValidator();
-	}
+  /**
+   * Creates and reuses injecting JSR 303 Validator.
+   *
+   * @param validatorFactory the ValidatorFactory to get the Validator from.
+   * @return the Validator.
+   */
+  @Provides
+  @Singleton
+  public Validator getValidator(ValidatorFactory validatorFactory) {
+    // this is no good, because validator is singleton and fixed
+    return validatorFactory.getValidator();
+  }
 }

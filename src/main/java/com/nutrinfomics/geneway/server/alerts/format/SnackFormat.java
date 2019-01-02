@@ -23,7 +23,7 @@ public class SnackFormat {
     this.resourceBundles = resourceBundles;
   }
 
-  //TODO: Use decorator design pattern for classes in this package
+  // TODO: Use decorator design pattern for classes in this package
   public String format(Snack snack, Locale locale) {
     if (snack instanceof GeneralVaryingSnack) {
       return formatGeneralVaryingSnack((GeneralVaryingSnack) snack, locale);
@@ -60,15 +60,17 @@ public class SnackFormat {
     Collection<FoodItem> foodItems = snack.getFoodItems();
     StringBuilder bld = new StringBuilder();
     for (FoodItem foodItem : foodItems) {
-    	bld.append(          foodItemFormat.format(
-                new FoodItem(
-                        foodItem.getAmount(), foodItem.getMeasurementUnit(), foodItem.getFoodType()),
-                    locale));
-    	bld.append(" - ");
-    	bld.append(NumberFormat.getIntegerInstance(locale).format(foodItem.getCycle().getCycleLength()));
-    	bld.append(" ");
-    	bld.append(resourceBundles.getMiscBundleResource("days", locale));
-    	bld.append(System.getProperty("line.separator"));
+      bld.append(
+          foodItemFormat.format(
+              new FoodItem(
+                  foodItem.getAmount(), foodItem.getMeasurementUnit(), foodItem.getFoodType()),
+              locale));
+      bld.append(" - ");
+      bld.append(
+          NumberFormat.getIntegerInstance(locale).format(foodItem.getCycle().getCycleLength()));
+      bld.append(" ");
+      bld.append(resourceBundles.getMiscBundleResource("days", locale));
+      bld.append(System.getProperty("line.separator"));
     }
     String s = bld.toString();
     return s.isEmpty() ? s : s.substring(0, s.length() - 1); // string ends with "\n"

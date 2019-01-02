@@ -2,7 +2,6 @@ package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.lang.reflect.Method;
 
-import javax.persistence.EntityManager;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.logging.log4j.Level;
@@ -23,77 +22,77 @@ import com.nutrinfomics.geneway.shared.AccessConstants;
 
 public class SecurityLocalizationDecorator extends ServiceLayerDecorator {
 
-	private static final Logger LOGGER = LogManager.getLogger();
+  private static final Logger LOGGER = LogManager.getLogger();
 
-	@Inject
-	Injector injector;
+  @Inject Injector injector;
 
-	@Override
-	public Object invoke(Method domainMethod, Object... args) {
-		if (!isAllowed(domainMethod)) {
-			return doReport(domainMethod);
-		}
-		return super.invoke(domainMethod, args);
-	}
+  @Override
+  public Object invoke(Method domainMethod, Object... args) {
+    if (!isAllowed(domainMethod)) {
+      return doReport(domainMethod);
+    }
+    return super.invoke(domainMethod, args);
+  }
 
-	private boolean isAllowed(Method domainMethod) {
-		try {
-			if (userIsLoggedIn(RequestFactoryServlet.getThreadLocalRequest()))
-				return true;
-			else
-				return domainMethod
-						.equals(AuthenticationService.class.getMethod("authenticateCustomer", Customer.class))
-						|| domainMethod.equals(AuthenticationService.class.getMethod("register", Customer.class))
-						|| domainMethod
-								.equals(AuthenticationService.class.getMethod("authenticateCode", Customer.class))
-						|| domainMethod.equals(AuthenticationService.class.getMethod("unlock", Identifier.class))
-						|| domainMethod.equals(
-								AuthenticationService.class.getMethod("confirmValuationTermsOfService", String.class));
-		} catch (NoSuchMethodException | SecurityException e) {
-			LOGGER.log(Level.FATAL, e.toString(), e);
-		}
-		return false;
-	}
+  private boolean isAllowed(Method domainMethod) {
+    try {
+      if (userIsLoggedIn(RequestFactoryServlet.getThreadLocalRequest())) return true;
+      else
+        return domainMethod.equals(
+                AuthenticationService.class.getMethod("authenticateCustomer", Customer.class))
+            || domainMethod.equals(
+                AuthenticationService.class.getMethod("register", Customer.class))
+            || domainMethod.equals(
+                AuthenticationService.class.getMethod("authenticateCode", Customer.class))
+            || domainMethod.equals(
+                AuthenticationService.class.getMethod("unlock", Identifier.class))
+            || domainMethod.equals(
+                AuthenticationService.class.getMethod(
+                    "confirmValuationTermsOfService", String.class));
+    } catch (NoSuchMethodException | SecurityException e) {
+      LOGGER.log(Level.FATAL, e.toString(), e);
+    }
+    return false;
+  }
 
-	protected boolean userIsLoggedIn(HttpServletRequest req) {
-		String sid = (String) req.getHeader(AccessConstants.SID.toString());
-		String uuid = (String) req.getHeader(AccessConstants.UUID.toString());
+  protected boolean userIsLoggedIn(HttpServletRequest req) {
+    String sid = (String) req.getHeader(AccessConstants.SID.toString());
+    String uuid = (String) req.getHeader(AccessConstants.UUID.toString());
 
-		if (sid == null)
-			return false;
+    if (sid == null) return false;
 
-		Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
+    Session sessionDb = injector.getInstance(HibernateUtil.class).selectSession(sid);
 
-		Customer customerDb = sessionDb.getCustomer();
-		Device deviceDb = customerDb.getDevice();
+    Customer customerDb = sessionDb.getCustomer();
+    Device deviceDb = customerDb.getDevice();
 
-		return (deviceDb.getUuid().equalsIgnoreCase(uuid) && sessionDb.getSid().equalsIgnoreCase(sid));
-	}
+    return (deviceDb.getUuid().equalsIgnoreCase(uuid) && sessionDb.getSid().equalsIgnoreCase(sid));
+  }
 
-	protected Object doReport(Method domainMethod) {
-		// log.log(Level.INFO, "Operation {0}#{1} not allowed for user {2}",
-		// new String[] {
-		// domainMethod.getDeclaringClass().getCanonicalName(),
-		// domainMethod.getName(),
-		// requestProvider.get().getRemoteUser()
-		// });
+  protected Object doReport(Method domainMethod) {
+    // log.log(Level.INFO, "Operation {0}#{1} not allowed for user {2}",
+    // new String[] {
+    // domainMethod.getDeclaringClass().getCanonicalName(),
+    // domainMethod.getName(),
+    // requestProvider.get().getRemoteUser()
+    // });
 
-		return report("Operation not allowed: %s", domainMethod.getName());
-	}
+    return report("Operation not allowed: %s", domainMethod.getName());
+  }
 
-	// needed to support validation error message localization
-	// @Override
-	// public <U extends Object> Set<ConstraintViolation<U>> validate(U
-	// domainObject) {
-	// ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
-	// MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
-	// Locale locale = Utils.getLocale();
-	//// new Locale(RequestFactoryServlet
-	//// .getThreadLocalRequest().getHeader("X-GWT-Locale"));
-	// GeneWayLocaleMessageInterpolator interpolator = new
-	// GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);
-	// Validator validator =
-	// factory.usingContext().messageInterpolator(interpolator).getValidator();
-	// return validator.validate(domainObject);
-	// }
+  // needed to support validation error message localization
+  // @Override
+  // public <U extends Object> Set<ConstraintViolation<U>> validate(U
+  // domainObject) {
+  // ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+  // MessageInterpolator defaultInterpolator = factory.getMessageInterpolator();
+  // Locale locale = Utils.getLocale();
+  //// new Locale(RequestFactoryServlet
+  //// .getThreadLocalRequest().getHeader("X-GWT-Locale"));
+  // GeneWayLocaleMessageInterpolator interpolator = new
+  // GeneWayLocaleMessageInterpolator(defaultInterpolator, locale);
+  // Validator validator =
+  // factory.usingContext().messageInterpolator(interpolator).getValidator();
+  // return validator.validate(domainObject);
+  // }
 }

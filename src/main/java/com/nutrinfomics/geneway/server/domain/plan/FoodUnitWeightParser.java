@@ -20,9 +20,8 @@ import com.nutrinfomics.geneway.shared.MeasurementUnit;
 
 @Singleton
 public class FoodUnitWeightParser {
-	
-	private static final Logger LOGGER = LogManager.getLogger();
-	
+
+  private static final Logger LOGGER = LogManager.getLogger();
 
   public static final String FILE_PATH =
       System.getProperty("user.home")
@@ -32,7 +31,7 @@ public class FoodUnitWeightParser {
       new EnumMap<FoodItemType, EnumMap<MeasurementUnit, Double>>(FoodItemType.class);
 
   public FoodUnitWeightParser() {
-    try(CSVReader reader = new CSVReader(new FileReader(new File(FILE_PATH)))) {
+    try (CSVReader reader = new CSVReader(new FileReader(new File(FILE_PATH)))) {
       String[] units = reader.readNext(); // units
       String[] header = reader.readNext();
       MeasurementUnit[] measurementUnits = MeasurementUnit.parse(header, 1);
@@ -52,9 +51,9 @@ public class FoodUnitWeightParser {
         }
       }
     } catch (FileNotFoundException e) {
-    	LOGGER.log(Level.FATAL, e.toString(), e);
+      LOGGER.log(Level.FATAL, e.toString(), e);
     } catch (IOException e) {
-    	LOGGER.log(Level.FATAL, e.toString(), e);
+      LOGGER.log(Level.FATAL, e.toString(), e);
     }
   }
 
