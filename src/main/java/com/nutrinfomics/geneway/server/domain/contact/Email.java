@@ -12,16 +12,16 @@ public class Email extends EntityBase {
 	private static final long serialVersionUID = -11865244538655550L;
 
 	@org.hibernate.validator.constraints.Email
-	private String email;
+	private String address;
 
 	private String description;
 
 	public String getEmail() {
-		return email;
+		return address;
 	}
 
 	public void setEmail(String email) {
-		this.email = email;
+		this.address = email;
 	}
 
 	public String getDescription() {
