@@ -15,42 +15,43 @@ import com.nutrinfomics.geneway.server.domain.EntityBase;
 @Entity
 public class ContactInformation extends EntityBase {
 
-  @OneToMany(
-      fetch = FetchType.LAZY,
-      cascade = {CascadeType.ALL})
-  private List<PhoneNumber> phoneNumbers = new ArrayList<>();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -8890171059982652983L;
 
-  @OneToMany(
-      fetch = FetchType.LAZY,
-      cascade = {CascadeType.ALL})
-  private List<Email> emails = new ArrayList<>();
+	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	private List<PhoneNumber> phoneNumbers = new ArrayList<>();
 
-  @Pattern(regexp = "[0-9]{10,20}", message = "{contactInformation.phonenumber.pattern.message}")
-  //	@Size(min=10, max=20, message="{device.phonenumber.size.message}")
-  @Column(nullable = false, unique = true)
-  private String phonenumber;
+	@OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.ALL })
+	private List<Email> emails = new ArrayList<>();
 
-  public String getRegisteredPhoneNumber() {
-    return phonenumber;
-  }
+	@Pattern(regexp = "[0-9]{10,20}", message = "{contactInformation.phonenumber.pattern.message}")
+	// @Size(min=10, max=20, message="{device.phonenumber.size.message}")
+	@Column(nullable = false, unique = true)
+	private String phonenumber;
 
-  public void setRegisteredPhoneNumber(String registeredPhoneNumber) {
-    phonenumber = registeredPhoneNumber;
-  }
+	public String getRegisteredPhoneNumber() {
+		return phonenumber;
+	}
 
-  public List<PhoneNumber> getPhoneNumbers() {
-    return phoneNumbers;
-  }
+	public void setRegisteredPhoneNumber(String registeredPhoneNumber) {
+		phonenumber = registeredPhoneNumber;
+	}
 
-  public void setPhoneNumbers(List<PhoneNumber> phoneNumbers) {
-    this.phoneNumbers = phoneNumbers;
-  }
+	public List<PhoneNumber> getPhoneNumbers() {
+		return phoneNumbers;
+	}
 
-  public List<Email> getEmails() {
-    return emails;
-  }
+	public void setPhoneNumbers(List<PhoneNumber> phoneNumbers) {
+		this.phoneNumbers = phoneNumbers;
+	}
 
-  public void setEmails(List<Email> emails) {
-    this.emails = emails;
-  }
+	public List<Email> getEmails() {
+		return emails;
+	}
+
+	public void setEmails(List<Email> emails) {
+		this.emails = emails;
+	}
 }
