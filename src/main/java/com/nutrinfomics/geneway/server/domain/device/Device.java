@@ -1,7 +1,7 @@
 package com.nutrinfomics.geneway.server.domain.device;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -22,14 +22,14 @@ public class Device extends EntityBase implements Serializable {
 
   private String code;
 
-  private LocalDateTime codeCreation;
+  private OffsetDateTime codeCreationTimestamp;
 
-  public LocalDateTime getCodeCreation() {
-    return codeCreation;
+  public OffsetDateTime getCodeCreationTimestamp() {
+    return codeCreationTimestamp;
   }
 
-  public void setCodeCreation(LocalDateTime codeCreation) {
-    this.codeCreation = codeCreation;
+  public void setCodeCreationTimestamp(OffsetDateTime codeCreation) {
+    this.codeCreationTimestamp = codeCreation;
   }
 
   public String getCode() {

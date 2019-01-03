@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.UUID;
@@ -176,8 +176,8 @@ public class AuthenticationServiceTest {
 
     Device mockDbDevice = mock(Device.class);
     when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID)).thenReturn(mockDbDevice);
-    LocalDateTime localDateTime = LocalDateTime.now(clock);
-    doReturn(localDateTime).when(mockDbDevice).getCodeCreation();
+    OffsetDateTime offsetDateTime = OffsetDateTime.now(clock);
+    doReturn(offsetDateTime).when(mockDbDevice).getCodeCreationTimestamp();
     doReturn(code).when(mockDbDevice).getCode();
 
     Customer mockCustomer = mock(Customer.class);
@@ -196,9 +196,9 @@ public class AuthenticationServiceTest {
 
     Device mockDbDevice = mock(Device.class);
     when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID)).thenReturn(mockDbDevice);
-    LocalDateTime localDateTime = LocalDateTime.now(clock);
-    localDateTime = localDateTime.minusMinutes(45);
-    doReturn(localDateTime).when(mockDbDevice).getCodeCreation();
+    OffsetDateTime offsetDateTime = OffsetDateTime.now(clock);
+    offsetDateTime = offsetDateTime.minusMinutes(45);
+    doReturn(offsetDateTime).when(mockDbDevice).getCodeCreationTimestamp();
     doReturn(code).when(mockDbDevice).getCode();
 
     Customer mockCustomer = mock(Customer.class);
@@ -218,8 +218,8 @@ public class AuthenticationServiceTest {
 
     Device mockDbDevice = mock(Device.class);
     when(mockHibernateUtil.selectDeviceByUUID(CLIENT_UUID)).thenReturn(mockDbDevice);
-    LocalDateTime localDateTime = LocalDateTime.now(clock);
-    doReturn(localDateTime).when(mockDbDevice).getCodeCreation();
+    OffsetDateTime offsetDateTime = OffsetDateTime.now(clock);
+    doReturn(offsetDateTime).when(mockDbDevice).getCodeCreationTimestamp();
     doReturn(code + "9").when(mockDbDevice).getCode();
 
     Customer mockCustomer = mock(Customer.class);
@@ -254,7 +254,7 @@ public class AuthenticationServiceTest {
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
-    doReturn(null).when(mockDbDevice).getCodeCreation();
+    doReturn(null).when(mockDbDevice).getCodeCreationTimestamp();
 
     doNothing().when(mockEntityManager).persist(any());
 
@@ -284,7 +284,7 @@ public class AuthenticationServiceTest {
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
-    doReturn(null).when(mockDbDevice).getCodeCreation();
+    doReturn(null).when(mockDbDevice).getCodeCreationTimestamp();
 
     doNothing().when(mockEntityManager).persist(any());
 
@@ -316,7 +316,7 @@ public class AuthenticationServiceTest {
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
-    doReturn(null).when(mockDbDevice).getCodeCreation();
+    doReturn(null).when(mockDbDevice).getCodeCreationTimestamp();
 
     doNothing().when(mockEntityManager).persist(any());
 
@@ -346,7 +346,7 @@ public class AuthenticationServiceTest {
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
-    doReturn(null).when(mockDbDevice).getCodeCreation();
+    doReturn(null).when(mockDbDevice).getCodeCreationTimestamp();
 
     doNothing().when(mockEntityManager).persist(any());
 
@@ -380,7 +380,7 @@ public class AuthenticationServiceTest {
     doReturn(mockDbDevice).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
-    doReturn(null).when(mockDbDevice).getCodeCreation();
+    doReturn(null).when(mockDbDevice).getCodeCreationTimestamp();
 
     doNothing().when(mockEntityManager).persist(any());
 
@@ -412,7 +412,7 @@ public class AuthenticationServiceTest {
     doReturn(null).when(mockDbCustomer).getDevice();
     doReturn(CLIENT_UUID).when(mockDbDevice).getUuid();
     doReturn(null).when(mockDbDevice).getCode();
-    doReturn(null).when(mockDbDevice).getCodeCreation();
+    doReturn(null).when(mockDbDevice).getCodeCreationTimestamp();
 
     doNothing().when(mockEntityManager).persist(any());
 

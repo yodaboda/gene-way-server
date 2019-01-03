@@ -1,7 +1,7 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -104,7 +104,7 @@ public class RegisterService {
     }
 
     customer.getDevice().setCode(code);
-    customer.getDevice().setCodeCreation(LocalDateTime.now(clock));
+    customer.getDevice().setCodeCreationTimestamp(OffsetDateTime.now(clock));
 
     // allow new users when they register to connect to existing plans based on
     // phone number

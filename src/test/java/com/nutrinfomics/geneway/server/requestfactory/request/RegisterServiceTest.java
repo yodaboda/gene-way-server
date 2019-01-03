@@ -11,7 +11,7 @@ import static org.mockito.Mockito.when;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
@@ -173,7 +173,7 @@ public class RegisterServiceTest {
     registerService.registerCustomer(mockCustomer);
 
     verify(mockDevice, times(1)).setCode(CODE);
-    verify(mockDevice, times(1)).setCodeCreation(LocalDateTime.now(clock));
+    verify(mockDevice, times(1)).setCodeCreationTimestamp(OffsetDateTime.now(clock));
     verify(mockCredintials, times(1)).setHashedPassword(HASHED_PASSWORD);
   }
 

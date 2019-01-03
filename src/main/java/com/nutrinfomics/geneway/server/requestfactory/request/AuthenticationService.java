@@ -1,7 +1,7 @@
 package com.nutrinfomics.geneway.server.requestfactory.request;
 
 import java.time.Clock;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.Date;
 
 import javax.inject.Inject;
@@ -87,14 +87,14 @@ public class AuthenticationService {
   @Transactional
   public boolean authenticateCode(Customer customer) throws AuthenticationException {
     Device deviceDb = hibernateUtil.selectDeviceByUUID(customer.getDevice().getUuid());
-    LocalDateTime creationTime = deviceDb.getCodeCreation();
-    LocalDateTime expiry = creationTime.plusMinutes(20);
-    if (expiry.isBefore(LocalDateTime.now(clock))) {
+    OffsetDateTime creationTime = deviceDb.getCodeCreationTimestamp();
+    OffsetDateTime expiry = creationTime.plusMinutes(20);
+    if (expiry.isBefore(OffsetDateTime.now(clock))) {
       throw new AuthenticationException(AuthenticationExceptionType.EXPIRED);
     }
     if (deviceDb.getCode().equals(customer.getDevice().getCode())) {
       deviceDb.setCode(null);
-      deviceDb.setCodeCreation(null);
+      deviceDb.setCodeCreationTimestamp(null);
       // entityManager.get().merge(deviceDb);
 
       // do this *after* merging!!!
@@ -154,7 +154,7 @@ public class AuthenticationService {
 
       if (!device.getUuid().equalsIgnoreCase(customer.getDevice().getUuid())
           || device.getCode() != null
-          || device.getCodeCreation() != null) {
+          || device.getCodeCreationTimestamp() != null) {
         throw new AuthenticationException(AuthenticationExceptionType.UNAUTHORIZED_DEVICE);
       }
 
