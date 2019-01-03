@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
 
 import java.security.SecureRandom;
+import java.util.Locale;
 
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
@@ -22,10 +24,14 @@ import com.google.inject.name.Names;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
+import com.nutrinfomics.geneway.server.RequestUtils;
+import com.nutrinfomics.geneway.server.Utils;
 
 public class GeneWayRequestFactoryModuleTest {
 
   @Bind @Mock private SecureRandom mockSecureRandom;
+  @Mock private Utils mockUtils;
+  @Mock private RequestUtils mockRequestUtils;
 
   private Injector injector;
 
@@ -48,7 +54,7 @@ public class GeneWayRequestFactoryModuleTest {
     injector =
         Guice.createInjector(
             Modules.override(new GeneWayRequestFactoryModule())
-                .with(new TestGeneWayRequestFactoryModule()),
+                .with(new TestGeneWayRequestFactoryModule(mockUtils, mockRequestUtils)),
             BoundFieldModule.of(this));
   }
 
@@ -57,6 +63,15 @@ public class GeneWayRequestFactoryModuleTest {
     String code = injector.getInstance(Key.get(String.class, Names.named("code")));
     assertEquals(6, code.length());
     assertEquals("81040g", code);
+  }
+
+  @Test
+  public void provideLocale_AsExpected() {
+    Locale defaultLocale = Locale.getDefault();
+    doReturn(defaultLocale).when(mockUtils).getLocale();
+
+    Locale locale = injector.getInstance(Locale.class);
+    assertEquals(defaultLocale, locale);
   }
 
   // TODO: add more tests

@@ -2,6 +2,7 @@ package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.math.BigInteger;
 import java.security.SecureRandom;
+import java.util.Locale;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
@@ -13,6 +14,8 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
+import com.nutrinfomics.geneway.server.RequestUtils;
+import com.nutrinfomics.geneway.server.Utils;
 
 /**
  * Guice Module for injecting {@code Request} related instances. This module depends on being
@@ -25,12 +28,20 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
   @Override
   protected void configure() {
     requireBinding(SecureRandom.class);
+    requireBinding(Utils.class);
+    requireBinding(RequestUtils.class);
   }
 
   @Provides
   @RequestScoped
   public @Named("code") String provideCode(SecureRandom random) {
     return new BigInteger(130, random).toString(32).substring(0, 6);
+  }
+
+  @Provides
+  @RequestScoped
+  public Locale provideLocale(Utils utils) {
+    return utils.getLocale();
   }
 
   /**

@@ -20,7 +20,6 @@ import java.util.List;
 import java.util.Locale;
 
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityManager;
@@ -58,7 +57,9 @@ import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.requestfactory.GeneWayAlertsModule;
 import com.nutrinfomics.geneway.server.requestfactory.GeneWayJPAModule;
+import com.nutrinfomics.geneway.server.requestfactory.GeneWayRequestFactoryModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
+import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayRequestFactoryModule;
 
 public class RegisterServiceIntegrationTest {
 
@@ -85,9 +86,9 @@ public class RegisterServiceIntegrationTest {
   // LoggerContextRule(CONFIG);
   @Rule public ExpectedException thrown = ExpectedException.none();
 
-  @Bind
-  @Named("code")
-  private String code = "1224";
+  //  @Bind
+  //  @Named("code")
+  //  private String code = "1224";
 
   @Bind @Mock private ResourceBundles mockResourceBundles;
 
@@ -140,10 +141,11 @@ public class RegisterServiceIntegrationTest {
     injector =
         Guice.createInjector(
             Modules.override(new GeneWayJPAModule(), new GeneWayAlertsModule())
+                .with(new TestGeneWayJPAModule(mockHibernateUtil), new TestGeneWayAlertsModule()),
+            Modules.override(new AlertsModule(), new GeneWayRequestFactoryModule())
                 .with(
-                    new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils),
-                    new TestGeneWayAlertsModule()),
-            Modules.override(new AlertsModule()).with(new TestAlertsModule()),
+                    new TestAlertsModule(),
+                    new TestGeneWayRequestFactoryModule(mockUtils, mockRequestUtils)),
             BoundFieldModule.of(this));
 
     service = injector.getInstance(PersistService.class);
@@ -260,7 +262,8 @@ public class RegisterServiceIntegrationTest {
     Customer emCustomer = customers.get(0);
     Device emDevice = emCustomer.getDevice();
     Credentials emCredentials = emCustomer.getCredentials();
-    assertEquals(code, emDevice.getCode());
+    assertEquals(6, emDevice.getCode().length());
+    assertEquals("81040g", emDevice.getCode());
     assertTrue(passwordUtis.checkHashedPassword(PASSWORD, emCredentials.getHashedPassword()));
 
     rollbackTransaction();

@@ -69,9 +69,10 @@ public class GeneWayServletModuleTest {
                     new AlertsModule(),
                     new GeneWayRequestFactoryModule())
                 .with(
-                    new TestGeneWayJPAModule(mockHibernateUtil, mockUtils, mockRequestUtils),
+                    new TestGeneWayJPAModule(mockHibernateUtil),
                     new TestGeneWayAlertsModule(),
-                    new TestAlertsModule()),
+                    new TestAlertsModule(),
+                    new TestGeneWayRequestFactoryModule(mockUtils, mockRequestUtils)),
             BoundFieldModule.of(this));
     injector.injectMembers(this);
     service.start();
