@@ -8,21 +8,21 @@ import javax.validation.MessageInterpolator;
 public class GeneWayLocaleMessageInterpolator implements MessageInterpolator {
 
   MessageInterpolator defaultInterpolator;
-  Locale requesLocale;
+  Locale requestLocale;
 
   public GeneWayLocaleMessageInterpolator(
       MessageInterpolator defaultInterpolator, Locale requestLocale) {
     this.defaultInterpolator = defaultInterpolator;
-    this.requesLocale = requestLocale;
+    this.requestLocale = requestLocale;
   }
 
   @Override
   public String interpolate(String messageTemplate, Context context) {
-    return defaultInterpolator.interpolate(messageTemplate, context, requesLocale);
+    return defaultInterpolator.interpolate(messageTemplate, context, requestLocale);
   }
 
   @Override
   public String interpolate(String messageTemplate, Context context, Locale locale) {
-    return defaultInterpolator.interpolate(messageTemplate, context, requesLocale);
+    return defaultInterpolator.interpolate(messageTemplate, context, requestLocale);
   }
 }
