@@ -39,16 +39,21 @@ public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
   }
 
   @Override
-  public Object createServiceInstance(Class<? extends RequestContext> requestContext) {
-    Class<? extends ServiceLocator> serviceLocatorClass;
-    if ((serviceLocatorClass = getTop().resolveServiceLocator(requestContext)) != null) {
-      return injector
-          .getInstance(serviceLocatorClass)
-          .getInstance(requestContext.getAnnotation(Service.class).value());
-    } else {
-      return null;
-    }
+  public <T extends ServiceLocator> T createServiceLocator(Class<T> clazz) {
+	  return injector.getInstance(clazz);
   }
+  
+//  @Override
+//  public Object createServiceInstance(Class<? extends RequestContext> requestContext) {
+//    Class<? extends ServiceLocator> serviceLocatorClass;
+//    if ((serviceLocatorClass = getTop().resolveServiceLocator(requestContext)) != null) {
+//      return injector
+//          .getInstance(serviceLocatorClass)
+//          .getInstance(requestContext.getAnnotation(Service.class).value());
+//    } else {
+//      return null;
+//    }
+//  }
   /**
    * Invokes JSR 303 validator on a given domain object.
    *
