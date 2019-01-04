@@ -1,8 +1,6 @@
 package com.nutrinfomics.geneway.server.domain.plan;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.EnumMap;
 import java.util.Map;
 import java.util.Vector;
 
@@ -17,8 +15,8 @@ import com.nutrinfomics.geneway.shared.MeasurementUnit;
 public class FoodItemUtils {
 
   private FoodUnitWeightParser foodUnitWeightParser;
-
-  private EnumMap<FoodCategory, Vector<FoodItemType>> foodItemTypeByCategory;
+  // TODO: To be deleted
+  //  private EnumMap<FoodCategory, Vector<FoodItemType>> foodItemTypeByCategory;
 
   @Inject
   public FoodItemUtils(FoodUnitWeightParser foodUnitWeightParser) {
@@ -36,13 +34,14 @@ public class FoodItemUtils {
     }
   }
 
-  public synchronized Vector<FoodItemType> getFoodTypeInCategory(FoodCategory foodCategory) {
-    if (foodItemTypeByCategory == null) {
-      foodItemTypeByCategory = new EnumMap<>(FoodCategory.class);
-      orderFoodItemTypeByCategory(Arrays.asList(FoodItemType.values()), foodItemTypeByCategory);
-    }
-    return foodItemTypeByCategory.get(foodCategory);
-  }
+  // TODO: To be deleted
+  //  public synchronized Vector<FoodItemType> getFoodTypeInCategory(FoodCategory foodCategory) {
+  //    if (foodItemTypeByCategory == null) {
+  //      foodItemTypeByCategory = new EnumMap<>(FoodCategory.class);
+  //      orderFoodItemTypeByCategory(Arrays.asList(FoodItemType.values()), foodItemTypeByCategory);
+  //    }
+  //    return foodItemTypeByCategory.get(foodCategory);
+  //  }
 
   public void orderFoodItemByCategory(
       Collection<FoodItem> foodItems, Map<FoodCategory, Vector<FoodItem>> foodItemByCategory) {
