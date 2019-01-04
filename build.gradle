@@ -68,7 +68,7 @@ dependencies {
 	testImplementation 'org.hamcrest:hamcrest-library:1.3'
 	implementation 'com.fasterxml:classmate:1.3.4'
 //	compile 'com.fasterxml:classmate:1.4.0'
-  	testImplementation fileTree(dir: '../../git/repository/gene-way-alerts-testing/build/libs', include: ['*.jar'])	
+  	testImplementation fileTree(dir: '../gene-way-alerts-testing/build/libs', include: ['*.jar'])	
 }
 
 sourceSets {
