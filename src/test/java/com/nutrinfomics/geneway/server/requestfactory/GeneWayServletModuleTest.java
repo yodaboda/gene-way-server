@@ -46,8 +46,9 @@ import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.requestfactory.request.TestGeneWayAlertsModule;
 import com.nutrinfomics.geneway.shared.testcategory.FastTest;
+import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
-@Category(value = {FastTest.class})
+@Category(value = {SlowTest.class})
 public class GeneWayServletModuleTest {
 
   private final String SID = "Smith Pt PF AB";
