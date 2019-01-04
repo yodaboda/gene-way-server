@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -27,7 +28,9 @@ import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.requestfactory.request.PlanService;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class GuiceServiceLayerDecoratorTest {
 
   @Inject private GuiceServiceLayerDecorator layerDecorator;

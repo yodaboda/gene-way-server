@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -23,7 +24,9 @@ import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class GeneWayJPAModuleTest {
 
   private final String SID = "no taxes without representation";

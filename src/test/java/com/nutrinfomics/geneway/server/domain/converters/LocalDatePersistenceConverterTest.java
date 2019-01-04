@@ -9,7 +9,11 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
+
+@Category(value = {FastTest.class})
 public class LocalDatePersistenceConverterTest {
 
   private LocalDatePersistenceConverter localDatePersistenceConverter =

@@ -7,12 +7,15 @@ import java.util.MissingResourceException;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
 import com.nutrinfomics.geneway.shared.SupplementType;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class ResourceBundlesTest {
 
   @Rule public ExpectedException thrown = ExpectedException.none();

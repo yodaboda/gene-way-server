@@ -4,10 +4,13 @@ import javax.inject.Provider;
 import javax.persistence.EntityManager;
 
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class CommunityServiceTest {
 
   @Mock private Provider<EntityManager> mockEntityManagerProvider;

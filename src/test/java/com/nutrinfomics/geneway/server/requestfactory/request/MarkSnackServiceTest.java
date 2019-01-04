@@ -12,6 +12,7 @@ import javax.persistence.EntityManager;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -27,7 +28,9 @@ import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.server.domain.plan.SnackHistory;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class MarkSnackServiceTest {
 
   private final String SID = "SID";

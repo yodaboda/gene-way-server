@@ -6,8 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
+
+@Category(value = {FastTest.class})
 public class PasswordUtilsTest {
 
   @Rule public ExpectedException thrown = ExpectedException.none();

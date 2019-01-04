@@ -16,9 +16,12 @@ import org.apache.logging.log4j.test.appender.ListAppender;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.geneway.alerts.AlertMechanism;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class EmailAlertTest {
 
   private static final String CONFIG = "log4j-appender.xml";

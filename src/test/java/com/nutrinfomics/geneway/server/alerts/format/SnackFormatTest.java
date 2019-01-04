@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 
 import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.plan.ArbitraryCycle;
@@ -17,7 +18,9 @@ import com.nutrinfomics.geneway.server.domain.plan.GeneralVaryingSnack;
 import com.nutrinfomics.geneway.server.domain.plan.Snack;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class SnackFormatTest {
 
   private FoodItemFormat mockFoodItemFormat;

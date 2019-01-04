@@ -20,6 +20,7 @@ import javax.persistence.EntityManager;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -40,7 +41,9 @@ import com.nutrinfomics.geneway.server.domain.plan.SnackMenu;
 import com.nutrinfomics.geneway.server.domain.plan.SnackTimes;
 import com.nutrinfomics.geneway.server.domain.plan.VaryingSnack;
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class NextSnackServiceTest {
   private static final double TIME_BETWEEN_SNACKS = 1.2;
   private static final double NEXT_DAY_TIME_BETWEEN_SNACKS = 30.;

@@ -30,6 +30,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -60,7 +61,10 @@ import com.nutrinfomics.geneway.server.requestfactory.GeneWayJPAModule;
 import com.nutrinfomics.geneway.server.requestfactory.GeneWayRequestFactoryModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayRequestFactoryModule;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
+import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
+@Category(value = {SlowTest.class})
 public class RegisterServiceIntegrationTest {
 
   private static final String CUSTOMER_NICK_NAME = "not blank";

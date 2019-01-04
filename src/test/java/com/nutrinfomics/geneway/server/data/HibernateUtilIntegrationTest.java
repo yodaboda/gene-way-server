@@ -9,6 +9,7 @@ import javax.persistence.EntityTransaction;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.MockitoAnnotations;
 
 import com.google.inject.AbstractModule;
@@ -22,7 +23,10 @@ import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
+import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
+@Category(value = {SlowTest.class})
 public class HibernateUtilIntegrationTest {
 
   private PersistService service;

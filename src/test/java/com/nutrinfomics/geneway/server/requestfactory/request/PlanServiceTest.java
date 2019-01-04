@@ -15,6 +15,7 @@ import javax.persistence.EntityManager;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -34,7 +35,9 @@ import com.nutrinfomics.geneway.server.domain.specification.AbstractFoodSpecific
 import com.nutrinfomics.geneway.server.domain.specification.SnackOrderSpecification;
 import com.nutrinfomics.geneway.shared.FoodItemType;
 import com.nutrinfomics.geneway.shared.MeasurementUnit;
+import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 
+@Category(value = {FastTest.class})
 public class PlanServiceTest {
 
   private final String SID = "SID";
