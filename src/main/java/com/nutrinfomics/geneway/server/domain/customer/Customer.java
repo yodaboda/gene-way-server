@@ -50,8 +50,6 @@ public class Customer extends EntityBase {
   @NotBlank(message = "{customer.nickname.notblank.message}")
   private String nickName;
 
-  public Customer() {}
-
   public Plan getPlan() {
     return plan;
   }
