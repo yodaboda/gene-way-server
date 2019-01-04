@@ -19,17 +19,20 @@ import com.google.web.bindery.requestfactory.shared.ServiceLocator;
 
 public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
   /** JSR 303 validator used to validate requested entities. */
-  private final Validator validator;
+	//TODO: delete this field
+//  private final Validator validator;
 
   private final Injector injector;
   private Locale requestLocale;
 
   @Inject
   protected GuiceServiceLayerDecorator(
-      final Injector injector, final Validator validator, Locale requestLocale) {
+      final Injector injector, 
+      //final Validator validator, 
+      Locale requestLocale) {
     super();
     this.injector = injector;
-    this.validator = validator;
+//    this.validator = validator;
     this.requestLocale = requestLocale;
   }
 

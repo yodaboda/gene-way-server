@@ -44,32 +44,33 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
     return utils.getLocale();
   }
 
-  /**
-   * Creates and reuses injecting JSR 303 Validator factory.
-   *
-   * @param injector the injector that will be used for the injection.
-   * @return The ValidatorFactory.
-   */
-  @Provides
-  @Singleton
-  public ValidatorFactory getValidatorFactory(Injector injector) {
-    // this is no good, because validator is singleton and fixed
-    return Validation.byDefaultProvider()
-        .configure()
-        .constraintValidatorFactory(new InjectingConstraintValidationFactory(injector))
-        .buildValidatorFactory();
-  }
-
-  /**
-   * Creates and reuses injecting JSR 303 Validator.
-   *
-   * @param validatorFactory the ValidatorFactory to get the Validator from.
-   * @return the Validator.
-   */
-  @Provides
-  @Singleton
-  public Validator getValidator(ValidatorFactory validatorFactory) {
-    // this is no good, because validator is singleton and fixed
-    return validatorFactory.getValidator();
-  }
+  //TODO: Delete these providers
+//  /**
+//   * Creates and reuses injecting JSR 303 Validator factory.
+//   *
+//   * @param injector the injector that will be used for the injection.
+//   * @return The ValidatorFactory.
+//   */
+//  @Provides
+//  @Singleton
+//  public ValidatorFactory getValidatorFactory(Injector injector) {
+//    // this is no good, because validator is singleton and fixed
+//    return Validation.byDefaultProvider()
+//        .configure()
+//        .constraintValidatorFactory(new InjectingConstraintValidationFactory(injector))
+//        .buildValidatorFactory();
+//  }
+//
+//  /**
+//   * Creates and reuses injecting JSR 303 Validator.
+//   *
+//   * @param validatorFactory the ValidatorFactory to get the Validator from.
+//   * @return the Validator.
+//   */
+//  @Provides
+//  @Singleton
+//  public Validator getValidator(ValidatorFactory validatorFactory) {
+//    // this is no good, because validator is singleton and fixed
+//    return validatorFactory.getValidator();
+//  }
 }

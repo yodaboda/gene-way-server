@@ -74,17 +74,18 @@ public class GeneWayRequestFactoryModuleTest {
     assertEquals(defaultLocale, locale);
   }
 
-  // TODO: add more tests
-  @Test
-  public void getValidatorFactory_AsExpected() {
-    ValidatorFactory validatorFactory = injector.getInstance(ValidatorFactory.class);
-    assertNotNull(validatorFactory);
-  }
-
-  // TODO: add more tests
-  @Test
-  public void getValidator_AsExpected() {
-    Validator validator = injector.getInstance(Validator.class);
-    assertNotNull(validator);
-  }
+  //TODO: Delete these tests
+//  // TODO: add more tests
+//  @Test
+//  public void getValidatorFactory_AsExpected() {
+//    ValidatorFactory validatorFactory = injector.getInstance(ValidatorFactory.class);
+//    assertNotNull(validatorFactory);
+//  }
+//
+//  // TODO: add more tests
+//  @Test
+//  public void getValidator_AsExpected() {
+//    Validator validator = injector.getInstance(Validator.class);
+//    assertNotNull(validator);
+//  }
 }
