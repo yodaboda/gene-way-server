@@ -13,26 +13,25 @@ import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.web.bindery.requestfactory.server.ServiceLayerDecorator;
 import com.google.web.bindery.requestfactory.shared.Locator;
-import com.google.web.bindery.requestfactory.shared.RequestContext;
-import com.google.web.bindery.requestfactory.shared.Service;
 import com.google.web.bindery.requestfactory.shared.ServiceLocator;
 
 public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
   /** JSR 303 validator used to validate requested entities. */
-	//TODO: delete this field
-//  private final Validator validator;
+  // TODO: delete this field
+  //  private final Validator validator;
 
   private final Injector injector;
+
   private Locale requestLocale;
 
   @Inject
   protected GuiceServiceLayerDecorator(
-      final Injector injector, 
-      //final Validator validator, 
+      final Injector injector,
+      // final Validator validator,
       Locale requestLocale) {
     super();
     this.injector = injector;
-//    this.validator = validator;
+    //    this.validator = validator;
     this.requestLocale = requestLocale;
   }
 
@@ -43,20 +42,20 @@ public class GuiceServiceLayerDecorator extends ServiceLayerDecorator {
 
   @Override
   public <T extends ServiceLocator> T createServiceLocator(Class<T> clazz) {
-	  return injector.getInstance(clazz);
+    return injector.getInstance(clazz);
   }
-  
-//  @Override
-//  public Object createServiceInstance(Class<? extends RequestContext> requestContext) {
-//    Class<? extends ServiceLocator> serviceLocatorClass;
-//    if ((serviceLocatorClass = getTop().resolveServiceLocator(requestContext)) != null) {
-//      return injector
-//          .getInstance(serviceLocatorClass)
-//          .getInstance(requestContext.getAnnotation(Service.class).value());
-//    } else {
-//      return null;
-//    }
-//  }
+
+  //  @Override
+  //  public Object createServiceInstance(Class<? extends RequestContext> requestContext) {
+  //    Class<? extends ServiceLocator> serviceLocatorClass;
+  //    if ((serviceLocatorClass = getTop().resolveServiceLocator(requestContext)) != null) {
+  //      return injector
+  //          .getInstance(serviceLocatorClass)
+  //          .getInstance(requestContext.getAnnotation(Service.class).value());
+  //    } else {
+  //      return null;
+  //    }
+  //  }
   /**
    * Invokes JSR 303 validator on a given domain object.
    *

@@ -1,16 +1,12 @@
 package com.nutrinfomics.geneway.server.requestfactory;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import java.security.SecureRandom;
 import java.util.Locale;
-
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -77,18 +73,18 @@ public class GeneWayRequestFactoryModuleTest {
     assertEquals(defaultLocale, locale);
   }
 
-  //TODO: Delete these tests
-//  // TODO: add more tests
-//  @Test
-//  public void getValidatorFactory_AsExpected() {
-//    ValidatorFactory validatorFactory = injector.getInstance(ValidatorFactory.class);
-//    assertNotNull(validatorFactory);
-//  }
-//
-//  // TODO: add more tests
-//  @Test
-//  public void getValidator_AsExpected() {
-//    Validator validator = injector.getInstance(Validator.class);
-//    assertNotNull(validator);
-//  }
+  // TODO: Delete these tests
+  //  // TODO: add more tests
+  //  @Test
+  //  public void getValidatorFactory_AsExpected() {
+  //    ValidatorFactory validatorFactory = injector.getInstance(ValidatorFactory.class);
+  //    assertNotNull(validatorFactory);
+  //  }
+  //
+  //  // TODO: add more tests
+  //  @Test
+  //  public void getValidator_AsExpected() {
+  //    Validator validator = injector.getInstance(Validator.class);
+  //    assertNotNull(validator);
+  //  }
 }

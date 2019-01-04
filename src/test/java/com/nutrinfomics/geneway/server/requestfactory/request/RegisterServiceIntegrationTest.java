@@ -61,7 +61,6 @@ import com.nutrinfomics.geneway.server.requestfactory.GeneWayJPAModule;
 import com.nutrinfomics.geneway.server.requestfactory.GeneWayRequestFactoryModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayRequestFactoryModule;
-import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
 @Category(value = {SlowTest.class})

@@ -5,6 +5,7 @@ import javax.validation.ConstraintValidatorFactory;
 
 import com.google.inject.Injector;
 
+// TODO: Delete this class
 public class InjectingConstraintValidationFactory implements ConstraintValidatorFactory {
 
   /** The entry point injector that is used to inject different kind of dependencies. */

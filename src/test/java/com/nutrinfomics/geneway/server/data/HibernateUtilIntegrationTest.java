@@ -23,7 +23,6 @@ import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.nutrinfomics.geneway.server.domain.device.Device;
 import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
-import com.nutrinfomics.geneway.shared.testcategory.FastTest;
 import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
 @Category(value = {SlowTest.class})

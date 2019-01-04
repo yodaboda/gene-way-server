@@ -5,13 +5,8 @@ import java.security.SecureRandom;
 import java.util.Locale;
 
 import javax.inject.Named;
-import javax.inject.Singleton;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Injector;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
 import com.nutrinfomics.geneway.server.RequestUtils;
@@ -44,33 +39,33 @@ public class GeneWayRequestFactoryModule extends AbstractModule {
     return utils.getLocale();
   }
 
-  //TODO: Delete these providers
-//  /**
-//   * Creates and reuses injecting JSR 303 Validator factory.
-//   *
-//   * @param injector the injector that will be used for the injection.
-//   * @return The ValidatorFactory.
-//   */
-//  @Provides
-//  @Singleton
-//  public ValidatorFactory getValidatorFactory(Injector injector) {
-//    // this is no good, because validator is singleton and fixed
-//    return Validation.byDefaultProvider()
-//        .configure()
-//        .constraintValidatorFactory(new InjectingConstraintValidationFactory(injector))
-//        .buildValidatorFactory();
-//  }
-//
-//  /**
-//   * Creates and reuses injecting JSR 303 Validator.
-//   *
-//   * @param validatorFactory the ValidatorFactory to get the Validator from.
-//   * @return the Validator.
-//   */
-//  @Provides
-//  @Singleton
-//  public Validator getValidator(ValidatorFactory validatorFactory) {
-//    // this is no good, because validator is singleton and fixed
-//    return validatorFactory.getValidator();
-//  }
+  // TODO: Delete these providers
+  //  /**
+  //   * Creates and reuses injecting JSR 303 Validator factory.
+  //   *
+  //   * @param injector the injector that will be used for the injection.
+  //   * @return The ValidatorFactory.
+  //   */
+  //  @Provides
+  //  @Singleton
+  //  public ValidatorFactory getValidatorFactory(Injector injector) {
+  //    // this is no good, because validator is singleton and fixed
+  //    return Validation.byDefaultProvider()
+  //        .configure()
+  //        .constraintValidatorFactory(new InjectingConstraintValidationFactory(injector))
+  //        .buildValidatorFactory();
+  //  }
+  //
+  //  /**
+  //   * Creates and reuses injecting JSR 303 Validator.
+  //   *
+  //   * @param validatorFactory the ValidatorFactory to get the Validator from.
+  //   * @return the Validator.
+  //   */
+  //  @Provides
+  //  @Singleton
+  //  public Validator getValidator(ValidatorFactory validatorFactory) {
+  //    // this is no good, because validator is singleton and fixed
+  //    return validatorFactory.getValidator();
+  //  }
 }
