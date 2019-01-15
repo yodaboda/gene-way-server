@@ -1,4 +1,4 @@
-package com.nutrinfomics.geneway.server.domain;
+package com.nutrinfomics.geneway.server.requestfactory;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
 import com.google.web.bindery.requestfactory.shared.Locator;
+import com.nutrinfomics.geneway.server.domain.EntityBase;
 
 public class EntityBaseLocator extends Locator<EntityBase, Long> {
 
