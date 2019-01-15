@@ -27,12 +27,12 @@ ext {
     ]
 }
 
-ext.hibernateVersion = '23.1.1'
+
 dependencies {
+	compile "org.hibernate:hibernate-entitymanager:$ver.hibernate"
 	implementation "org.hibernate:hibernate-core:$ver.hibernate"
 	implementation "org.hibernate:hibernate-c3p0:$ver.hibernate"
 	implementation 'c3p0:c3p0:0.9.1.2'
-	implementation "org.hibernate:hibernate-entitymanager:$ver.hibernate"
 	implementation "org.hibernate:hibernate-validator:$ver.hibernateValidator"
 	implementation "com.google.inject:guice:$ver.guice"
 	implementation "com.google.inject.extensions:guice-servlet:$ver.guice"
@@ -54,6 +54,7 @@ dependencies {
 
 	compile 	fileTree(dir: '../gene-way-shared/build/libs', include: ['*.jar'])
 	compile 	fileTree(dir: '../gene-way-alerts/build/libs', include: ['*.jar'])
+	compile 	fileTree(dir: '../gene-way-domain/build/libs', include: ['*.jar'])
 		
 	providedCompile "javax.servlet:servlet-api:2.5"
 	//providedCompile "javax.servlet:jstl:1+"

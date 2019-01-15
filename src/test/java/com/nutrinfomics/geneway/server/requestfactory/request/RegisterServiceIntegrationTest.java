@@ -28,6 +28,7 @@ import javax.persistence.EntityTransaction;
 import org.apache.logging.log4j.test.appender.ListAppender;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
@@ -63,6 +64,8 @@ import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayRequestFactoryModule;
 import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
+//TODO: Re-enable test
+@Ignore
 @Category(value = {SlowTest.class})
 public class RegisterServiceIntegrationTest {
 

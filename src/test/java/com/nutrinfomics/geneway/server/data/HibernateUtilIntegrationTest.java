@@ -8,6 +8,7 @@ import javax.persistence.EntityTransaction;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
 import org.mockito.MockitoAnnotations;
@@ -25,6 +26,8 @@ import com.nutrinfomics.geneway.server.domain.device.Session;
 import com.nutrinfomics.geneway.server.domain.identifier.Identifier;
 import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
 
+//TODO: Re-enable test
+@Ignore
 @Category(value = {SlowTest.class})
 public class HibernateUtilIntegrationTest {
 
