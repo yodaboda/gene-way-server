@@ -22,7 +22,6 @@ import com.google.inject.util.Modules;
 import com.nutrinfomics.geneway.server.RequestUtils;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
-import com.nutrinfomics.geneway.server.domain.EntityBaseLocator;
 import com.nutrinfomics.geneway.server.domain.customer.Credentials;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
 import com.nutrinfomics.geneway.server.domain.device.Device;
