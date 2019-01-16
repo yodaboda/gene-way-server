@@ -4,7 +4,8 @@ apply plugin: 'eclipse'
 
 buildscript { repositories { mavenCentral() }} // needed for google-java-format
 
-apply from: '../gene-way-shared/config.gradle'
+//apply from: "https://raw.githubusercontent.com/yodaboda/gene-way-shared/master/config.gradle"
+apply from: "../gene-way-shared/config.gradle"
 
 
 jar {
@@ -52,9 +53,11 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.13'
 	
 
-	compile 	fileTree(dir: '../gene-way-shared/build/libs', include: ['*.jar'])
+	//compile 	fileTree(dir: '../gene-way-shared/build/libs', include: ['*.jar'])
+	implementation 'com.gene-play:gene-way-shared:0.4.7'
 	compile 	fileTree(dir: '../gene-way-alerts/build/libs', include: ['*.jar'])
 	compile 	fileTree(dir: '../gene-way-domain/build/libs', include: ['*.jar'])
+	compile 	fileTree(dir: '../gene-way-utils/build/libs', include: ['*.jar'])
 		
 	providedCompile "javax.servlet:servlet-api:2.5"
 	//providedCompile "javax.servlet:jstl:1+"

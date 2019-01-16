@@ -15,9 +15,9 @@ import com.geneway.alerts.impl.DefaultEmailAlertSender;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.servlet.RequestScoped;
-import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.device.Session;
+import com.nutrinfomics.geneway.utils.resources.ResourceBundles;
 
 public class GeneWayAlertsModule extends AbstractModule {
 

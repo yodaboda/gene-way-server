@@ -30,7 +30,6 @@ import com.google.inject.Injector;
 import com.google.inject.testing.fieldbinder.Bind;
 import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
-import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
 import com.nutrinfomics.geneway.server.domain.contact.Email;
 import com.nutrinfomics.geneway.server.domain.customer.Customer;
@@ -39,6 +38,7 @@ import com.nutrinfomics.geneway.server.domain.plan.Plan;
 import com.nutrinfomics.geneway.server.domain.plan.PlanPreferences;
 import com.nutrinfomics.geneway.server.requestfactory.request.TestGeneWayAlertsModule;
 import com.nutrinfomics.geneway.shared.testcategory.FastTest;
+import com.nutrinfomics.geneway.utils.resources.ResourceBundles;
 
 @Category(value = {FastTest.class})
 public class GeneWayAlertsModuleTest {

@@ -46,7 +46,6 @@ import com.google.inject.testing.fieldbinder.BoundFieldModule;
 import com.google.inject.util.Modules;
 import com.nutrinfomics.geneway.server.PasswordUtils;
 import com.nutrinfomics.geneway.server.RequestUtils;
-import com.nutrinfomics.geneway.server.ResourceBundles;
 import com.nutrinfomics.geneway.server.Utils;
 import com.nutrinfomics.geneway.server.data.HibernateUtil;
 import com.nutrinfomics.geneway.server.domain.contact.ContactInformation;
@@ -63,6 +62,7 @@ import com.nutrinfomics.geneway.server.requestfactory.GeneWayRequestFactoryModul
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayJPAModule;
 import com.nutrinfomics.geneway.server.requestfactory.TestGeneWayRequestFactoryModule;
 import com.nutrinfomics.geneway.shared.testcategory.SlowTest;
+import com.nutrinfomics.geneway.utils.resources.ResourceBundles;
 
 //TODO: Re-enable test
 @Ignore
