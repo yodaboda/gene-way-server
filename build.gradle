@@ -1,6 +1,4 @@
-//apply plugin: 'java'
 apply plugin: 'war'
-//apply plugin: 'eclipse'
 
 buildscript { repositories { mavenCentral() }} // needed for google-java-format
 
@@ -13,14 +11,14 @@ jar {
     	include 'META-INF/persistence.xml'
   	}
     manifest {
-        attributes 'compile-Title': 'Gene-Way domain',
+        attributes 'compile-Title': 'Gene-Way server',
                    'compile-Version': project.ext.version
     }
 }
 
 configurations { providedCompile }
 
-
+archivesBaseName = "gene-way-server"
 
 
 dependencies {
@@ -67,8 +65,8 @@ dependencies {
 	testImplementation 'org.hamcrest:hamcrest-library:1.3'
 	implementation 'com.fasterxml:classmate:1.3.4'
 //	compile 'com.fasterxml:classmate:1.4.0'
-	//TODO: Move to Central Repository artifact
-  	testImplementation fileTree(dir: '../gene-way-alerts-testing/build/libs', include: ['*.jar'])	
+	testImplementation 'com.gene-play:gene-way-alerts-testing:0.4.7'
+//  	testImplementation fileTree(dir: '../gene-way-alerts-testing/build/libs', include: ['*.jar'])	
 }
 
 sourceSets {
