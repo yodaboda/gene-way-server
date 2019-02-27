@@ -110,14 +110,14 @@ public class PlanServiceTest {
 
   @BeforeClass
   public static void initSnacks() {
-    FoodItem foodItem = new FoodItem(.4, MeasurementUnit.GRAM, FOOD_ITEM_TYPES.get(0));
+    FoodItem foodItem = new FoodItem(.4F, MeasurementUnit.GRAM, FOOD_ITEM_TYPES.get(0));
     Snack snack = new Snack(foodItem);
     GeneralVaryingSnack varyingSnack = new GeneralVaryingSnack();
     varyingSnack.add(snack);
     SNACKS.add(varyingSnack);
     SNACKS_SUMMARY.add(varyingSnack.getSummary());
 
-    FoodItem beefFoodItem = new FoodItem(.12345678, MeasurementUnit.GRAM, FOOD_ITEM_TYPES.get(1));
+    FoodItem beefFoodItem = new FoodItem(.12345678F, MeasurementUnit.GRAM, FOOD_ITEM_TYPES.get(1));
     Snack beefSnack = new Snack(beefFoodItem);
     SNACKS.add(beefSnack);
     SNACKS_SUMMARY.add(beefSnack.getSummary());
