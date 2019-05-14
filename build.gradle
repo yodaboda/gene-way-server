@@ -45,8 +45,8 @@ dependencies {
 	implementation 'mysql:mysql-connector-java:8.0.13'
 	
 
-	//compile 	fileTree(dir: '../gene-way-shared/build/libs', include: ['*.jar'])
-	implementation 'com.gene-play:gene-way-shared:0.4.7'
+	compile 	fileTree(dir: '../gene-way-shared/build/libs', include: ['*.jar'])
+	//implementation 'com.gene-play:gene-way-shared:0.4.7'
 	implementation 'com.gene-play:gene-way-alerts:0.4.7'
 	//compile 	fileTree(dir: '../gene-way-alerts/build/libs', include: ['*.jar'])
 	compile 	fileTree(dir: '../gene-way-domain/build/libs', include: ['*.jar'])
